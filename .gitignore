@@ -42,6 +42,7 @@ coverage/
 # Documentation files
 *.md
 !README.md
+!.github/**/*.md
 # Preview / temporary environments
 .venv-preview/
 preview/
