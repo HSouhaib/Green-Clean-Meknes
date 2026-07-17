@@ -46,8 +46,8 @@ export const authRouter = createRouter({
 
   // Dev-only: bypass Kimi OAuth for local testing (Admin)
   devLogin: publicQuery.mutation(async ({ ctx }) => {
-    if (env.isProduction) {
-      throw new Error("Dev login is not available in production");
+    if (env.isProduction || !env.allowDevLogin) {
+      throw new Error("Dev login is not available");
     }
     const devUnionId = "dev_user_001";
     const devName = "Dev User";
@@ -88,8 +88,8 @@ export const authRouter = createRouter({
 
   // Dev-only: bypass OAuth as regular volunteer user
   devLoginUser: publicQuery.mutation(async ({ ctx }) => {
-    if (env.isProduction) {
-      throw new Error("Dev login is not available in production");
+    if (env.isProduction || !env.allowDevLogin) {
+      throw new Error("Dev login is not available");
     }
     const devUnionId = "dev_user_002";
     const devName = "Local Volunteer";

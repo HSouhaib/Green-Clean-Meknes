@@ -21,6 +21,7 @@ function list(name: string): string[] {
 export const env = {
   appSecret: required("APP_SECRET"),
   isProduction: process.env.NODE_ENV === "production",
+  allowDevLogin: process.env.ALLOW_DEV_LOGIN === "true",
   databaseUrl: required("DATABASE_URL"),
   ownerUnionId: process.env.OWNER_UNION_ID ?? "",
 
