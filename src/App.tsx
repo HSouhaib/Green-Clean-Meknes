@@ -1,17 +1,33 @@
-import { Routes, Route } from 'react-router';
-import { lazy, Suspense } from 'react';
-import { PageLoader } from '@/components/PageLoader';
+import { Routes, Route, useLocation } from "react-router";
+import { lazy, Suspense } from "react";
+import { PageLoader } from "@/components/PageLoader";
+import MaintenanceModal from "@/components/MaintenanceModal";
+import { trpc } from "@/providers/trpc";
 
-const Home = lazy(() => import('@/pages/Home'));
-const Login = lazy(() => import('@/pages/Login'));
-const Admin = lazy(() => import('@/pages/Admin'));
-const Profile = lazy(() => import('@/pages/Profile'));
-const NotFound = lazy(() => import('@/pages/NotFound'));
-const NeighborhoodPage = lazy(() => import('@/pages/NeighborhoodPage'));
+const Home = lazy(() => import("@/pages/Home"));
+const Login = lazy(() => import("@/pages/Login"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const Profile = lazy(() => import("@/pages/Profile"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const NeighborhoodPage = lazy(() => import("@/pages/NeighborhoodPage"));
+
+function MaintenanceGuard() {
+  const location = useLocation();
+  const { data: settings } = trpc.settings.list.useQuery();
+
+  const isMaintenance = settings?.maintenance_mode === "true";
+  const isExemptRoute =
+    location.pathname === "/admin" || location.pathname === "/login";
+
+  if (!isMaintenance || isExemptRoute) return null;
+
+  return <MaintenanceModal message={settings?.maintenance_message || null} />;
+}
 
 function App() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <MaintenanceGuard />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

@@ -793,6 +793,7 @@ export default function CampaignsSection() {
         {/* Campaign Detail Modal */}
         {detailModalCampaign && (
           <CampaignDetailModal
+            key={detailModalCampaign.id}
             campaign={detailModalCampaign}
             onClose={() => setDetailModalCampaign(null)}
           />

@@ -7,11 +7,12 @@ import LoginModal from "@/components/LoginModal";
 import { useLoginModalTrigger } from "@/hooks/useLoginModal";
 import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 import { useAuth } from "@/hooks/useAuth";
-import { allNavLinks, langs, handleNavClick } from "@/const";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { allNavLinks, handleNavClick } from "@/const";
 import { User, LogOut } from "lucide-react";
 
 export default function Navigation() {
-  const { lang, setLang, t, dir } = useLanguage();
+  const { t, dir } = useLanguage();
   const isRtl = dir === "rtl";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -128,34 +129,7 @@ export default function Navigation() {
             className={`flex items-center gap-4 ${isRtl ? "flex-row-reverse" : ""}`}
           >
             {/* Language switcher - desktop */}
-            <div
-              className="hidden md:flex items-center gap-1 font-mono text-xs"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              {langs.map((l, i) => (
-                <span key={l} className="flex items-center">
-                  <button
-                    onClick={() => setLang(l)}
-                    className="transition-colors duration-200 hover:text-[var(--text-primary)]"
-                    style={{
-                      color:
-                        lang === l
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                      letterSpacing: "0.08em",
-                    }}
-                    aria-pressed={lang === l}
-                  >
-                    {l.toUpperCase()}
-                  </button>
-                  {i < langs.length - 1 && <span className="mx-1.5">|</span>}
-                </span>
-              ))}
-            </div>
+            <LanguageSwitcher className="hidden md:flex" />
 
             {/* Theme toggle - cycles dark -> light -> auto */}
             <button

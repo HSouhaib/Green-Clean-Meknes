@@ -1,5 +1,6 @@
 export const Session = {
   cookieName: "kimi_sid",
+  pendingTwoFactorCookieName: "kimi_2fa_pending",
   maxAgeMs: 7 * 24 * 60 * 60 * 1000, // 7 days (matches JWT expiration)
 } as const;
 

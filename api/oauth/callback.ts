@@ -2,8 +2,8 @@ import type { Context } from "hono";
 import { setCookie, getCookie } from "hono/cookie";
 import { getSessionCookieOptions } from "../lib/cookies";
 import { Session } from "@contracts/constants";
-import { signSessionToken } from "../kimi/session";
-import { upsertUser } from "../queries/users";
+import { signSessionToken, signTwoFactorPendingToken } from "../kimi/session";
+import { findUserByUnionId, upsertUser } from "../queries/users";
 import { getOAuthProviders, type OAuthProvider } from "./providers";
 
 const PKCE_COOKIE_NAME = "oauth_pkce";
@@ -15,15 +15,12 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
     const state = c.req.query("state");
     const error = c.req.query("error");
     const errorDescription = c.req.query("error_description");
-    
+
     if (error) {
       if (error === "access_denied") {
         return c.redirect("/", 302);
       }
-      return c.json(
-        { error, error_description: errorDescription },
-        400,
-      );
+      return c.json({ error, error_description: errorDescription }, 400);
     }
 
     if (!code || !state) {
@@ -57,7 +54,7 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
       if (!nonce || !storedNonce || nonce !== storedNonce) {
         return c.json({ error: "CSRF nonce mismatch" }, 400);
       }
-      
+
       if (!codeVerifier) {
         return c.json({ error: "PKCE code verifier expired or missing" }, 400);
       }
@@ -66,7 +63,10 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
       const config = providers[provider];
 
       if (!config || !config.enabled) {
-        return c.json({ error: `OAuth provider ${provider} is not enabled` }, 400);
+        return c.json(
+          { error: `OAuth provider ${provider} is not enabled` },
+          400
+        );
       }
 
       // Exchange code for token
@@ -80,6 +80,7 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
 
       // Create a unique unionId that includes the provider prefix
       const unionId = `${provider}:${profile.id}`;
+      const clientId = `${provider}_app`;
 
       await upsertUser({
         unionId,
@@ -89,15 +90,11 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
         lastSignInAt: new Date(),
       });
 
-      const token = await signSessionToken({
-        unionId,
-        clientId: `${provider}_app`,
-      });
-
+      const user = await findUserByUnionId(unionId);
       const cookieOpts = getSessionCookieOptions(c.req.raw.headers);
-      
+
       // Clear PKCE cookie (must match the settings used when setting it)
-      const isSecure = redirectUri.startsWith('https://');
+      const isSecure = redirectUri.startsWith("https://");
       setCookie(c, PKCE_COOKIE_NAME, "", {
         httpOnly: true,
         path: "/",
@@ -105,7 +102,27 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
         secure: isSecure,
         maxAge: 0,
       });
-      
+
+      // If the user has 2FA enabled, issue a short-lived pending token and
+      // redirect to the login page so they can complete the second factor.
+      if (user?.twoFactorEnabled) {
+        const pendingToken = await signTwoFactorPendingToken({
+          unionId,
+          clientId,
+          twoFactorPending: true,
+        });
+        setCookie(c, Session.pendingTwoFactorCookieName, pendingToken, {
+          ...cookieOpts,
+          maxAge: 600, // 10 minutes
+        });
+        return c.redirect("/login?pending2fa=1", 302);
+      }
+
+      const token = await signSessionToken({
+        unionId,
+        clientId,
+      });
+
       // Set session cookie
       setCookie(c, Session.cookieName, token, {
         ...cookieOpts,
@@ -113,8 +130,9 @@ export function createProviderOAuthCallbackHandler(provider: OAuthProvider) {
       });
 
       return c.redirect("/", 302);
-    } catch (error: any) {
-      return c.json({ error: "OAuth callback failed", details: error?.message || String(error) }, 500);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return c.json({ error: "OAuth callback failed", details: message }, 500);
     }
   };
 }

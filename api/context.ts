@@ -7,16 +7,19 @@ export type TrpcContext = {
   req: Request;
   resHeaders: Headers;
   user?: User;
+  twoFactorRequired?: boolean;
 };
 
 export async function createContext(
-  opts: FetchCreateContextFnOptions,
+  opts: FetchCreateContextFnOptions
 ): Promise<TrpcContext> {
   const ctx: TrpcContext = { req: opts.req, resHeaders: opts.resHeaders };
   try {
-    const { user, refreshedToken } = await authenticateRequest(opts.req.headers);
+    const { user, refreshedToken, twoFactorRequired } =
+      await authenticateRequest(opts.req.headers);
     ctx.user = user;
-    
+    ctx.twoFactorRequired = twoFactorRequired;
+
     // Sliding session: set refreshed cookie on every authenticated request
     if (refreshedToken) {
       const { getSessionCookieOptions } = await import("./lib/cookies");
@@ -30,7 +33,7 @@ export async function createContext(
           sameSite: cookieOpts.sameSite?.toLowerCase() as "lax" | "none",
           secure: cookieOpts.secure,
           maxAge: Session.maxAgeMs / 1000,
-        }),
+        })
       );
     }
   } catch {

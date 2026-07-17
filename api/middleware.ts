@@ -10,7 +10,7 @@ const t = initTRPC.context<TrpcContext>().create({
 export const createRouter = t.router;
 export const publicQuery = t.procedure;
 
-const requireAuth = t.middleware(async (opts) => {
+const requireAuth = t.middleware(async opts => {
   const { ctx, next } = opts;
 
   if (!ctx.user) {
@@ -24,10 +24,13 @@ const requireAuth = t.middleware(async (opts) => {
 });
 
 function requireAdminRole() {
-  return t.middleware(async (opts) => {
+  return t.middleware(async opts => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || (ctx.user.role !== "admin" && ctx.user.role !== "super_admin")) {
+    if (
+      !ctx.user ||
+      (ctx.user.role !== "admin" && ctx.user.role !== "super_admin")
+    ) {
       throw new TRPCError({
         code: "FORBIDDEN",
         message: ErrorMessages.insufficientRole,
@@ -38,5 +41,32 @@ function requireAdminRole() {
   });
 }
 
+function requireTwoFactorVerified() {
+  return t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: ErrorMessages.unauthenticated,
+      });
+    }
+
+    if (ctx.user.twoFactorEnabled && ctx.twoFactorRequired) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Two-factor authentication required",
+      });
+    }
+
+    return next({ ctx: { ...ctx, user: ctx.user } });
+  });
+}
+
 export const authedQuery = t.procedure.use(requireAuth);
-export const adminQuery = authedQuery.use(requireAdminRole());
+export const adminQuery = authedQuery
+  .use(requireAdminRole())
+  .use(requireTwoFactorVerified());
+export const twoFactorVerifiedQuery = authedQuery.use(
+  requireTwoFactorVerified()
+);

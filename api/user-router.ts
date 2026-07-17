@@ -13,8 +13,14 @@ export const userRouter = createRouter({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(20),
-        search: z.string().optional().transform((s) => s ? sanitizeString(s, 255) : undefined),
-        role: z.string().optional().transform((s) => s ? sanitizeString(s, 255) : undefined),
+        search: z
+          .string()
+          .optional()
+          .transform(s => (s ? sanitizeString(s, 255) : undefined)),
+        role: z
+          .string()
+          .optional()
+          .transform(s => (s ? sanitizeString(s, 255) : undefined)),
       })
     )
     .query(async ({ input }) => {
@@ -25,17 +31,15 @@ export const userRouter = createRouter({
       if (input.search) {
         const searchTerm = `%${input.search}%`;
         conditions.push(
-          or(
-            like(users.name, searchTerm),
-            like(users.email, searchTerm)
-          )
+          or(like(users.name, searchTerm), like(users.email, searchTerm))
         );
       }
       if (input.role) {
         conditions.push(eq(users.role, input.role));
       }
 
-      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+      const whereClause =
+        conditions.length > 0 ? and(...conditions) : undefined;
 
       const [userList, totalResult] = await Promise.all([
         db
@@ -45,10 +49,7 @@ export const userRouter = createRouter({
           .orderBy(desc(users.createdAt))
           .limit(input.limit)
           .offset(offset),
-        db
-          .select({ count: count() })
-          .from(users)
-          .where(whereClause),
+        db.select({ count: count() }).from(users).where(whereClause),
       ]);
 
       return {
@@ -83,7 +84,10 @@ export const userRouter = createRouter({
           campaignDate: campaigns.date,
         })
         .from(campaignRegistrations)
-        .innerJoin(campaigns, eq(campaignRegistrations.campaignId, campaigns.id))
+        .innerJoin(
+          campaigns,
+          eq(campaignRegistrations.campaignId, campaigns.id)
+        )
         .where(eq(campaignRegistrations.userId, input.id))
         .orderBy(desc(campaignRegistrations.createdAt));
 
@@ -143,6 +147,42 @@ export const userRouter = createRouter({
       return { success: true };
     }),
 
+  // Admin: reset (disable) two-factor authentication for a user
+  resetTwoFactor: adminQuery
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb();
+      const [existing] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, input.id))
+        .limit(1);
+
+      if (!existing) {
+        throw new Error("User not found");
+      }
+
+      await db
+        .update(users)
+        .set({
+          twoFactorSecret: null,
+          twoFactorEnabled: false,
+          twoFactorBackupCodes: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, input.id));
+
+      await logActivity({
+        userId: ctx.user?.id,
+        action: "user.two_factor_reset",
+        entityType: "user",
+        entityId: input.id,
+        details: { targetUser: existing.unionId },
+      });
+
+      return { success: true };
+    }),
+
   // Admin: hard-delete user (permanently removed from database)
   delete: adminQuery
     .input(z.object({ id: z.number() }))
@@ -158,9 +198,7 @@ export const userRouter = createRouter({
         throw new Error("User not found");
       }
 
-      await db
-        .delete(users)
-        .where(eq(users.id, input.id));
+      await db.delete(users).where(eq(users.id, input.id));
 
       await logActivity({
         userId: ctx.user?.id,

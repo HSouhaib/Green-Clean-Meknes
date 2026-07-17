@@ -9,6 +9,13 @@ export type TokenResponse = {
 export type SessionPayload = {
   unionId: string;
   clientId: string;
+  twoFactorVerified?: boolean;
+};
+
+export type TwoFactorPendingPayload = {
+  unionId: string;
+  clientId: string;
+  twoFactorPending: true;
 };
 
 export type UserProfile = {

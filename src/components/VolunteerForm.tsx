@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
-import { toast } from 'sonner';
-import { useErrorModal } from '@/hooks/useErrorModal';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { trpc } from "@/providers/trpc";
+import { toast } from "sonner";
+import { useErrorModal } from "@/hooks/useErrorModal";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
   User,
@@ -13,32 +13,40 @@ import {
   CheckCircle2,
   Loader2,
   ArrowRight,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface VolunteerFormProps {
   onSuccess?: () => void;
   compact?: boolean;
 }
 
-export default function VolunteerForm({ onSuccess, compact = false }: VolunteerFormProps) {
+export default function VolunteerForm({
+  onSuccess,
+  compact = false,
+}: VolunteerFormProps) {
   const { t } = useLanguage();
   const { showError } = useErrorModal();
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const [submitted, setSubmitted] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const submitMutation = trpc.volunteer.submit.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success) {
         setSubmitted(true);
-        setFormData({ name: '', email: '', phone: '', message: '' });
-        toast.success(t('volunteer.success'));
+        setFormData({ name: "", email: "", phone: "", message: "" });
+        toast.success(t("volunteer.success"));
         onSuccess?.();
       } else {
-        showError(data.message || t('toast.error_generic'));
+        showError(data.message || t("toast.error_generic"));
       }
     },
-    onError: (err) => showError(err.message || t('toast.error_generic')),
+    onError: err => showError(err.message || t("toast.error_generic")),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,20 +56,20 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
   };
 
   const inputBaseStyle: React.CSSProperties = {
-    width: '100%',
-    background: 'var(--bg-surface)',
-    border: '1.5px solid var(--bg-surface-light)',
-    borderRadius: '12px',
-    padding: '14px 16px 14px 48px',
-    fontSize: '14px',
-    color: 'var(--text-primary)',
-    outline: 'none',
-    transition: 'all 0.25s ease',
+    width: "100%",
+    background: "var(--bg-surface)",
+    border: "1.5px solid var(--bg-surface-light)",
+    borderRadius: "12px",
+    padding: "14px 16px 14px 48px",
+    fontSize: "14px",
+    color: "var(--text-primary)",
+    outline: "none",
+    transition: "all 0.25s ease",
   };
 
   const inputFocusStyle: React.CSSProperties = {
-    borderColor: 'var(--accent-green)',
-    boxShadow: '0 0 0 3px rgba(107, 142, 90, 0.12)',
+    borderColor: "var(--accent-green)",
+    boxShadow: "0 0 0 3px rgba(107, 142, 90, 0.12)",
   };
 
   const getInputStyle = (field: string): React.CSSProperties => ({
@@ -79,37 +87,54 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 15,
+            delay: 0.1,
+          }}
         >
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(107, 142, 90, 0.15)' }}
+            style={{ background: "rgba(107, 142, 90, 0.15)" }}
           >
-            <CheckCircle2 size={32} style={{ color: 'var(--accent-green)' }} />
+            <CheckCircle2 size={32} style={{ color: "var(--accent-green)" }} />
           </div>
         </motion.div>
         <div>
-          <p className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>
-            {t('volunteer.success')}
+          <p
+            className="text-base font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
+            {t("volunteer.success")}
           </p>
-          <p className="text-sm mt-1.5" style={{ color: 'var(--text-secondary)' }}>
-            We will review your application and contact you soon.
+          <p
+            className="text-sm mt-1.5"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            {t("volunteer.success_subtitle")}
           </p>
         </div>
         <button
           onClick={() => setSubmitted(false)}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer border-none hover:opacity-90"
-          style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}
+          style={{
+            background: "var(--bg-surface-light)",
+            color: "var(--text-secondary)",
+          }}
         >
           <ArrowRight size={14} />
-          {t('volunteer.register_another')}
+          {t("volunteer.register_another")}
         </button>
       </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className={compact ? 'space-y-3' : 'space-y-4'}>
+    <form
+      onSubmit={handleSubmit}
+      className={compact ? "space-y-3" : "space-y-4"}
+    >
       <AnimatePresence>
         {/* Name */}
         <motion.div
@@ -122,17 +147,23 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
           <User
             size={16}
             className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: focusedField === 'name' ? 'var(--accent-green)' : 'var(--text-tertiary)', transition: 'color 0.25s' }}
+            style={{
+              color:
+                focusedField === "name"
+                  ? "var(--accent-green)"
+                  : "var(--text-tertiary)",
+              transition: "color 0.25s",
+            }}
           />
           <input
             type="text"
-            placeholder={t('volunteer.name')}
+            placeholder={t("volunteer.name")}
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            onFocus={() => setFocusedField('name')}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
+            onFocus={() => setFocusedField("name")}
             onBlur={() => setFocusedField(null)}
             required
-            style={getInputStyle('name')}
+            style={getInputStyle("name")}
           />
         </motion.div>
 
@@ -147,17 +178,23 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
           <Mail
             size={16}
             className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: focusedField === 'email' ? 'var(--accent-green)' : 'var(--text-tertiary)', transition: 'color 0.25s' }}
+            style={{
+              color:
+                focusedField === "email"
+                  ? "var(--accent-green)"
+                  : "var(--text-tertiary)",
+              transition: "color 0.25s",
+            }}
           />
           <input
             type="email"
-            placeholder={t('volunteer.email')}
+            placeholder={t("volunteer.email")}
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            onFocus={() => setFocusedField('email')}
+            onChange={e => setFormData({ ...formData, email: e.target.value })}
+            onFocus={() => setFocusedField("email")}
             onBlur={() => setFocusedField(null)}
             required
-            style={getInputStyle('email')}
+            style={getInputStyle("email")}
           />
         </motion.div>
 
@@ -172,16 +209,22 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
           <Phone
             size={16}
             className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: focusedField === 'phone' ? 'var(--accent-green)' : 'var(--text-tertiary)', transition: 'color 0.25s' }}
+            style={{
+              color:
+                focusedField === "phone"
+                  ? "var(--accent-green)"
+                  : "var(--text-tertiary)",
+              transition: "color 0.25s",
+            }}
           />
           <input
             type="tel"
-            placeholder={t('volunteer.phone')}
+            placeholder={t("volunteer.phone")}
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            onFocus={() => setFocusedField('phone')}
+            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+            onFocus={() => setFocusedField("phone")}
             onBlur={() => setFocusedField(null)}
-            style={getInputStyle('phone')}
+            style={getInputStyle("phone")}
           />
         </motion.div>
 
@@ -196,20 +239,28 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
           <MessageSquare
             size={16}
             className="absolute left-4 top-4 pointer-events-none"
-            style={{ color: focusedField === 'message' ? 'var(--accent-green)' : 'var(--text-tertiary)', transition: 'color 0.25s' }}
+            style={{
+              color:
+                focusedField === "message"
+                  ? "var(--accent-green)"
+                  : "var(--text-tertiary)",
+              transition: "color 0.25s",
+            }}
           />
           <textarea
-            placeholder={t('volunteer.message')}
+            placeholder={t("volunteer.message")}
             value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-            onFocus={() => setFocusedField('message')}
+            onChange={e =>
+              setFormData({ ...formData, message: e.target.value })
+            }
+            onFocus={() => setFocusedField("message")}
             onBlur={() => setFocusedField(null)}
             rows={compact ? 2 : 3}
             style={{
-              ...getInputStyle('message'),
-              paddingTop: '14px',
-              resize: 'vertical',
-              minHeight: compact ? '60px' : '80px',
+              ...getInputStyle("message"),
+              paddingTop: "14px",
+              resize: "vertical",
+              minHeight: compact ? "60px" : "80px",
             }}
           />
         </motion.div>
@@ -226,27 +277,30 @@ export default function VolunteerForm({ onSuccess, compact = false }: VolunteerF
         whileTap={{ scale: 0.98 }}
         className="w-full flex items-center justify-center gap-2.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer border-none relative overflow-hidden"
         style={{
-          background: 'var(--accent-green)',
-          color: 'white',
-          padding: compact ? '12px 20px' : '14px 24px',
+          background: "var(--accent-green)",
+          color: "white",
+          padding: compact ? "12px 20px" : "14px 24px",
           opacity: submitMutation.isPending ? 0.7 : 1,
         }}
       >
         {submitMutation.isPending ? (
           <>
             <Loader2 size={16} className="animate-spin" />
-            {t('volunteer.submitting')}
+            {t("volunteer.submitting")}
           </>
         ) : (
           <>
             <Send size={15} />
-            {t('volunteer.submit')}
+            {t("volunteer.submit")}
           </>
         )}
       </motion.button>
 
-      <p className="text-center text-xs" style={{ color: 'var(--text-tertiary)' }}>
-        No account required. An admin will review your application.
+      <p
+        className="text-center text-xs"
+        style={{ color: "var(--text-tertiary)" }}
+      >
+        {t("volunteer.no_account_note")}
       </p>
     </form>
   );

@@ -20,6 +20,10 @@ export function createTestDb() {
       email TEXT,
       avatar TEXT,
       role TEXT NOT NULL DEFAULT 'user',
+      is_active INTEGER NOT NULL DEFAULT 1,
+      two_factor_secret TEXT,
+      two_factor_enabled INTEGER NOT NULL DEFAULT 0,
+      two_factor_backup_codes TEXT,
       createdAt INTEGER NOT NULL DEFAULT (unixepoch()),
       updatedAt INTEGER NOT NULL DEFAULT (unixepoch()),
       lastSignInAt INTEGER NOT NULL DEFAULT (unixepoch())
@@ -75,8 +79,11 @@ export function createTestDb() {
     CREATE TABLE IF NOT EXISTS campaign_registrations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       campaign_id INTEGER NOT NULL,
-      user_id INTEGER NOT NULL,
+      user_id INTEGER,
+      guest_name TEXT,
+      guest_email TEXT,
       status TEXT NOT NULL DEFAULT 'registered',
+      attended INTEGER NOT NULL DEFAULT 0,
       notes TEXT,
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
@@ -204,16 +211,22 @@ export function createTestUser(
 ): User {
   const sqlite = (db as any).$client as any;
   const unionId = overrides.unionId ?? `test_user_${Date.now()}`;
-  const result = sqlite.prepare(
-    `INSERT INTO users (unionId, name, email, avatar, role, createdAt, updatedAt, lastSignInAt)
-     VALUES (?, ?, ?, ?, ?, unixepoch(), unixepoch(), unixepoch())`
-  ).run(
-    unionId,
-    overrides.name ?? "Test User",
-    overrides.email ?? "test@example.com",
-    overrides.avatar ?? null,
-    overrides.role ?? "user"
-  );
+  const result = sqlite
+    .prepare(
+      `INSERT INTO users (unionId, name, email, avatar, role, is_active, two_factor_secret, two_factor_enabled, two_factor_backup_codes, createdAt, updatedAt, lastSignInAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch(), unixepoch())`
+    )
+    .run(
+      unionId,
+      overrides.name ?? "Test User",
+      overrides.email ?? "test@example.com",
+      overrides.avatar ?? null,
+      overrides.role ?? "user",
+      (overrides.isActive ?? true) ? 1 : 0,
+      overrides.twoFactorSecret ?? null,
+      (overrides.twoFactorEnabled ?? false) ? 1 : 0,
+      overrides.twoFactorBackupCodes ?? null
+    );
   return {
     id: result.lastInsertRowid as number,
     unionId,
@@ -221,7 +234,10 @@ export function createTestUser(
     email: overrides.email ?? "test@example.com",
     avatar: overrides.avatar ?? null,
     role: (overrides.role ?? "user") as "user" | "admin",
-    isActive: true,
+    isActive: overrides.isActive ?? true,
+    twoFactorSecret: overrides.twoFactorSecret ?? null,
+    twoFactorEnabled: overrides.twoFactorEnabled ?? false,
+    twoFactorBackupCodes: overrides.twoFactorBackupCodes ?? null,
     createdAt: new Date(),
     updatedAt: new Date(),
     lastSignInAt: new Date(),
@@ -230,9 +246,12 @@ export function createTestUser(
 /**
  * Create a mock tRPC context for testing.
  */
-export function createTestContext(user?: User): TrpcContext {
+export function createTestContext(
+  user?: User,
+  reqInit?: RequestInit
+): TrpcContext {
   return {
-    req: new Request("http://localhost:3000"),
+    req: new Request("http://localhost:3000", reqInit),
     resHeaders: new Headers(),
     user,
   };
@@ -261,9 +280,11 @@ export function seedTestData(db: ReturnType<typeof createTestDb>["db"]) {
     { sectionKey: "poll", isVisible: 1 },
   ];
   for (const section of sections) {
-    sqlite.prepare(
-      `INSERT INTO section_visibility (section_key, is_visible) VALUES (?, ?)`
-    ).run(section.sectionKey, section.isVisible);
+    sqlite
+      .prepare(
+        `INSERT INTO section_visibility (section_key, is_visible) VALUES (?, ?)`
+      )
+      .run(section.sectionKey, section.isVisible);
   }
   // Insert default site settings
   const settings = [
@@ -272,8 +293,8 @@ export function seedTestData(db: ReturnType<typeof createTestDb>["db"]) {
     { key: "contact_email", value: "contact@greenmeknes.ma" },
   ];
   for (const setting of settings) {
-    sqlite.prepare(
-      `INSERT INTO site_settings (key, value) VALUES (?, ?)`
-    ).run(setting.key, setting.value);
+    sqlite
+      .prepare(`INSERT INTO site_settings (key, value) VALUES (?, ?)`)
+      .run(setting.key, setting.value);
   }
 }

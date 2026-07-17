@@ -15,6 +15,7 @@ import { userRouter } from "./user-router";
 import { roleRouter } from "./role-router";
 import { planRouter } from "./plan-router";
 import { activityRouter } from "./activity-router";
+import { badgeRouter } from "./badge-router";
 import { createRouter, publicQuery } from "./middleware";
 
 export const appRouter = createRouter({
@@ -36,6 +37,7 @@ export const appRouter = createRouter({
   volunteer: volunteerRouter,
   sponsor: sponsorRouter,
   socialFeed: socialFeedRouter,
+  badge: badgeRouter,
 });
 
 export type AppRouter = typeof appRouter;

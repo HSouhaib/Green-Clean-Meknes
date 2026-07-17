@@ -58,7 +58,9 @@ async function verifyAccessToken(
   return { userId, clientId };
 }
 
-export async function authenticateRequest(headers: Headers): Promise<{ user: User; refreshedToken?: string }> {
+export async function authenticateRequest(
+  headers: Headers
+): Promise<{ user: User; refreshedToken?: string; twoFactorRequired?: boolean }> {
   const cookies = cookie.parse(headers.get("cookie") || "");
   const token = cookies[Session.cookieName];
   if (!token) {
@@ -74,13 +76,20 @@ export async function authenticateRequest(headers: Headers): Promise<{ user: Use
   if (!user) {
     throw Errors.forbidden("User not found. Please re-login.");
   }
-  
+
+  // If the user has 2FA enabled but this session has not passed the second factor,
+  // return the user but mark 2FA as required. We do not issue a refreshed token.
+  if (user.twoFactorEnabled && !claim.twoFactorVerified) {
+    return { user, twoFactorRequired: true };
+  }
+
   // Sliding session: issue a new token with fresh 7-day expiration
   const refreshedToken = await signSessionToken({
     unionId: claim.unionId,
     clientId: claim.clientId,
+    twoFactorVerified: claim.twoFactorVerified,
   });
-  
+
   return { user, refreshedToken };
 }
 

@@ -1,9 +1,4 @@
-import {
-  sqliteTable,
-  integer,
-  text,
-  real,
-} from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
 import type { CampaignStatus } from "@contracts/constants";
 
 // ===== USER ROLES =====
@@ -15,7 +10,9 @@ export const userRoles = sqliteTable("user_roles", {
   labelAr: text("label_ar"),
   permissions: text("permissions").notNull(),
   isSystem: integer("is_system", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type UserRole = typeof userRoles.$inferSelect;
@@ -26,7 +23,9 @@ export const siteSettings = sqliteTable("site_settings", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   key: text("key").notNull().unique(),
   value: text("value"),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
@@ -37,7 +36,9 @@ export const sectionVisibility = sqliteTable("section_visibility", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   sectionKey: text("section_key").notNull().unique(),
   isVisible: integer("is_visible", { mode: "boolean" }).notNull().default(true),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type SectionVisibility = typeof sectionVisibility.$inferSelect;
@@ -48,7 +49,9 @@ export const sectionOrder = sqliteTable("section_order", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   sectionKey: text("section_key").notNull().unique(),
   sortOrder: integer("sort_order").notNull().default(0),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type SectionOrder = typeof sectionOrder.$inferSelect;
@@ -63,9 +66,20 @@ export const users = sqliteTable("users", {
   avatar: text("avatar"),
   role: text("role").notNull().default("user"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("createdAt", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updatedAt", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  lastSignInAt: integer("lastSignInAt", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorEnabled: integer("two_factor_enabled", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  twoFactorBackupCodes: text("two_factor_backup_codes"),
+  createdAt: integer("createdAt", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: integer("updatedAt", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  lastSignInAt: integer("lastSignInAt", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type User = typeof users.$inferSelect;
@@ -91,13 +105,21 @@ export const campaigns = sqliteTable("campaigns", {
   mapX: real("map_x"),
   mapY: real("map_y"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  status: text("status").notNull().default("upcoming").$type<CampaignStatus>().$defaultFn(() => "upcoming"),
+  status: text("status")
+    .notNull()
+    .default("upcoming")
+    .$type<CampaignStatus>()
+    .$defaultFn(() => "upcoming"),
   statsWasteKg: integer("stats_waste_kg").default(0),
   statsTrees: integer("stats_trees").default(0),
   statsVolunteers: integer("stats_volunteers").default(0),
   statsNeighborhoods: integer("stats_neighborhoods").default(0),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Campaign = typeof campaigns.$inferSelect;
@@ -121,8 +143,12 @@ export const neighborhoods = sqliteTable("neighborhoods", {
   mapX: real("map_x"),
   mapY: real("map_y"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Neighborhood = typeof neighborhoods.$inferSelect;
@@ -139,8 +165,12 @@ export const faqs = sqliteTable("faqs", {
   answerAr: text("answer_ar"),
   sortOrder: integer("sort_order").notNull().default(0),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Faq = typeof faqs.$inferSelect;
@@ -153,8 +183,12 @@ export const contacts = sqliteTable("contacts", {
   email: text("email").notNull(),
   message: text("message").notNull(),
   isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
-  isReplied: integer("is_replied", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  isReplied: integer("is_replied", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Contact = typeof contacts.$inferSelect;
@@ -168,12 +202,16 @@ export const campaignRegistrations = sqliteTable("campaign_registrations", {
   guestName: text("guest_name"), // For guest registrations (no user account)
   guestEmail: text("guest_email"), // For guest registrations
   status: text("status").notNull().default("registered"),
+  attended: integer("attended", { mode: "boolean" }).notNull().default(false),
   notes: text("notes"),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type CampaignRegistration = typeof campaignRegistrations.$inferSelect;
-export type InsertCampaignRegistration = typeof campaignRegistrations.$inferInsert;
+export type InsertCampaignRegistration =
+  typeof campaignRegistrations.$inferInsert;
 
 // ===== VOLUNTEER REGISTRATIONS (self-registration form, no OAuth required) =====
 export const volunteerRegistrations = sqliteTable("volunteer_registrations", {
@@ -182,12 +220,17 @@ export const volunteerRegistrations = sqliteTable("volunteer_registrations", {
   email: text("email").notNull(),
   phone: text("phone"),
   message: text("message"),
-  status: text("status", { enum: ["pending", "approved", "rejected"] }).notNull().default("pending"),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  status: text("status", { enum: ["pending", "approved", "rejected"] })
+    .notNull()
+    .default("pending"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type VolunteerRegistration = typeof volunteerRegistrations.$inferSelect;
-export type InsertVolunteerRegistration = typeof volunteerRegistrations.$inferInsert;
+export type InsertVolunteerRegistration =
+  typeof volunteerRegistrations.$inferInsert;
 
 // ===== TESTIMONIALS =====
 export const testimonials = sqliteTable("testimonials", {
@@ -204,7 +247,9 @@ export const testimonials = sqliteTable("testimonials", {
   avatar: text("avatar"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Testimonial = typeof testimonials.$inferSelect;
@@ -220,7 +265,9 @@ export const polls = sqliteTable("polls", {
   optionsAr: text("options_ar"),
   optionsFr: text("options_fr"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Poll = typeof polls.$inferSelect;
@@ -232,7 +279,9 @@ export const pollVotes = sqliteTable("poll_votes", {
   pollId: integer("poll_id").notNull(),
   optionIndex: integer("option_index").notNull(),
   ipHash: text("ip_hash").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type PollVote = typeof pollVotes.$inferSelect;
@@ -243,15 +292,25 @@ export const plans = sqliteTable("plans", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   description: text("description"),
-  status: text("status", { enum: ["backlog", "planned", "in_progress", "completed", "cancelled"] }).notNull().default("backlog"),
-  priority: text("priority", { enum: ["low", "medium", "high", "urgent"] }).notNull().default("medium"),
+  status: text("status", {
+    enum: ["backlog", "planned", "in_progress", "completed", "cancelled"],
+  })
+    .notNull()
+    .default("backlog"),
+  priority: text("priority", { enum: ["low", "medium", "high", "urgent"] })
+    .notNull()
+    .default("medium"),
   category: text("category"),
   createdBy: integer("created_by").notNull(),
   assignedTo: integer("assigned_to"),
   targetDate: integer("target_date", { mode: "timestamp" }),
   completedAt: integer("completed_at", { mode: "timestamp" }),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Plan = typeof plans.$inferSelect;
@@ -263,7 +322,9 @@ export const planComments = sqliteTable("plan_comments", {
   planId: integer("plan_id").notNull(),
   userId: integer("user_id").notNull(),
   content: text("content").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type PlanComment = typeof planComments.$inferSelect;
@@ -278,7 +339,9 @@ export const activityLogs = sqliteTable("activity_logs", {
   entityId: integer("entity_id"),
   details: text("details"),
   ipAddress: text("ip_address"),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
@@ -295,7 +358,9 @@ export const campaignPhotos = sqliteTable("campaign_photos", {
   captionAr: text("caption_ar"),
   sortOrder: integer("sort_order").notNull().default(0),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type CampaignPhoto = typeof campaignPhotos.$inferSelect;
@@ -310,13 +375,19 @@ export const sponsors = sqliteTable("sponsors", {
   nameAr: text("name_ar"),
   logoUrl: text("logo_url").notNull(),
   websiteUrl: text("website_url"),
-  sponsorType: text("sponsor_type", { enum: ["municipality", "ngo", "business", "media", "other"] }).notNull().default("other"),
+  sponsorType: text("sponsor_type", {
+    enum: ["municipality", "ngo", "business", "media", "other"],
+  })
+    .notNull()
+    .default("other"),
   descriptionEn: text("description_en"),
   descriptionFr: text("description_fr"),
   descriptionAr: text("description_ar"),
   sortOrder: integer("sort_order").notNull().default(0),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type Sponsor = typeof sponsors.$inferSelect;
@@ -325,7 +396,9 @@ export type InsertSponsor = typeof sponsors.$inferInsert;
 // ===== SOCIAL FEED POSTS =====
 export const socialFeedPosts = sqliteTable("social_feed_posts", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  platform: text("platform", { enum: ["instagram", "tiktok", "facebook", "twitter"] }).notNull(),
+  platform: text("platform", {
+    enum: ["instagram", "tiktok", "facebook", "twitter"],
+  }).notNull(),
   postUrl: text("post_url").notNull(),
   embedCode: text("embed_code"),
   imageUrl: text("image_url"),
@@ -336,8 +409,12 @@ export const socialFeedPosts = sqliteTable("social_feed_posts", {
   postedAt: integer("posted_at", { mode: "timestamp" }),
   sortOrder: integer("sort_order").notNull().default(0),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
 });
 
 export type SocialFeedPost = typeof socialFeedPosts.$inferSelect;
