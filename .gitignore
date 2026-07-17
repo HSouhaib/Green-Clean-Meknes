@@ -16,34 +16,59 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+*.swp
+*.swo
+*~
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
 # Environment variables
 .env
-.env.example
-.env.local
-.env.*.local
+.env.*
 # Database
 *.db
 *.sqlite
 *.sqlite3
 db/migrations/*.sql
+
 # TypeScript cache
 *.tsbuildinfo
+
 # Build outputs
 dist/
 build/
+
 # Test coverage
 coverage/
 .nyc_output/
+
+# Cache and temp files
+.cache/
+.eslintcache
+tmp/
+temp/
+*.tmp
+
+# Uploaded user content (adjust if you want sample assets in git)
+uploads/
+
 # Documentation files
 *.md
 !README.md
 !.github/**/*.md
+
 # Preview / temporary environments
 .venv-preview/
 preview/
+
+# Secrets and certificates
+*.pem
+*.key
+*.crt
