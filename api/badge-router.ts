@@ -141,12 +141,17 @@ export const badgeRouter = createRouter({
         .set({ attended: true })
         .where(eq(campaignRegistrations.id, registration.id));
 
-      const alreadyHasPoints = await hasAttendancePoints(
-        payload.userId,
-        payload.campaignId
-      );
-      if (!alreadyHasPoints) {
-        await awardAttendancePoints(payload.userId, payload.campaignId);
+      try {
+        const alreadyHasPoints = await hasAttendancePoints(
+          payload.userId,
+          payload.campaignId
+        );
+        if (!alreadyHasPoints) {
+          await awardAttendancePoints(payload.userId, payload.campaignId);
+        }
+      } catch (err) {
+        // Points table may not exist yet (migration pending); attendance is still recorded.
+        console.error("Failed to award attendance points:", err);
       }
     }
 
@@ -188,6 +193,13 @@ export const badgeRouter = createRouter({
         .where(eq(campaignRegistrations.id, input.registrationId))
         .limit(1);
 
+      if (!registration) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Registration not found",
+        });
+      }
+
       await db
         .update(campaignRegistrations)
         .set({ attended: input.attended })
@@ -195,18 +207,23 @@ export const badgeRouter = createRouter({
 
       if (
         input.attended &&
-        registration?.userId &&
+        registration.userId &&
         !(registration.attended ?? false)
       ) {
-        const alreadyHasPoints = await hasAttendancePoints(
-          registration.userId,
-          registration.campaignId
-        );
-        if (!alreadyHasPoints) {
-          await awardAttendancePoints(
+        try {
+          const alreadyHasPoints = await hasAttendancePoints(
             registration.userId,
             registration.campaignId
           );
+          if (!alreadyHasPoints) {
+            await awardAttendancePoints(
+              registration.userId,
+              registration.campaignId
+            );
+          }
+        } catch (err) {
+          // Points table may not exist yet (migration pending); attendance is still recorded.
+          console.error("Failed to award attendance points:", err);
         }
       }
 
