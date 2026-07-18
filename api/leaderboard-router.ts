@@ -85,9 +85,10 @@ export const leaderboardRouter = createRouter({
 
       // User scores: derive registration/attendance/waste points from
       // campaign_registrations so every registered user appears even if the
-      // volunteer_points table is missing registration rows. Waste points use the
-      // campaign's stats_waste_kg for attended registrations. Add manual points from
-      // volunteer_points (excluding registration/attendance reasons to avoid double counting).
+      // volunteer_points table is missing registration rows. Waste points split each
+      // campaign's stats_waste_kg equally across everyone who attended that campaign.
+      // Add manual points from volunteer_points (excluding registration/attendance
+      // reasons to avoid double counting).
       const userQuery = `
         SELECT
           'user:' || u.id AS identity,
@@ -95,7 +96,7 @@ export const leaderboardRouter = createRouter({
           u.name,
           u.avatar,
           u.role,
-          COALESCE(reg_counts.reg_count, 0) * ? + COALESCE(reg_counts.att_count, 0) * ? + COALESCE(reg_counts.waste_kg, 0) * ? + COALESCE(manual_points.total, 0) AS total_points,
+          COALESCE(reg_counts.reg_count, 0) * ? + COALESCE(reg_counts.att_count, 0) * ? + COALESCE(waste_share.waste_kg_share, 0) * ? + COALESCE(manual_points.total, 0) AS total_points,
           COALESCE(reg_counts.att_count, 0) AS attended_count
         FROM (
           SELECT DISTINCT user_id FROM (
@@ -108,13 +109,25 @@ export const leaderboardRouter = createRouter({
         LEFT JOIN (
           SELECT cr.user_id,
             COUNT(*) AS reg_count,
-            SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS att_count,
-            SUM(CASE WHEN cr.attended = 1 THEN COALESCE(c.stats_waste_kg, 0) ELSE 0 END) AS waste_kg
+            SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS att_count
           FROM campaign_registrations cr
-          LEFT JOIN campaigns c ON c.id = cr.campaign_id
           WHERE cr.user_id IS NOT NULL AND cr.status = 'registered' ${userTimeFilter}
           GROUP BY cr.user_id
         ) reg_counts ON reg_counts.user_id = u.id
+        LEFT JOIN (
+          SELECT cr.user_id,
+            SUM(ROUND(CAST(c.stats_waste_kg AS REAL) / NULLIF(attendees.total_attendees, 0))) AS waste_kg_share
+          FROM campaign_registrations cr
+          LEFT JOIN campaigns c ON c.id = cr.campaign_id
+          LEFT JOIN (
+            SELECT campaign_id, COUNT(*) AS total_attendees
+            FROM campaign_registrations
+            WHERE status = 'registered' AND attended = 1
+            GROUP BY campaign_id
+          ) attendees ON attendees.campaign_id = cr.campaign_id
+          WHERE cr.user_id IS NOT NULL AND cr.status = 'registered' AND cr.attended = 1 ${userTimeFilter}
+          GROUP BY cr.user_id
+        ) waste_share ON waste_share.user_id = u.id
         LEFT JOIN (
           SELECT vp.user_id, SUM(vp.points) AS total
           FROM volunteer_points vp
@@ -127,7 +140,8 @@ export const leaderboardRouter = createRouter({
       `;
 
       // Guest scores: derive registration/attendance/waste points from guest
-      // campaign registrations. Waste points use the campaign's stats_waste_kg.
+      // campaign registrations. Waste points split the campaign's stats_waste_kg
+      // equally across all attendees.
       const guestQuery = `
         SELECT
           'guest:' || COALESCE(cr.guest_email, cr.guest_name) AS identity,
@@ -135,10 +149,16 @@ export const leaderboardRouter = createRouter({
           cr.guest_name AS name,
           NULL AS avatar,
           'guest' AS role,
-          (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN COALESCE(c.stats_waste_kg, 0) ELSE 0 END) * ?) AS total_points,
+          (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) + (COALESCE(SUM(CASE WHEN cr.attended = 1 THEN ROUND(CAST(c.stats_waste_kg AS REAL) / NULLIF(attendees.total_attendees, 0)) ELSE 0 END), 0) * ?) AS total_points,
           SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS attended_count
         FROM campaign_registrations cr
         LEFT JOIN campaigns c ON c.id = cr.campaign_id
+        LEFT JOIN (
+          SELECT campaign_id, COUNT(*) AS total_attendees
+          FROM campaign_registrations
+          WHERE status = 'registered' AND attended = 1
+          GROUP BY campaign_id
+        ) attendees ON attendees.campaign_id = cr.campaign_id
         WHERE cr.user_id IS NULL
           AND cr.guest_name IS NOT NULL
           AND cr.status = 'registered'
@@ -156,8 +176,8 @@ export const leaderboardRouter = createRouter({
       if (periodStart) {
         // combined subquery: userTimeFilter + manualTimeFilter
         userParams.push(periodStart, periodStart);
-        // reg_counts + manual_points subqueries
-        userParams.push(periodStart, periodStart);
+        // reg_counts + waste_share + manual_points subqueries
+        userParams.push(periodStart, periodStart, periodStart);
       }
       userParams.push(input.limit);
 
