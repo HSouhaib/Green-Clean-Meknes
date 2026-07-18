@@ -6,6 +6,7 @@ export const LOGIN_PATH = "/login";
 export const allNavLinks = [
   { key: 'nav.home', href: '#hero', sectionKey: 'hero' },
   { key: 'nav.about', href: '#about', sectionKey: 'about' },
+  { key: 'nav.leaderboard', href: '/leaderboard', sectionKey: 'leaderboard', isPage: true },
   { key: 'nav.campaigns', href: '#campaigns', sectionKey: 'campaigns' },
   { key: 'nav.contact', href: '#contact', sectionKey: 'contact' },
 ] as const;

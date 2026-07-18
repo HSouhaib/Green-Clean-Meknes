@@ -10,6 +10,7 @@ const translations: Record<Lang, Record<string, string>> = {
   en: {
     "nav.home": "Home",
     "nav.about": "About",
+    "nav.leaderboard": "Leaderboard",
     "nav.campaigns": "Campaigns",
     "nav.contact": "Contact",
 
@@ -542,6 +543,7 @@ const translations: Record<Lang, Record<string, string>> = {
   fr: {
     "nav.home": "Accueil",
     "nav.about": "A propos",
+    "nav.leaderboard": "Classement",
     "nav.campaigns": "Campagnes",
     "nav.contact": "Contact",
 
@@ -1079,6 +1081,7 @@ const translations: Record<Lang, Record<string, string>> = {
   ar: {
     "nav.home": "الرئيسية",
     "nav.about": "من نحن",
+    "nav.leaderboard": "المتصدرين",
     "nav.campaigns": "الحملات",
     "nav.contact": "اتصل بنا",
 

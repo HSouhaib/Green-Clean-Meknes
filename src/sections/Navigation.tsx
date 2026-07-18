@@ -8,6 +8,7 @@ import { useLoginModalTrigger } from "@/hooks/useLoginModal";
 import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Link } from "react-router";
 import { allNavLinks, handleNavClick } from "@/const";
 import { User, LogOut } from "lucide-react";
 
@@ -73,23 +74,37 @@ export default function Navigation() {
           <div
             className={`hidden md:flex items-center gap-8 ${isRtl ? "flex-row-reverse" : ""}`}
           >
-            {navLinks.map(link => (
-              <a
-                key={link.key}
-                href={link.href}
-                onClick={e => {
-                  e.preventDefault();
-                  onNavClick(link.href);
-                }}
-                className="relative text-sm font-normal no-underline transition-colors duration-200 hover:text-[var(--accent-green-light)]"
-                style={{
-                  color: "var(--text-secondary)",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                {t(link.key)}
-              </a>
-            ))}
+            {navLinks.map(link =>
+              'isPage' in link && link.isPage ? (
+                <Link
+                  key={link.key}
+                  to={link.href}
+                  className="relative text-sm font-normal no-underline transition-colors duration-200 hover:text-[var(--accent-green-light)]"
+                  style={{
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {t(link.key)}
+                </Link>
+              ) : (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  onClick={e => {
+                    e.preventDefault();
+                    onNavClick(link.href);
+                  }}
+                  className="relative text-sm font-normal no-underline transition-colors duration-200 hover:text-[var(--accent-green-light)]"
+                  style={{
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {t(link.key)}
+                </a>
+              )
+            )}
             {/* Login / User */}
             {isAuthenticated ? (
               <>

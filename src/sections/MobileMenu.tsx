@@ -2,6 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from "@/hooks/useTheme";
 import { langOptions } from "@/const";
 import { useEffect, type CSSProperties } from "react";
+import { Link } from "react-router";
 import Logo from "@/components/Logo";
 import {
   User,
@@ -136,40 +137,62 @@ export default function MobileMenu({
         style={{ padding: "0 var(--page-margin)" }}
       >
         <div className="w-full" style={{ maxWidth: "480px" }}>
-          {navLinks.map((link, i) => (
-            <a
-              key={link.key}
-              href={link.href}
-              onClick={e => {
-                e.preventDefault();
-                handleNavClick(link.href);
-              }}
-              className="group flex items-center gap-4 no-underline"
-              style={{
-                ...itemStyle(i),
-                padding: "0.85rem 0",
-                borderBottom: HAIRLINE,
-              }}
-            >
-              <span
-                className="font-mono text-xs"
-                style={{ color: "var(--accent-green-light)" }}
+          {navLinks.map((link, i) => {
+            const isPage = 'isPage' in link && link.isPage;
+            const content = (
+              <>
+                <span
+                  className="font-mono text-xs"
+                  style={{ color: "var(--accent-green-light)" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span
+                  className="flex-1 transition-colors duration-200 text-[var(--text-primary)] group-hover:text-[var(--accent-green-light)]"
+                  style={{ fontSize: "clamp(1.45rem, 5.5vw, 1.9rem)" }}
+                >
+                  {t(link.key)}
+                </span>
+                <Chevron
+                  size={20}
+                  className={chevronClass}
+                  style={{ color: "var(--accent-green-light)" }}
+                />
+              </>
+            );
+            return isPage ? (
+              <Link
+                key={link.key}
+                to={link.href}
+                onClick={onClose}
+                className="group flex items-center gap-4 no-underline"
+                style={{
+                  ...itemStyle(i),
+                  padding: "0.85rem 0",
+                  borderBottom: HAIRLINE,
+                }}
               >
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span
-                className="flex-1 transition-colors duration-200 text-[var(--text-primary)] group-hover:text-[var(--accent-green-light)]"
-                style={{ fontSize: "clamp(1.45rem, 5.5vw, 1.9rem)" }}
+                {content}
+              </Link>
+            ) : (
+              <a
+                key={link.key}
+                href={link.href}
+                onClick={e => {
+                  e.preventDefault();
+                  handleNavClick(link.href);
+                }}
+                className="group flex items-center gap-4 no-underline"
+                style={{
+                  ...itemStyle(i),
+                  padding: "0.85rem 0",
+                  borderBottom: HAIRLINE,
+                }}
               >
-                {t(link.key)}
-              </span>
-              <Chevron
-                size={20}
-                className={chevronClass}
-                style={{ color: "var(--accent-green-light)" }}
-              />
-            </a>
-          ))}
+                {content}
+              </a>
+            );
+          })}
 
           {/* Account action */}
           <div style={itemStyle(navLinks.length)}>

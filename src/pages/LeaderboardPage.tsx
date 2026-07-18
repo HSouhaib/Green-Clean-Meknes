@@ -8,19 +8,10 @@ type Period = 'all' | 'year' | 'month';
 
 function Avatar({ src, name }: { src: string | null; name: string }) {
   if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        className="w-full h-full object-cover"
-      />
-    );
+    return <img src={src} alt={name} className="w-full h-full object-cover" />;
   }
   return (
-    <span
-      className="text-sm font-medium"
-      style={{ color: 'var(--text-primary)' }}
-    >
+    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
       {name.charAt(0).toUpperCase()}
     </span>
   );
@@ -45,6 +36,85 @@ function RankBadge({ rank }: { rank: number }) {
   );
 }
 
+function SkeletonRow() {
+  return (
+    <div
+      className="flex items-center gap-4 p-4 animate-pulse"
+      style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
+    >
+      <div className="w-8 h-8 rounded-full" style={{ background: 'var(--bg-surface-light)' }} />
+      <div className="w-12 h-12 rounded-full" style={{ background: 'var(--bg-surface-light)' }} />
+      <div className="flex-1 space-y-2">
+        <div className="h-4 w-32 rounded" style={{ background: 'var(--bg-surface-light)' }} />
+        <div className="h-3 w-24 rounded" style={{ background: 'var(--bg-surface-light)' }} />
+      </div>
+      <div className="h-5 w-12 rounded" style={{ background: 'var(--bg-surface-light)' }} />
+    </div>
+  );
+}
+
+function PodiumCard({
+  leader,
+  rank,
+  height,
+}: {
+  leader: { name: string; avatar: string | null; totalPoints: number };
+  rank: number;
+  height: string;
+}) {
+  const { t } = useLanguage();
+  const gradients: Record<number, string> = {
+    1: 'linear-gradient(180deg, rgba(255,215,0,0.15) 0%, transparent 100%)',
+    2: 'linear-gradient(180deg, rgba(192,192,192,0.12) 0%, transparent 100%)',
+    3: 'linear-gradient(180deg, rgba(205,127,50,0.12) 0%, transparent 100%)',
+  };
+  const borders: Record<number, string> = {
+    1: 'rgba(255,215,0,0.4)',
+    2: 'rgba(192,192,192,0.3)',
+    3: 'rgba(205,127,50,0.3)',
+  };
+  const size = rank === 1 ? 'w-24 h-24' : 'w-20 h-20';
+
+  return (
+    <div
+      className={`flex flex-col items-center justify-end rounded-xl w-full md:w-64 ${height} p-5`}
+      style={{
+        background: gradients[rank] ?? 'var(--bg-surface)',
+        border: `1px solid ${borders[rank] ?? 'var(--bg-surface-light)'}`,
+      }}
+    >
+      <div
+        className={`${size} rounded-full overflow-hidden flex items-center justify-center mb-3`}
+        style={{ background: 'var(--bg-surface-light)', border: `2px solid ${borders[rank]}` }}
+      >
+        <Avatar src={leader.avatar} name={leader.name} />
+      </div>
+      <Trophy
+        size={rank === 1 ? 28 : 22}
+        style={{ color: borders[rank], marginBottom: '8px' }}
+      />
+      <span
+        className="text-3xl font-bold"
+        style={{ color: borders[rank] }}
+      >
+        {rank}
+      </span>
+      <span
+        className="text-base font-medium mt-1 text-center truncate max-w-full"
+        style={{ color: 'var(--text-primary)' }}
+      >
+        {leader.name}
+      </span>
+      <span
+        className="text-sm mt-1"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        {leader.totalPoints} {t('leaderboard.points')}
+      </span>
+    </div>
+  );
+}
+
 export default function LeaderboardPage() {
   const { t, lang } = useLanguage();
   const [period, setPeriod] = useState<Period>('all');
@@ -63,6 +133,9 @@ export default function LeaderboardPage() {
     const term = search.toLowerCase();
     return leaders.filter((l) => l.name.toLowerCase().includes(term));
   }, [leaders, search]);
+
+  const topThree = filtered.slice(0, 3);
+  const rest = filtered.slice(3);
 
   const periods: { key: Period; label: string }[] = [
     { key: 'all', label: t('leaderboard.period.all') },
@@ -104,7 +177,7 @@ export default function LeaderboardPage() {
 
       <main
         className="mx-auto py-12"
-        style={{ padding: '0 var(--page-margin)', maxWidth: '900px' }}
+        style={{ padding: '0 var(--page-margin)', maxWidth: '1000px' }}
       >
         <div className="text-center mb-10">
           <Trophy
@@ -180,14 +253,22 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        {/* List */}
         {isLoading ? (
-          <div
-            className="text-center py-16"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            {t('leaderboard.loading')}
-          </div>
+          <>
+            <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-8">
+              <div className="w-full md:w-56 h-80 rounded-xl" style={{ background: 'var(--bg-surface)' }} />
+              <div className="w-full md:w-64 h-96 rounded-xl" style={{ background: 'var(--bg-surface)' }} />
+              <div className="w-full md:w-56 h-72 rounded-xl" style={{ background: 'var(--bg-surface)' }} />
+            </div>
+            <div
+              className="rounded-lg overflow-hidden"
+              style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
+            >
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonRow key={i} />
+              ))}
+            </div>
+          </>
         ) : filtered.length === 0 ? (
           <div
             className="text-center py-16 rounded-lg"
@@ -200,52 +281,78 @@ export default function LeaderboardPage() {
             {search.trim() ? t('leaderboard.no_search_results') : t('leaderboard.empty')}
           </div>
         ) : (
-          <div
-            className="rounded-lg overflow-hidden"
-            style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--bg-surface-light)',
-            }}
-          >
-            {filtered.map((leader) => (
+          <>
+            {/* Podium */}
+            {topThree.length > 0 && (
+              <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-10">
+                {topThree[1] && (
+                  <div className="order-2 md:order-1 w-full md:w-auto">
+                    <PodiumCard leader={topThree[1]} rank={2} height="h-72" />
+                  </div>
+                )}
+                {topThree[0] && (
+                  <div className="order-1 md:order-2 w-full md:w-auto">
+                    <PodiumCard leader={topThree[0]} rank={1} height="h-96" />
+                  </div>
+                )}
+                {topThree[2] && (
+                  <div className="order-3 w-full md:w-auto">
+                    <PodiumCard leader={topThree[2]} rank={3} height="h-64" />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Rest of leaderboard */}
+            {rest.length > 0 && (
               <div
-                key={leader.userId}
-                className="flex items-center gap-4 p-4"
+                className="rounded-lg overflow-hidden"
                 style={{
-                  borderBottom: '1px solid var(--bg-surface-light)',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--bg-surface-light)',
                 }}
               >
-                <RankBadge rank={leader.rank} />
-                <div
-                  className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'var(--bg-surface-light)' }}
-                >
-                  <Avatar src={leader.avatar} name={leader.name} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p
-                    className="text-base font-medium truncate"
-                    style={{ color: 'var(--text-primary)' }}
+                {rest.map((leader) => (
+                  <div
+                    key={leader.userId}
+                    className="flex items-center gap-4 p-4"
+                    style={{
+                      borderBottom: '1px solid var(--bg-surface-light)',
+                    }}
                   >
-                    {leader.name}
-                  </p>
-                  <p
-                    className="text-xs flex items-center gap-1"
-                    style={{ color: 'var(--text-tertiary)' }}
-                  >
-                    <Users size={12} />
-                    {leader.attendedCount} {t('leaderboard.campaigns_attended')}
-                  </p>
-                </div>
-                <div
-                  className="text-lg font-bold"
-                  style={{ color: 'var(--accent-green-light)' }}
-                >
-                  {leader.totalPoints} {t('leaderboard.points')}
-                </div>
+                    <RankBadge rank={leader.rank} />
+                    <div
+                      className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+                      style={{ background: 'var(--bg-surface-light)' }}
+                    >
+                      <Avatar src={leader.avatar} name={leader.name} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-base font-medium truncate"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        {leader.name}
+                      </p>
+                      <p
+                        className="text-xs flex items-center gap-1"
+                        style={{ color: 'var(--text-tertiary)' }}
+                      >
+                        <Users size={12} />
+                        {leader.attendedCount} {t('leaderboard.campaigns_attended')}
+                      </p>
+                    </div>
+                    <div
+                      className="text-lg font-bold"
+                      style={{ color: 'var(--accent-green-light)' }}
+                    >
+                      {leader.totalPoints} {t('leaderboard.points')}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
     </div>

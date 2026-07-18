@@ -2,23 +2,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { Link } from 'react-router';
-import { Trophy, Users, ArrowRight } from 'lucide-react';
+import { Trophy, Users, ArrowRight, Medal } from 'lucide-react';
 
 function Avatar({ src, name }: { src: string | null; name: string }) {
   if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        className="w-full h-full object-cover"
-      />
-    );
+    return <img src={src} alt={name} className="w-full h-full object-cover" />;
   }
   return (
-    <span
-      className="text-sm font-medium"
-      style={{ color: 'var(--text-primary)' }}
-    >
+    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
       {name.charAt(0).toUpperCase()}
     </span>
   );
@@ -43,6 +34,67 @@ function RankBadge({ rank }: { rank: number }) {
   );
 }
 
+function PodiumCard({
+  leader,
+  rank,
+  order,
+  height,
+}: {
+  leader: { name: string; avatar: string | null; totalPoints: number };
+  rank: number;
+  order: string;
+  height: string;
+}) {
+  const { t } = useLanguage();
+  const borders: Record<number, string> = {
+    1: 'rgba(255,215,0,0.4)',
+    2: 'rgba(192,192,192,0.3)',
+    3: 'rgba(205,127,50,0.3)',
+  };
+  const gradients: Record<number, string> = {
+    1: 'linear-gradient(180deg, rgba(255,215,0,0.12) 0%, transparent 100%)',
+    2: 'linear-gradient(180deg, rgba(192,192,192,0.1) 0%, transparent 100%)',
+    3: 'linear-gradient(180deg, rgba(205,127,50,0.1) 0%, transparent 100%)',
+  };
+  const size = rank === 1 ? 'w-20 h-20' : 'w-16 h-16';
+  const iconSize = rank === 1 ? 26 : 20;
+
+  return (
+    <div className={`${order} w-full md:w-56 ${height}`}>
+      <div
+        className="flex flex-col items-center justify-end rounded-xl h-full p-5"
+        style={{
+          background: gradients[rank],
+          border: `1px solid ${borders[rank]}`,
+        }}
+      >
+        <Medal size={iconSize} style={{ color: borders[rank], marginBottom: '10px' }} />
+        <div
+          className={`${size} rounded-full overflow-hidden flex items-center justify-center mb-3`}
+          style={{ background: 'var(--bg-surface-light)', border: `2px solid ${borders[rank]}` }}
+        >
+          <Avatar src={leader.avatar} name={leader.name} />
+        </div>
+        <span
+          className={`font-bold ${rank === 1 ? 'text-3xl' : 'text-2xl'}`}
+          style={{ color: borders[rank] }}
+        >
+          {rank}
+        </span>
+        <span
+          className="text-sm font-medium mt-1 text-center truncate max-w-full"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {leader.name}
+        </span>
+        <span className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+          {leader.totalPoints} {t('leaderboard.points')}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function LeaderboardSection() {
   const { t } = useLanguage();
   const { isVisible } = useSectionVisibility();
@@ -57,15 +109,16 @@ export default function LeaderboardSection() {
   const rest = leaders?.slice(3) ?? [];
 
   return (
-    <section
-      id="leaderboard"
-      style={{ padding: 'var(--section-gap) 0' }}
-    >
+    <section id="leaderboard" style={{ padding: 'var(--section-gap) 0' }}>
       <div
         className="mx-auto"
         style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}
       >
         <div className="text-center mb-12">
+          <Trophy
+            size={32}
+            style={{ color: 'var(--accent-green)', margin: '0 auto 12px' }}
+          />
           <h2
             className="font-display"
             style={{
@@ -85,131 +138,34 @@ export default function LeaderboardSection() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
-            {t('leaderboard.loading')}
+          <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-10">
+            <div className="w-full md:w-56 h-64 rounded-xl" style={{ background: 'var(--bg-surface)' }} />
+            <div className="w-full md:w-64 h-80 rounded-xl" style={{ background: 'var(--bg-surface)' }} />
+            <div className="w-full md:w-56 h-56 rounded-xl" style={{ background: 'var(--bg-surface)' }} />
           </div>
         ) : leaders?.length === 0 ? (
-          <div className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+          <div
+            className="text-center py-12 rounded-lg mb-8"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)', color: 'var(--text-secondary)' }}
+          >
             {t('leaderboard.empty')}
           </div>
         ) : (
           <>
-            {/* Podium */}
             {topThree.length > 0 && (
-              <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-12">
+              <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-10">
                 {topThree[1] && (
-                  <div
-                    className="flex flex-col items-center p-6 rounded-lg w-full md:w-56 order-2 md:order-1"
-                    style={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--bg-surface-light)',
-                    }}
-                  >
-                    <div
-                      className="w-16 h-16 rounded-full overflow-hidden mb-3 flex items-center justify-center"
-                      style={{ background: 'var(--bg-surface-light)' }}
-                    >
-                      <Avatar src={topThree[1].avatar} name={topThree[1].name} />
-                    </div>
-                    <span
-                      className="text-2xl font-bold"
-                      style={{ color: '#C0C0C0' }}
-                    >
-                      2
-                    </span>
-                    <span
-                      className="text-sm font-medium mt-1"
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {topThree[1].name}
-                    </span>
-                    <span
-                      className="text-xs mt-1"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {topThree[1].totalPoints} {t('leaderboard.points')}
-                    </span>
-                  </div>
+                  <PodiumCard leader={topThree[1]} rank={2} order="order-2 md:order-1" height="h-64" />
                 )}
-
                 {topThree[0] && (
-                  <div
-                    className="flex flex-col items-center p-8 rounded-lg w-full md:w-64 order-1 md:order-2"
-                    style={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--accent-green)',
-                    }}
-                  >
-                    <Trophy
-                      size={28}
-                      style={{ color: '#FFD700' }}
-                      className="mb-2"
-                    />
-                    <div
-                      className="w-20 h-20 rounded-full overflow-hidden mb-3 flex items-center justify-center"
-                      style={{ background: 'var(--bg-surface-light)' }}
-                    >
-                      <Avatar src={topThree[0].avatar} name={topThree[0].name} />
-                    </div>
-                    <span
-                      className="text-3xl font-bold"
-                      style={{ color: '#FFD700' }}
-                    >
-                      1
-                    </span>
-                    <span
-                      className="text-base font-medium mt-1"
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {topThree[0].name}
-                    </span>
-                    <span
-                      className="text-sm mt-1"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {topThree[0].totalPoints} {t('leaderboard.points')}
-                    </span>
-                  </div>
+                  <PodiumCard leader={topThree[0]} rank={1} order="order-1 md:order-2" height="h-80" />
                 )}
-
                 {topThree[2] && (
-                  <div
-                    className="flex flex-col items-center p-6 rounded-lg w-full md:w-56 order-3"
-                    style={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--bg-surface-light)',
-                    }}
-                  >
-                    <div
-                      className="w-16 h-16 rounded-full overflow-hidden mb-3 flex items-center justify-center"
-                      style={{ background: 'var(--bg-surface-light)' }}
-                    >
-                      <Avatar src={topThree[2].avatar} name={topThree[2].name} />
-                    </div>
-                    <span
-                      className="text-2xl font-bold"
-                      style={{ color: '#CD7F32' }}
-                    >
-                      3
-                    </span>
-                    <span
-                      className="text-sm font-medium mt-1"
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {topThree[2].name}
-                    </span>
-                    <span
-                      className="text-xs mt-1"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {topThree[2].totalPoints} {t('leaderboard.points')}
-                    </span>
-                  </div>
+                  <PodiumCard leader={topThree[2]} rank={3} order="order-3" height="h-56" />
                 )}
               </div>
             )}
 
-            {/* Rest of leaderboard */}
             {rest.length > 0 && (
               <div
                 className="rounded-lg overflow-hidden mb-8"
@@ -222,9 +178,7 @@ export default function LeaderboardSection() {
                   <div
                     key={leader.userId}
                     className="flex items-center gap-4 p-4"
-                    style={{
-                      borderBottom: '1px solid var(--bg-surface-light)',
-                    }}
+                    style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
                   >
                     <RankBadge rank={leader.rank} />
                     <div

@@ -7,19 +7,28 @@ import {
   campaignRegistrations,
   siteSettings,
 } from "@db/schema";
-import { eq, and, gte, desc, sum, count, sql, isNotNull } from "drizzle-orm";
+import { eq, and, desc, sum, count, sql } from "drizzle-orm";
 import { sanitizeString } from "./lib/sanitize";
 import { logActivity } from "./lib/activity";
 
 const periodSchema = z.enum(["all", "year", "month"]);
 
-function getPeriodStart(period: "all" | "year" | "month"): Date | null {
+interface RawLeaderboardRow {
+  user_id: number;
+  name: string | null;
+  avatar: string | null;
+  role: string;
+  total_points: number;
+  attended_count: number;
+}
+
+function getPeriodTimestamp(period: "all" | "year" | "month"): number | null {
   if (period === "all") return null;
   const now = new Date();
-  if (period === "year") {
-    return new Date(now.getFullYear(), 0, 1);
-  }
-  return new Date(now.getFullYear(), now.getMonth(), 1);
+  const start = period === "year"
+    ? new Date(now.getFullYear(), 0, 1)
+    : new Date(now.getFullYear(), now.getMonth(), 1);
+  return Math.floor(start.getTime() / 1000);
 }
 
 async function getSetting(db: ReturnType<typeof getDb>, key: string, fallback: number): Promise<number> {
@@ -42,12 +51,8 @@ async function shouldShowAdmins(db: ReturnType<typeof getDb>): Promise<boolean> 
   return row?.value === "true";
 }
 
-function periodCondition(
-  period: "all" | "year" | "month"
-) {
-  const start = getPeriodStart(period);
-  if (!start) return undefined;
-  return gte(volunteerPoints.createdAt, start);
+function getRawClient(db: ReturnType<typeof getDb>) {
+  return (db as unknown as { $client: { prepare: (sql: string) => { all: (...params: unknown[]) => unknown[] } } }).$client;
 }
 
 export const leaderboardRouter = createRouter({
@@ -62,84 +67,68 @@ export const leaderboardRouter = createRouter({
     .query(async ({ input }) => {
       const db = getDb();
       const showAdmins = await shouldShowAdmins(db);
+      const periodStart = getPeriodTimestamp(input.period);
 
-      const timeFilter = periodCondition(input.period);
+      const rawClient = getRawClient(db);
 
-      // Aggregate points per user, filtering by time if requested
-      const aggregated = await db
-        .select({
-          userId: volunteerPoints.userId,
-          totalPoints: sum(volunteerPoints.points),
-        })
-        .from(volunteerPoints)
-        .where(timeFilter)
-        .groupBy(volunteerPoints.userId)
-        .orderBy(desc(sum(volunteerPoints.points)))
-        .limit(input.limit);
+      const timeFilter = periodStart
+        ? `AND vp.created_at >= ?`
+        : "";
+      const params: (number | string)[] = [];
+      if (periodStart) params.push(periodStart);
+      params.push(input.limit);
 
-      const userIds = aggregated.map((row) => row.userId);
-      if (userIds.length === 0) {
-        return [];
-      }
+      const roleFilter = showAdmins
+        ? ""
+        : "AND u.role NOT IN ('admin', 'super_admin')";
 
-      const userRows = await db
-        .select()
-        .from(users)
-        .where(
-          and(
-            sql`${users.id} IN ${userIds}`,
-            showAdmins ? undefined : sql`${users.role} NOT IN ('admin', 'super_admin')`
-          )
-        );
+      const query = `
+        SELECT
+          u.id AS user_id,
+          u.name,
+          u.avatar,
+          u.role,
+          COALESCE(SUM(vp.points), 0) AS total_points,
+          COALESCE(att.attended_count, 0) AS attended_count
+        FROM users u
+        INNER JOIN volunteer_points vp ON vp.user_id = u.id
+        LEFT JOIN (
+          SELECT user_id, COUNT(*) AS attended_count
+          FROM campaign_registrations
+          WHERE attended = 1 AND user_id IS NOT NULL
+          GROUP BY user_id
+        ) att ON att.user_id = u.id
+        WHERE 1=1
+          ${timeFilter}
+          ${roleFilter}
+        GROUP BY u.id
+        ORDER BY total_points DESC
+        LIMIT ?
+      `;
 
-      const userMap = new Map(userRows.map((u) => [u.id, u]));
-
-      // Count attended campaigns per user (all-time)
-      const attendedCounts = await db
-        .select({
-          userId: campaignRegistrations.userId,
-          attended: count(),
-        })
-        .from(campaignRegistrations)
-        .where(
-          and(
-            isNotNull(campaignRegistrations.userId),
-            eq(campaignRegistrations.attended, true)
-          )
-        )
-        .groupBy(campaignRegistrations.userId);
-
-      const attendedMap = new Map(
-        attendedCounts.map((row) => [row.userId, row.attended])
-      );
+      const rows = rawClient.prepare(query).all(...params) as RawLeaderboardRow[];
 
       let rank = 0;
       let previousPoints: number | null = null;
       let displayRank = 0;
 
-      return aggregated
-        .map((row) => {
-          const user = userMap.get(row.userId);
-          if (!user) return null;
-          const totalPoints = Number(row.totalPoints ?? 0);
+      return rows.map((row) => {
+        rank++;
+        if (previousPoints === null || row.total_points < previousPoints) {
+          displayRank = rank;
+        }
+        previousPoints = row.total_points;
 
-          rank++;
-          if (previousPoints === null || totalPoints < previousPoints) {
-            displayRank = rank;
-          }
-          previousPoints = totalPoints;
-
-          return {
-            rank: displayRank,
-            userId: row.userId,
-            name: user.name ?? "Anonymous",
-            avatar: user.avatar ?? null,
-            role: user.role,
-            totalPoints,
-            attendedCount: attendedMap.get(row.userId) ?? 0,
-          };
-        })
-        .filter((item): item is NonNullable<typeof item> => item !== null);
+        return {
+          rank: displayRank,
+          userId: row.user_id,
+          name: row.name ?? "Anonymous",
+          avatar: row.avatar ?? null,
+          role: row.role,
+          totalPoints: row.total_points,
+          attendedCount: row.attended_count,
+        };
+      });
     }),
 
   // Public: get a single user's rank and point breakdown
