@@ -6,6 +6,7 @@ import { useState } from "react";
 import GuestRegisterModal from "./GuestRegisterModal";
 import type { Campaign } from "@/types/campaign";
 import { Trash2, Sprout, Users, MapPin, ImageOff } from "lucide-react";
+import { formatCampaignTime } from "@/lib/utils";
 
 function CampaignImage({ src, alt }: { src: string; alt: string }) {
   const [error, setError] = useState(false);
@@ -61,6 +62,7 @@ export default function CampaignCard({
     (campaign[
       `description${lang.charAt(0).toUpperCase() + lang.slice(1)}` as keyof Campaign
     ] as string) || campaign.descriptionEn;
+  const eventTime = formatCampaignTime(campaign.eventDate, lang);
 
   const handleRegister = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -127,6 +129,9 @@ export default function CampaignCard({
           }}
         >
           {campaign.date}
+          {eventTime && (
+            <span className="ml-1.5 opacity-90">• {eventTime}</span>
+          )}
         </div>
       </div>
 

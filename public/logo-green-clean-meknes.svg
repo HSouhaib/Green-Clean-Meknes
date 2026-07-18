@@ -3,7 +3,6 @@
   <defs>
     <style>
       .leaf { fill: #6B8E5A; }
-      .leaf-detail { fill: #4A6B3A; }
       .word { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; fill: #1a1a1a; }
       .tagline { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; fill: #6B8E5A; }
     </style>

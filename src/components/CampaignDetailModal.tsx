@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { Campaign } from "@/types/campaign";
 import { useState } from "react";
+import { formatCampaignDateTime } from "@/lib/utils";
 
 function CampaignImage({ src, alt }: { src: string; alt: string }) {
   const [error, setError] = useState(false);
@@ -77,6 +78,7 @@ export default function CampaignDetailModal({
   const title = getCampaignTitle(campaign, lang);
   const location = getCampaignLocation(campaign, lang);
   const description = getCampaignDescription(campaign, lang);
+  const eventDateTime = formatCampaignDateTime(campaign.eventDate, lang, campaign.date);
 
   const handleRegister = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -152,7 +154,7 @@ export default function CampaignDetailModal({
             }}
           >
             <Calendar size={12} className="inline mr-1" />
-            {campaign.date}
+            {eventDateTime}
           </div>
         </div>
 

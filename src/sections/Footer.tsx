@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import Logo from '@/components/Logo';
 import { trpc } from '@/lib/trpc';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 import { allNavLinks, langOptions, handleNavClick } from '@/const';
@@ -54,10 +55,9 @@ export default function Footer() {
           <a
             href="#hero"
             onClick={(e) => { e.preventDefault(); handleNavClick('#hero'); }}
-            className="font-display text-base tracking-tight no-underline"
-            style={{ color: 'var(--text-primary)' }}
+            className="no-underline"
           >
-            GREEN
+            <Logo size="sm" />
           </a>
 
           {/* Nav links — centered */}

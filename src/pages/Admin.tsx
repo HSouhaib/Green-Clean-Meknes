@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
+import Logo from "@/components/Logo";
 import { trpc } from '@/lib/trpc';
 import {
   Sun,
@@ -211,12 +212,11 @@ export default function Admin() {
           <div className="flex items-center gap-3 min-w-0">
             <a
               href="/"
-              className="font-display text-base tracking-tight no-underline flex-shrink-0"
-              style={{ color: "var(--text-primary)" }}
+              className="no-underline flex items-center gap-2 flex-shrink-0"
             >
-              GREEN{" "}
+              <Logo size="sm" />
               <span
-                className="font-light hidden sm:inline"
+                className="font-display text-base tracking-tight font-light hidden sm:inline"
                 style={{ color: "var(--text-tertiary)" }}
               >
                 Admin

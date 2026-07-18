@@ -3,6 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin } from 'lucide-react';
+import { formatCampaignDateTime } from '@/lib/utils';
 
 interface TimeLeft {
   days: number;
@@ -96,15 +97,11 @@ export default function CountdownSection() {
     ? nextCampaign.locationAr
     : nextCampaign.locationEn;
 
-  const eventDate = nextCampaign.eventDate ? new Date(nextCampaign.eventDate) : null;
-  const dateStr = eventDate
-    ? eventDate.toLocaleDateString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : nextCampaign.date;
+  const dateStr = formatCampaignDateTime(
+    nextCampaign.eventDate,
+    lang,
+    nextCampaign.date
+  );
 
   const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
 

@@ -59,6 +59,7 @@ export function CampaignsTab() {
     descriptionFr: string;
     descriptionAr: string;
     date: string;
+    eventTime: string;
     slug: string;
     image: string;
     filterTags: string;
@@ -80,6 +81,7 @@ export function CampaignsTab() {
     descriptionFr: "",
     descriptionAr: "",
     date: "",
+    eventTime: "",
     slug: "",
     image: "",
     filterTags: "all",
@@ -186,6 +188,7 @@ export function CampaignsTab() {
       descriptionFr: "",
       descriptionAr: "",
       date: "",
+      eventTime: "",
       slug: "",
       image: "",
       filterTags: "all",
@@ -212,6 +215,14 @@ export function CampaignsTab() {
       descriptionFr: campaign.descriptionFr ?? "",
       descriptionAr: campaign.descriptionAr ?? "",
       date: campaign.date,
+      eventTime:
+        campaign.eventDate && !isNaN(new Date(campaign.eventDate).getTime())
+          ? new Date(campaign.eventDate).toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })
+          : "",
       slug: campaign.slug,
       image: campaign.image ?? "",
       filterTags: campaign.filterTags,
@@ -226,10 +237,14 @@ export function CampaignsTab() {
     setShowForm(true);
   }
 
-  // Parse display date like "12 July 2026" to Unix timestamp for countdown
-  function parseDisplayDateToTimestamp(dateStr: string): number | undefined {
+  // Parse display date like "12 July 2026" + optional "HH:MM" to Unix timestamp for countdown
+  function parseDisplayDateToTimestamp(
+    dateStr: string,
+    timeStr?: string
+  ): number | undefined {
     if (!dateStr) return undefined;
-    const parsed = new Date(dateStr);
+    const combined = timeStr ? `${dateStr} ${timeStr}` : dateStr;
+    const parsed = new Date(combined);
     if (isNaN(parsed.getTime())) return undefined;
     return Math.floor(parsed.getTime() / 1000);
   }
@@ -240,11 +255,12 @@ export function CampaignsTab() {
       if (value === "") return editingId ? undefined : 0;
       return parseInt(value, 10);
     };
+    const { eventTime, ...baseForm } = formData;
     const payload = {
-      ...formData,
+      ...baseForm,
       mapX: formData.mapX ? parseFloat(formData.mapX) : undefined,
       mapY: formData.mapY ? parseFloat(formData.mapY) : undefined,
-      eventDate: parseDisplayDateToTimestamp(formData.date),
+      eventDate: parseDisplayDateToTimestamp(formData.date, eventTime),
       statsWasteKg: parseStat(formData.statsWasteKg),
       statsTrees: parseStat(formData.statsTrees),
       statsVolunteers: parseStat(formData.statsVolunteers),
@@ -389,12 +405,21 @@ export function CampaignsTab() {
               className="admin-input"
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               placeholder="Date (e.g., 12 July 2026) *"
               value={formData.date}
               onChange={e => setFormData({ ...formData, date: e.target.value })}
               required
+              className="admin-input"
+            />
+            <input
+              type="time"
+              placeholder="Start time (HH:MM)"
+              value={formData.eventTime}
+              onChange={e =>
+                setFormData({ ...formData, eventTime: e.target.value })
+              }
               className="admin-input"
             />
             <input

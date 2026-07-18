@@ -3,6 +3,7 @@ import CampaignDetailModal from '@/components/CampaignDetailModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import CampaignCard from '@/components/CampaignCard';
 import { trpc } from '@/lib/trpc';
+import { formatCampaignDateTime } from '@/lib/utils';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -213,14 +214,8 @@ function CampaignCountdownBanner({
     ? campaign.locationAr
     : campaign.locationEn;
 
-  const eventDate = eventTimestamp ? new Date(eventTimestamp) : null;
-  const dateStr = eventDate
-    ? eventDate.toLocaleDateString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+  const dateStr = eventTimestamp
+    ? formatCampaignDateTime(new Date(eventTimestamp), lang, campaign.date)
     : campaign.date;
 
   const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;

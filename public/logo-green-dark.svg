@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 60" width="260" height="60">
   <defs>
     <style>
       .leaf { fill: #6B8E5A; }
-      .stem { stroke: #8AB87A; stroke-width: 1.5; stroke-linecap: round; fill: none; }
-      .vein { stroke: #8AB87A; stroke-width: 1; stroke-linecap: round; fill: none; }
-      .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; fill: #f0f0f0; }
+      .leaf-detail { fill: #8AB87A; }
+      .word { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; fill: #f0f0f0; }
+      .tagline { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; fill: #8AB87A; }
     </style>
   </defs>
-  
-  <!-- Leaf -->
-  <g transform="translate(8, 8) scale(1.8)">
-    <path class="leaf" d="M16 2C8 8 4 14 4 20c0 6 5.4 10 12 10s12-4 12-10c0-6-4-12-12-18z"/>
-    <path class="stem" d="M16 6v20"/>
-    <path class="vein" d="M16 12l-4-2M16 16l-5-1M16 20l-4 1"/>
+
+  <!-- Leaf mark -->
+  <g transform="translate(8, 10) scale(1.6)">
+    <path class="leaf" d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
   </g>
-  
-  <!-- GREEN text -->
-  <text class="text" x="55" y="38">GREEN</text>
+
+  <!-- Wordmark -->
+  <text class="word" x="56" y="34">GREEN</text>
+  <text class="tagline" x="58" y="52">CLEAN MEKNES</text>
 </svg>

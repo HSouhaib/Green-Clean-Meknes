@@ -19,7 +19,9 @@ import TwoFactorSetupModal from "@/components/TwoFactorSetupModal";
 import TwoFactorDisableModal from "@/components/TwoFactorDisableModal";
 import CampaignBadgeModal from "@/components/CampaignBadgeModal";
 import CampaignDetailModal from "@/components/CampaignDetailModal";
+import Logo from "@/components/Logo";
 import type { Campaign } from "@/types/campaign";
+import { formatCampaignDateTime } from "@/lib/utils";
 
 export default function Profile() {
   const { t, lang } = useLanguage();
@@ -80,10 +82,9 @@ export default function Profile() {
         >
           <a
             href="/"
-            className="font-display text-base tracking-tight no-underline"
-            style={{ color: "var(--text-primary)" }}
+            className="no-underline"
           >
-            GREEN
+            <Logo size="sm" />
           </a>
           <div className="flex items-center gap-3">
             {isAdmin && (
@@ -315,7 +316,11 @@ export default function Profile() {
                                 style={{ color: "var(--text-tertiary)" }}
                               >
                                 <Calendar size={12} />
-                                {campaign.date}
+                                {formatCampaignDateTime(
+                                  campaign.eventDate,
+                                  lang,
+                                  campaign.date
+                                )}
                               </span>
                               <span
                                 className="flex items-center gap-1 text-xs"

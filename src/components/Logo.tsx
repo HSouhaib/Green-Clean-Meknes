@@ -1,15 +1,22 @@
-export default function Logo() {
+import { cn } from "@/lib/utils";
+
+interface LogoProps {
+  className?: string;
+  size?: "sm" | "md";
+}
+
+export default function Logo({ className, size = "md" }: LogoProps) {
+  const leafSize = size === "sm" ? 28 : 34;
+  const titleClass = size === "sm" ? "text-[15px]" : "text-lg";
+  const taglineClass = size === "sm" ? "text-[8px] tracking-[0.16em]" : "text-[9px] tracking-[0.18em]";
+
   return (
-    <span className="flex items-center gap-2">
-      <span
-        className="font-display text-base tracking-tight"
-        style={{ color: "var(--text-primary)" }}
-      >
-        GREEN
-      </span>
+    <span
+      className={cn("inline-flex items-center gap-2 no-underline", className)}
+    >
       <svg
-        width="14"
-        height="14"
+        width={leafSize}
+        height={leafSize}
         viewBox="0 0 24 24"
         fill="none"
         style={{ color: "var(--accent-green-light)" }}
@@ -19,6 +26,20 @@ export default function Logo() {
           fill="currentColor"
         />
       </svg>
+      <span className="flex flex-col leading-none">
+        <span
+          className={cn("font-display tracking-tight", titleClass)}
+          style={{ color: "var(--text-primary)" }}
+        >
+          GREEN
+        </span>
+        <span
+          className={cn("uppercase font-medium", taglineClass)}
+          style={{ color: "var(--accent-green-light)" }}
+        >
+          Clean Meknes
+        </span>
+      </span>
     </span>
   );
 }
