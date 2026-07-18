@@ -203,6 +203,7 @@ export const campaignRegistrations = sqliteTable("campaign_registrations", {
   guestEmail: text("guest_email"), // For guest registrations
   status: text("status").notNull().default("registered"),
   attended: integer("attended", { mode: "boolean" }).notNull().default(false),
+  wasteKg: integer("waste_kg").default(0), // Kilograms of waste collected by this volunteer
   notes: text("notes"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .$defaultFn(() => new Date())

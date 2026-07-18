@@ -3,6 +3,7 @@ import { createRouter, publicQuery, authedQuery, adminQuery } from "./middleware
 import { getDb } from "./queries/connection";
 import { campaigns, campaignRegistrations, users } from "@db/schema";
 import { eq, desc, and, count, inArray, gte, isNotNull, sum } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 import { sanitizeString } from "./lib/sanitize";
 import { safeUrl } from "./lib/zod-helpers";
@@ -442,6 +443,38 @@ export const campaignRouter = createRouter({
     .mutation(async ({ input }) => {
       const db = getDb();
       await db.delete(campaignRegistrations).where(eq(campaignRegistrations.id, input.id));
+      return { success: true };
+    }),
+
+  // Admin: record how many kilograms of waste a volunteer collected
+  updateRegistrationWaste: adminQuery
+    .input(
+      z.object({
+        registrationId: z.number().int().positive(),
+        wasteKg: z.number().int().min(0).max(1_000_000),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = getDb();
+
+      const [registration] = await db
+        .select()
+        .from(campaignRegistrations)
+        .where(eq(campaignRegistrations.id, input.registrationId))
+        .limit(1);
+
+      if (!registration) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Registration not found",
+        });
+      }
+
+      await db
+        .update(campaignRegistrations)
+        .set({ wasteKg: input.wasteKg })
+        .where(eq(campaignRegistrations.id, input.registrationId));
+
       return { success: true };
     }),
 

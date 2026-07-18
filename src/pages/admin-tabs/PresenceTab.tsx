@@ -28,7 +28,50 @@ export function PresenceTab() {
     onError: () => toast.error(t("badge.attendance_update_failed")),
   });
 
+  const updateWaste = trpc.campaign.updateRegistrationWaste.useMutation({
+    onSuccess: () => {
+      toast.success(t("badge.waste_updated"));
+    },
+    onError: () => toast.error(t("badge.waste_update_failed")),
+  });
+
   const selectedCampaign = campaigns?.find(c => c.id === selectedCampaignId);
+
+  function WasteInput({
+    registrationId,
+    initialWasteKg,
+  }: {
+    registrationId: number;
+    initialWasteKg: number | null;
+  }) {
+    const [value, setValue] = useState(String(initialWasteKg ?? 0));
+
+    const handleBlur = () => {
+      const parsed = parseInt(value, 10);
+      const normalized = isNaN(parsed) || parsed < 0 ? 0 : parsed;
+      if (normalized !== (initialWasteKg ?? 0)) {
+        updateWaste.mutate({ registrationId, wasteKg: normalized });
+      }
+      setValue(String(normalized));
+    };
+
+    return (
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onBlur={handleBlur}
+        disabled={updateWaste.isPending}
+        className="w-20 rounded-lg px-2 py-1 text-right text-sm disabled:opacity-50"
+        style={{
+          background: "var(--bg-primary)",
+          border: "1px solid var(--bg-surface-light)",
+          color: "var(--text-primary)",
+        }}
+      />
+    );
+  }
 
   const filtered = (registrations || [])
     .filter(reg => {
@@ -187,6 +230,12 @@ export function PresenceTab() {
                       className="py-3 px-4 font-mono text-xs uppercase tracking-wider text-right"
                       style={{ color: "var(--text-tertiary)" }}
                     >
+                      {t("badge.waste_kg")}
+                    </th>
+                    <th
+                      className="py-3 px-4 font-mono text-xs uppercase tracking-wider text-right"
+                      style={{ color: "var(--text-tertiary)" }}
+                    >
                       {t("badge.present")}
                     </th>
                   </tr>
@@ -240,6 +289,12 @@ export function PresenceTab() {
                             ? t("badge.attended")
                             : t("badge.not_attended")}
                         </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <WasteInput
+                          registrationId={reg.id}
+                          initialWasteKg={reg.wasteKg ?? 0}
+                        />
                       </td>
                       <td className="py-3 px-4 text-right">
                         <button

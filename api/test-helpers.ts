@@ -91,6 +91,7 @@ export function createTestDb() {
       guest_email TEXT,
       status TEXT NOT NULL DEFAULT 'registered',
       attended INTEGER NOT NULL DEFAULT 0,
+      waste_kg INTEGER DEFAULT 0,
       notes TEXT,
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     );

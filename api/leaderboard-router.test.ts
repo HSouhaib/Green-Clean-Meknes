@@ -114,11 +114,10 @@ describe("leaderboard router", () => {
     expect(result[0].totalPoints).toBe(1);
   });
 
-  it("includes an equal share of waste kg points for attended campaigns", async () => {
+  it("includes individually recorded waste kg points for attended campaigns", async () => {
     const db = getDb();
     const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => { lastInsertRowid: number | bigint } } } }).$client;
     const user = createTestUser(db, { name: "Alice", unionId: "alice_waste_test" });
-    const other = createTestUser(db, { name: "Bob", unionId: "bob_waste_test" });
 
     sqlite
       .prepare("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)")
@@ -126,30 +125,24 @@ describe("leaderboard router", () => {
 
     const campaignResult = sqlite
       .prepare(
-        "INSERT INTO campaigns (title_en, location_en, description_en, date, slug, status, is_active, stats_waste_kg, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())"
+        "INSERT INTO campaigns (title_en, location_en, description_en, date, slug, status, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())"
       )
-      .run("Waste Campaign", "Meknes", "Test", "2026-07-20", "waste-campaign", "completed", 1, 100);
+      .run("Waste Campaign", "Meknes", "Test", "2026-07-20", "waste-campaign", "completed", 1);
     const campaignId = Number(campaignResult.lastInsertRowid);
 
     sqlite
       .prepare(
-        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, created_at) VALUES (?, ?, ?, ?, ?, ?, unixepoch())"
+        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, waste_kg, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, unixepoch())"
       )
-      .run(campaignId, user.id, null, null, "registered", 1);
-    sqlite
-      .prepare(
-        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, created_at) VALUES (?, ?, ?, ?, ?, ?, unixepoch())"
-      )
-      .run(campaignId, other.id, null, null, "registered", 1);
+      .run(campaignId, user.id, null, null, "registered", 1, 30);
 
     const caller = appRouter.createCaller(createTestContext());
     const result = await caller.leaderboard.getTop({ limit: 10 });
 
-    expect(result).toHaveLength(2);
-    const alice = result.find((r) => r.userId === user.id);
-    expect(alice).toBeDefined();
-    // registration (1) + attendance (5) + waste share (50 kg * 2)
-    expect(alice!.totalPoints).toBe(1 + 5 + 50 * 2);
+    expect(result).toHaveLength(1);
+    expect(result[0].userId).toBe(user.id);
+    // registration (1) + attendance (5) + recorded waste (30 kg * 2)
+    expect(result[0].totalPoints).toBe(1 + 5 + 30 * 2);
   });
 
   it("excludes admins when leaderboard_show_admins is false", async () => {
