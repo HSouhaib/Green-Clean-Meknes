@@ -14,16 +14,52 @@ export function useCampaignRegistration(campaignId: number) {
   );
 
   const register = trpc.campaign.register.useMutation({
-    onSuccess: () => {
-      utils.campaign.myRegistrationStatus.invalidate({ id: campaignId });
-      utils.campaign.registrationCount.invalidate({ id: campaignId });
+    onMutate: async () => {
+      await utils.campaign.myRegistrationStatus.cancel({ id: campaignId });
+      await utils.campaign.registrationCount.cancel({ id: campaignId });
+      const previousStatus = utils.campaign.myRegistrationStatus.getData({ id: campaignId });
+      const previousCount = utils.campaign.registrationCount.getData({ id: campaignId });
+      utils.campaign.myRegistrationStatus.setData({ id: campaignId }, 'registered');
+      utils.campaign.registrationCount.setData({ id: campaignId }, (old) => (old ?? 0) + 1);
+      return { previousStatus, previousCount };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousStatus !== undefined) {
+        utils.campaign.myRegistrationStatus.setData({ id: campaignId }, context.previousStatus);
+      }
+      if (context?.previousCount !== undefined) {
+        utils.campaign.registrationCount.setData({ id: campaignId }, context.previousCount);
+      }
+    },
+    onSettled: async () => {
+      await utils.campaign.myRegistrationStatus.invalidate({ id: campaignId });
+      await utils.campaign.registrationCount.invalidate({ id: campaignId });
+      await utils.campaign.myRegistrations.invalidate();
     },
   });
 
   const unregister = trpc.campaign.unregister.useMutation({
-    onSuccess: () => {
-      utils.campaign.myRegistrationStatus.invalidate({ id: campaignId });
-      utils.campaign.registrationCount.invalidate({ id: campaignId });
+    onMutate: async () => {
+      await utils.campaign.myRegistrationStatus.cancel({ id: campaignId });
+      await utils.campaign.registrationCount.cancel({ id: campaignId });
+      const previousStatus = utils.campaign.myRegistrationStatus.getData({ id: campaignId });
+      const previousCount = utils.campaign.registrationCount.getData({ id: campaignId });
+      utils.campaign.myRegistrationStatus.setData({ id: campaignId }, undefined);
+      utils.campaign.registrationCount.setData({ id: campaignId }, (old) => Math.max((old ?? 1) - 1, 0));
+      return { previousStatus, previousCount };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousStatus !== undefined) {
+        utils.campaign.myRegistrationStatus.setData({ id: campaignId }, context.previousStatus);
+      }
+      if (context?.previousCount !== undefined) {
+        utils.campaign.registrationCount.setData({ id: campaignId }, context.previousCount);
+      }
+    },
+    onSettled: async () => {
+      await utils.campaign.myRegistrationStatus.invalidate({ id: campaignId });
+      await utils.campaign.registrationCount.invalidate({ id: campaignId });
+      await utils.campaign.myRegistrations.invalidate();
     },
   });
 
