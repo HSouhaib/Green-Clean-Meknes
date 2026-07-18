@@ -114,6 +114,36 @@ describe("leaderboard router", () => {
     expect(result[0].totalPoints).toBe(1);
   });
 
+  it("includes waste kg points for attended campaigns", async () => {
+    const db = getDb();
+    const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => { lastInsertRowid: number | bigint } } } }).$client;
+    const user = createTestUser(db, { name: "Alice", unionId: "alice_waste_test" });
+
+    sqlite
+      .prepare("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)")
+      .run("points_per_waste_kg", "2");
+
+    const campaignResult = sqlite
+      .prepare(
+        "INSERT INTO campaigns (title_en, location_en, description_en, date, slug, status, is_active, stats_waste_kg, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())"
+      )
+      .run("Waste Campaign", "Meknes", "Test", "2026-07-20", "waste-campaign", "completed", 1, 100);
+    const campaignId = Number(campaignResult.lastInsertRowid);
+
+    sqlite
+      .prepare(
+        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, created_at) VALUES (?, ?, ?, ?, ?, ?, unixepoch())"
+      )
+      .run(campaignId, user.id, null, null, "registered", 1);
+
+    const caller = appRouter.createCaller(createTestContext());
+    const result = await caller.leaderboard.getTop({ limit: 10 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].userId).toBe(user.id);
+    expect(result[0].totalPoints).toBe(1 + 5 + 100 * 2);
+  });
+
   it("excludes admins when leaderboard_show_admins is false", async () => {
     const db = getDb();
     const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => void } } }).$client;

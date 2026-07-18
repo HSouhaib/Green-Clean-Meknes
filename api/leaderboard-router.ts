@@ -74,6 +74,7 @@ export const leaderboardRouter = createRouter({
 
       const registrationPoints = await getSetting(db, "points_registration", 1);
       const attendancePoints = await getSetting(db, "points_attendance", 5);
+      const perWasteKgPoints = await getSetting(db, "points_per_waste_kg", 0);
 
       const userTimeFilter = periodStart ? "AND cr.created_at >= ?" : "";
       const guestTimeFilter = periodStart ? "AND cr.created_at >= ?" : "";
@@ -82,10 +83,11 @@ export const leaderboardRouter = createRouter({
         ? ""
         : "AND u.role NOT IN ('admin', 'super_admin')";
 
-      // User scores: derive registration/attendance points from campaign_registrations
-      // so every registered user appears even if the volunteer_points table is missing
-      // registration rows. Add manual points from volunteer_points (excluding
-      // registration/attendance reasons to avoid double counting).
+      // User scores: derive registration/attendance/waste points from
+      // campaign_registrations so every registered user appears even if the
+      // volunteer_points table is missing registration rows. Waste points use the
+      // campaign's stats_waste_kg for attended registrations. Add manual points from
+      // volunteer_points (excluding registration/attendance reasons to avoid double counting).
       const userQuery = `
         SELECT
           'user:' || u.id AS identity,
@@ -93,7 +95,7 @@ export const leaderboardRouter = createRouter({
           u.name,
           u.avatar,
           u.role,
-          COALESCE(reg_counts.reg_count, 0) * ? + COALESCE(reg_counts.att_count, 0) * ? + COALESCE(manual_points.total, 0) AS total_points,
+          COALESCE(reg_counts.reg_count, 0) * ? + COALESCE(reg_counts.att_count, 0) * ? + COALESCE(reg_counts.waste_kg, 0) * ? + COALESCE(manual_points.total, 0) AS total_points,
           COALESCE(reg_counts.att_count, 0) AS attended_count
         FROM (
           SELECT DISTINCT user_id FROM (
@@ -104,8 +106,12 @@ export const leaderboardRouter = createRouter({
         ) combined
         INNER JOIN users u ON u.id = combined.user_id
         LEFT JOIN (
-          SELECT cr.user_id, COUNT(*) AS reg_count, SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS att_count
+          SELECT cr.user_id,
+            COUNT(*) AS reg_count,
+            SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS att_count,
+            SUM(CASE WHEN cr.attended = 1 THEN COALESCE(c.stats_waste_kg, 0) ELSE 0 END) AS waste_kg
           FROM campaign_registrations cr
+          LEFT JOIN campaigns c ON c.id = cr.campaign_id
           WHERE cr.user_id IS NOT NULL AND cr.status = 'registered' ${userTimeFilter}
           GROUP BY cr.user_id
         ) reg_counts ON reg_counts.user_id = u.id
@@ -120,7 +126,8 @@ export const leaderboardRouter = createRouter({
         LIMIT ?
       `;
 
-      // Guest scores: derive directly from guest campaign registrations.
+      // Guest scores: derive registration/attendance/waste points from guest
+      // campaign registrations. Waste points use the campaign's stats_waste_kg.
       const guestQuery = `
         SELECT
           'guest:' || COALESCE(cr.guest_email, cr.guest_name) AS identity,
@@ -128,9 +135,10 @@ export const leaderboardRouter = createRouter({
           cr.guest_name AS name,
           NULL AS avatar,
           'guest' AS role,
-          (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) AS total_points,
+          (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN COALESCE(c.stats_waste_kg, 0) ELSE 0 END) * ?) AS total_points,
           SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS attended_count
         FROM campaign_registrations cr
+        LEFT JOIN campaigns c ON c.id = cr.campaign_id
         WHERE cr.user_id IS NULL
           AND cr.guest_name IS NOT NULL
           AND cr.status = 'registered'
@@ -140,7 +148,11 @@ export const leaderboardRouter = createRouter({
         LIMIT ?
       `;
 
-      const userParams: (number | string)[] = [registrationPoints, attendancePoints];
+      const userParams: (number | string)[] = [
+        registrationPoints,
+        attendancePoints,
+        perWasteKgPoints,
+      ];
       if (periodStart) {
         // combined subquery: userTimeFilter + manualTimeFilter
         userParams.push(periodStart, periodStart);
@@ -149,7 +161,11 @@ export const leaderboardRouter = createRouter({
       }
       userParams.push(input.limit);
 
-      const guestParams: (number | string)[] = [registrationPoints, attendancePoints];
+      const guestParams: (number | string)[] = [
+        registrationPoints,
+        attendancePoints,
+        perWasteKgPoints,
+      ];
       if (periodStart) guestParams.push(periodStart);
       guestParams.push(input.limit);
 
@@ -357,13 +373,15 @@ export const leaderboardRouter = createRouter({
   // Internal helper exposed for other routers: get current point values
   getPointSettings: publicQuery.query(async () => {
     const db = getDb();
-    const [registration, attendance] = await Promise.all([
+    const [registration, attendance, perWasteKg] = await Promise.all([
       getSetting(db, "points_registration", 1),
       getSetting(db, "points_attendance", 5),
+      getSetting(db, "points_per_waste_kg", 0),
     ]);
     return {
       registration,
       attendance,
+      perWasteKg,
     };
   }),
 });

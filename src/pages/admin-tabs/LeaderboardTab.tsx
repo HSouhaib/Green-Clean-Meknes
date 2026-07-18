@@ -43,12 +43,14 @@ export function LeaderboardTab() {
 
   const [registrationPoints, setRegistrationPoints] = useState('1');
   const [attendancePoints, setAttendancePoints] = useState('5');
+  const [perWasteKgPoints, setPerWasteKgPoints] = useState('0');
 
   useEffect(() => {
     if (settings) {
       const timeout = setTimeout(() => {
         setRegistrationPoints(settings.points_registration ?? '1');
         setAttendancePoints(settings.points_attendance ?? '5');
+        setPerWasteKgPoints(settings.points_per_waste_kg ?? '0');
       }, 0);
       return () => clearTimeout(timeout);
     }
@@ -65,7 +67,15 @@ export function LeaderboardTab() {
   const handleSavePointSettings = () => {
     const reg = parseInt(registrationPoints, 10);
     const att = parseInt(attendancePoints, 10);
-    if (isNaN(reg) || isNaN(att) || reg < 0 || att < 0) {
+    const waste = parseInt(perWasteKgPoints, 10);
+    if (
+      isNaN(reg) ||
+      isNaN(att) ||
+      isNaN(waste) ||
+      reg < 0 ||
+      att < 0 ||
+      waste < 0
+    ) {
       showError(t('admin.leaderboard.invalid_points'));
       return;
     }
@@ -77,11 +87,16 @@ export function LeaderboardTab() {
       key: 'points_attendance',
       value: String(att),
     });
+    updateSettingMutation.mutate({
+      key: 'points_per_waste_kg',
+      value: String(waste),
+    });
   };
 
   const hasPointChanges =
     registrationPoints !== (settings?.points_registration ?? '1') ||
-    attendancePoints !== (settings?.points_attendance ?? '5');
+    attendancePoints !== (settings?.points_attendance ?? '5') ||
+    perWasteKgPoints !== (settings?.points_per_waste_kg ?? '0');
 
   const awardMutation = trpc.leaderboard.awardPoints.useMutation({
     onSuccess: () => {
@@ -135,7 +150,7 @@ export function LeaderboardTab() {
           {t('admin.leaderboard.points_system_help')}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label
               className="text-xs font-mono uppercase tracking-wider block mb-2"
@@ -168,6 +183,26 @@ export function LeaderboardTab() {
               min={0}
               value={attendancePoints}
               onChange={(e) => setAttendancePoints(e.target.value)}
+              className="w-full rounded-lg px-3 py-2 text-sm"
+              style={{
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--bg-surface-light)',
+                color: 'var(--text-primary)',
+              }}
+            />
+          </div>
+          <div>
+            <label
+              className="text-xs font-mono uppercase tracking-wider block mb-2"
+              style={{ color: 'var(--text-tertiary)' }}
+            >
+              {t('admin.leaderboard.points_per_waste_kg')}
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={perWasteKgPoints}
+              onChange={(e) => setPerWasteKgPoints(e.target.value)}
               className="w-full rounded-lg px-3 py-2 text-sm"
               style={{
                 background: 'var(--bg-primary)',
