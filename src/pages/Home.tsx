@@ -1,5 +1,6 @@
 import CommunitySection from '@/sections/CommunitySection';
 import Footer from '@/sections/Footer';
+import HomeSkeleton from '@/components/HomeSkeleton';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import Navigation from '@/sections/Navigation';
 import HeroSection from '@/sections/HeroSection';
@@ -16,7 +17,11 @@ import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 
 export default function Home() {
   useScrollAnimation(0.2);
-  const { isVisible } = useSectionVisibility();
+  const { isVisible, isLoading } = useSectionVisibility();
+
+  if (isLoading) {
+    return <HomeSkeleton />;
+  }
 
   return (
     <>
