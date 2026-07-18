@@ -9,6 +9,19 @@ import {
   Plus,
   HelpCircle,
   Lightbulb,
+  PanelTop,
+  ScanLine,
+  Camera,
+  Handshake,
+  Rss,
+  UserPlus,
+  Shield,
+  Layers,
+  Settings,
+  MapPin,
+  MessageSquare,
+  BarChart3,
+  Trophy,
 } from 'lucide-react';
 
 interface DashboardTabProps {
@@ -28,10 +41,24 @@ export function DashboardTab({ onNavigate }: DashboardTabProps) {
   const unreadCount = unreadContacts ?? 0;
 
   const quickActions = [
+    { label: 'Landing Page', icon: <PanelTop size={16} />, tab: 'landing', color: 'var(--accent-blue)' },
     { label: 'New Campaign', icon: <Plus size={16} />, tab: 'campaigns', color: 'var(--accent-green)' },
-    { label: 'Add FAQ', icon: <HelpCircle size={16} />, tab: 'faqs', color: 'var(--accent-terracotta)' },
+    { label: 'Presence', icon: <ScanLine size={16} />, tab: 'presence', color: 'var(--accent-terracotta)' },
+    { label: 'Photos', icon: <Camera size={16} />, tab: 'photos', color: 'var(--accent-blue)' },
+    { label: 'Sponsors', icon: <Handshake size={16} />, tab: 'sponsors', color: 'var(--accent-amber)' },
+    { label: 'Social Feed', icon: <Rss size={16} />, tab: 'socialFeed', color: 'var(--accent-green)' },
+    { label: 'Users', icon: <Users size={16} />, tab: 'users', color: 'var(--accent-blue)' },
+    { label: 'Volunteers', icon: <UserPlus size={16} />, tab: 'volunteers', color: 'var(--accent-terracotta)' },
+    { label: 'Roles', icon: <Shield size={16} />, tab: 'roles', color: 'var(--accent-amber)' },
     { label: 'View Contacts', icon: <Mail size={16} />, tab: 'contacts', color: 'var(--accent-blue)' },
     { label: 'Planning', icon: <Lightbulb size={16} />, tab: 'plans', color: 'var(--accent-green)' },
+    { label: 'Sections', icon: <Layers size={16} />, tab: 'sections', color: 'var(--accent-terracotta)' },
+    { label: 'Settings', icon: <Settings size={16} />, tab: 'settings', color: 'var(--text-tertiary)' },
+    { label: 'Neighborhoods', icon: <MapPin size={16} />, tab: 'neighborhoods', color: 'var(--accent-green)' },
+    { label: 'Add FAQ', icon: <HelpCircle size={16} />, tab: 'faqs', color: 'var(--accent-terracotta)' },
+    { label: 'Testimonials', icon: <MessageSquare size={16} />, tab: 'testimonials', color: 'var(--accent-blue)' },
+    { label: 'Polls', icon: <BarChart3 size={16} />, tab: 'polls', color: 'var(--accent-green)' },
+    { label: 'Leaderboard', icon: <Trophy size={16} />, tab: 'leaderboard', color: 'var(--accent-amber)' },
   ];
 
   return (
