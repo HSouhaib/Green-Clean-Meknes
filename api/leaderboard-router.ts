@@ -75,63 +75,92 @@ export const leaderboardRouter = createRouter({
       const registrationPoints = await getSetting(db, "points_registration", 1);
       const attendancePoints = await getSetting(db, "points_attendance", 5);
 
-      const userTimeFilter = periodStart ? `AND vp.created_at >= ?` : "";
-      const guestTimeFilter = periodStart ? `AND cr.created_at >= ?` : "";
+      const userTimeFilter = periodStart ? "AND cr.created_at >= ?" : "";
+      const guestTimeFilter = periodStart ? "AND cr.created_at >= ?" : "";
+      const manualTimeFilter = periodStart ? "AND vp.created_at >= ?" : "";
       const roleFilter = showAdmins
         ? ""
         : "AND u.role NOT IN ('admin', 'super_admin')";
 
-      const query = `
-        SELECT * FROM (
-          SELECT
-            'user:' || u.id AS identity,
-            u.id AS user_id,
-            u.name,
-            u.avatar,
-            u.role,
-            COALESCE(SUM(vp.points), 0) AS total_points,
-            COALESCE(att.attended_count, 0) AS attended_count
-          FROM users u
-          INNER JOIN volunteer_points vp ON vp.user_id = u.id
-          LEFT JOIN (
-            SELECT user_id, COUNT(*) AS attended_count
-            FROM campaign_registrations
-            WHERE attended = 1 AND user_id IS NOT NULL
-            GROUP BY user_id
-          ) att ON att.user_id = u.id
-          WHERE 1=1
-            ${userTimeFilter}
-            ${roleFilter}
-          GROUP BY u.id
-
-          UNION ALL
-
-          SELECT
-            'guest:' || COALESCE(cr.guest_email, cr.guest_name) AS identity,
-            NULL AS user_id,
-            cr.guest_name AS name,
-            NULL AS avatar,
-            'guest' AS role,
-            (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) AS total_points,
-            SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS attended_count
+      // User scores: derive registration/attendance points from campaign_registrations
+      // so every registered user appears even if the volunteer_points table is missing
+      // registration rows. Add manual points from volunteer_points (excluding
+      // registration/attendance reasons to avoid double counting).
+      const userQuery = `
+        SELECT
+          'user:' || u.id AS identity,
+          u.id AS user_id,
+          u.name,
+          u.avatar,
+          u.role,
+          COALESCE(reg_counts.reg_count, 0) * ? + COALESCE(reg_counts.att_count, 0) * ? + COALESCE(manual_points.total, 0) AS total_points,
+          COALESCE(reg_counts.att_count, 0) AS attended_count
+        FROM (
+          SELECT DISTINCT user_id FROM (
+            SELECT cr.user_id FROM campaign_registrations cr WHERE cr.user_id IS NOT NULL AND cr.status = 'registered' ${userTimeFilter}
+            UNION
+            SELECT vp.user_id FROM volunteer_points vp WHERE vp.reason NOT IN ('registration', 'attendance') ${manualTimeFilter}
+          )
+        ) combined
+        INNER JOIN users u ON u.id = combined.user_id
+        LEFT JOIN (
+          SELECT cr.user_id, COUNT(*) AS reg_count, SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS att_count
           FROM campaign_registrations cr
-          WHERE cr.user_id IS NULL
-            AND cr.guest_name IS NOT NULL
-            AND cr.status = 'registered'
-            ${guestTimeFilter}
-          GROUP BY cr.guest_email, cr.guest_name
-        )
+          WHERE cr.user_id IS NOT NULL AND cr.status = 'registered' ${userTimeFilter}
+          GROUP BY cr.user_id
+        ) reg_counts ON reg_counts.user_id = u.id
+        LEFT JOIN (
+          SELECT vp.user_id, SUM(vp.points) AS total
+          FROM volunteer_points vp
+          WHERE vp.reason NOT IN ('registration', 'attendance') ${manualTimeFilter}
+          GROUP BY vp.user_id
+        ) manual_points ON manual_points.user_id = u.id
+        WHERE 1=1 ${roleFilter}
         ORDER BY total_points DESC
         LIMIT ?
       `;
 
-      const queryParams: (number | string)[] = [];
-      if (periodStart) queryParams.push(periodStart);
-      queryParams.push(registrationPoints, attendancePoints);
-      if (periodStart) queryParams.push(periodStart);
-      queryParams.push(input.limit);
+      // Guest scores: derive directly from guest campaign registrations.
+      const guestQuery = `
+        SELECT
+          'guest:' || COALESCE(cr.guest_email, cr.guest_name) AS identity,
+          NULL AS user_id,
+          cr.guest_name AS name,
+          NULL AS avatar,
+          'guest' AS role,
+          (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) AS total_points,
+          SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS attended_count
+        FROM campaign_registrations cr
+        WHERE cr.user_id IS NULL
+          AND cr.guest_name IS NOT NULL
+          AND cr.status = 'registered'
+          ${guestTimeFilter}
+        GROUP BY cr.guest_email, cr.guest_name
+        ORDER BY total_points DESC
+        LIMIT ?
+      `;
 
-      const rows = rawClient.prepare(query).all(...queryParams) as RawLeaderboardRow[];
+      const userParams: (number | string)[] = [registrationPoints, attendancePoints];
+      if (periodStart) {
+        // combined subquery: userTimeFilter + manualTimeFilter
+        userParams.push(periodStart, periodStart);
+        // reg_counts + manual_points subqueries
+        userParams.push(periodStart, periodStart);
+      }
+      userParams.push(input.limit);
+
+      const guestParams: (number | string)[] = [registrationPoints, attendancePoints];
+      if (periodStart) guestParams.push(periodStart);
+      guestParams.push(input.limit);
+
+      const [userRows, guestRows] = await Promise.all([
+        rawClient.prepare(userQuery).all(...userParams) as RawLeaderboardRow[],
+        rawClient.prepare(guestQuery).all(...guestParams) as RawLeaderboardRow[],
+      ]);
+
+      const rows = [...userRows, ...guestRows]
+        .sort((a, b) => b.total_points - a.total_points)
+        .slice(0, input.limit);
 
       let rank = 0;
       let previousPoints: number | null = null;

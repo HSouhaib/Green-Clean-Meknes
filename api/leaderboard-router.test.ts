@@ -45,9 +45,11 @@ describe("leaderboard router", () => {
     const user2 = createTestUser(db, { name: "Bob", unionId: "bob_1" });
     const user3 = createTestUser(db, { name: "Carol", unionId: "carol_1" });
 
-    insertPoint(user1.id, 5, "attendance");
-    insertPoint(user2.id, 10, "attendance");
-    insertPoint(user3.id, 3, "registration");
+    // Manual awards (registration/attendance reasons are now derived from
+    // campaign_registrations and excluded from manual point totals).
+    insertPoint(user1.id, 5, "bonus");
+    insertPoint(user2.id, 10, "bonus");
+    insertPoint(user3.id, 3, "team_lead");
 
     const caller = appRouter.createCaller(createTestContext());
     const result = await caller.leaderboard.getTop({ limit: 10 });
@@ -67,7 +69,8 @@ describe("leaderboard router", () => {
     const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => void } } }).$client;
     const user = createTestUser(db, { name: "Alice", unionId: "alice_guest_test" });
 
-    insertPoint(user.id, 5, "attendance");
+    // Manual award so the registered user still appears alongside the guest.
+    insertPoint(user.id, 5, "bonus");
 
     // Guest with one registered campaign that was attended => 1 registration + 1 attendance = 6 points
     sqlite
@@ -88,6 +91,29 @@ describe("leaderboard router", () => {
     expect(result[1].totalPoints).toBe(5);
   });
 
+  it("reflects logged-in user registration points in the leaderboard", async () => {
+    const db = getDb();
+    const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => { lastInsertRowid: number | bigint } } } }).$client;
+    const user = createTestUser(db, { name: "Alice", unionId: "alice_register_test" });
+
+    const campaignResult = sqlite
+      .prepare(
+        "INSERT INTO campaigns (title_en, location_en, description_en, date, slug, status, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, unixepoch(), unixepoch())"
+      )
+      .run("Clean Garden", "Meknes", "Test", "2026-07-20", "clean-garden", "upcoming", 1);
+    const campaignId = Number(campaignResult.lastInsertRowid);
+
+    const userCaller = appRouter.createCaller(createTestContext(user));
+    await userCaller.campaign.register({ id: campaignId });
+
+    const publicCaller = appRouter.createCaller(createTestContext());
+    const result = await publicCaller.leaderboard.getTop({ limit: 10 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].userId).toBe(user.id);
+    expect(result[0].totalPoints).toBe(1);
+  });
+
   it("excludes admins when leaderboard_show_admins is false", async () => {
     const db = getDb();
     const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => void } } }).$client;
@@ -98,8 +124,8 @@ describe("leaderboard router", () => {
     const admin = createTestUser(db, { name: "Admin", role: "admin", unionId: "admin_1" });
     const user = createTestUser(db, { name: "Volunteer", unionId: "volunteer_1" });
 
-    insertPoint(admin.id, 100, "attendance");
-    insertPoint(user.id, 5, "attendance");
+    insertPoint(admin.id, 100, "bonus");
+    insertPoint(user.id, 5, "bonus");
 
     const caller = appRouter.createCaller(createTestContext());
     const result = await caller.leaderboard.getTop({ limit: 10 });
@@ -159,6 +185,36 @@ describe("leaderboard router", () => {
         reason: "Test",
       })
     ).rejects.toThrow("Insufficient permissions");
+  });
+
+  it("respects period filters", async () => {
+    const db = getDb();
+    const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => void } } }).$client;
+    const user = createTestUser(db, { name: "Alice", unionId: "alice_period_test" });
+
+    // Old registration (more than a year ago)
+    sqlite
+      .prepare(
+        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      )
+      .run(1, user.id, null, null, "registered", 1, 1);
+
+    // Recent registration
+    sqlite
+      .prepare(
+        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, created_at) VALUES (?, ?, ?, ?, ?, ?, unixepoch())"
+      )
+      .run(2, user.id, null, null, "registered", 1);
+
+    const caller = appRouter.createCaller(createTestContext());
+
+    const allTime = await caller.leaderboard.getTop({ limit: 10, period: "all" });
+    expect(allTime).toHaveLength(1);
+    expect(allTime[0].totalPoints).toBe(12); // 2 reg + 2 att
+
+    const thisYear = await caller.leaderboard.getTop({ limit: 10, period: "year" });
+    expect(thisYear).toHaveLength(1);
+    expect(thisYear[0].totalPoints).toBe(6); // 1 reg + 1 att
   });
 
   it("lists recent awards for admins", async () => {
