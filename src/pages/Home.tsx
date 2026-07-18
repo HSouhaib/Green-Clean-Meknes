@@ -15,13 +15,12 @@ import LeaderboardSection from '@/sections/LeaderboardSection';
 import NeighborhoodsSection from '@/sections/NeighborhoodsSection';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 
-export default function Home() {
-  useScrollAnimation(0.2);
-  const { isVisible, isLoading } = useSectionVisibility();
+interface HomeContentProps {
+  isVisible: (key: string) => boolean;
+}
 
-  if (isLoading) {
-    return <HomeSkeleton />;
-  }
+function HomeContent({ isVisible }: HomeContentProps) {
+  useScrollAnimation(0.2);
 
   return (
     <>
@@ -42,4 +41,14 @@ export default function Home() {
       <Footer />
     </>
   );
+}
+
+export default function Home() {
+  const { isVisible, isLoading } = useSectionVisibility();
+
+  if (isLoading) {
+    return <HomeSkeleton />;
+  }
+
+  return <HomeContent isVisible={isVisible} />;
 }
