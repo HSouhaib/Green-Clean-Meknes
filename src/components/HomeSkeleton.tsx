@@ -6,7 +6,7 @@ interface BlockProps {
 function Block({ height, className = '' }: BlockProps) {
   return (
     <div
-      className={`rounded-xl animate-pulse ${className}`}
+      className={`rounded-lg animate-pulse ${className}`}
       style={{
         height,
         background: 'var(--bg-surface)',
@@ -34,6 +34,16 @@ function Line({ width, height = '0.75rem' }: LineProps) {
   );
 }
 
+function SkeletonSection({ children }: { children: React.ReactNode }) {
+  return (
+    <section style={{ paddingBottom: 'var(--section-gap)' }}>
+      <div style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
 export default function HomeSkeleton() {
   return (
     <div
@@ -55,92 +65,112 @@ export default function HomeSkeleton() {
         {/* Hero */}
         <section style={{ padding: 'var(--section-gap) 0' }}>
           <div style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}>
-            <Block height="24rem" />
+            <Block height="18rem" />
           </div>
         </section>
 
         {/* Impact stats */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Block height="6rem" />
-              <Block height="6rem" />
-              <Block height="6rem" />
-              <Block height="6rem" />
-            </div>
+        <SkeletonSection>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Block height="5rem" />
+            <Block height="5rem" />
+            <Block height="5rem" />
+            <Block height="5rem" />
           </div>
-        </section>
+        </SkeletonSection>
 
-        {/* About / text section */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1200px' }}>
-            <div className="mx-auto max-w-2xl space-y-4">
-              <Line width="40%" height="1.5rem" />
-              <Line width="100%" />
-              <Line width="90%" />
-              <Line width="75%" />
-            </div>
+        {/* About */}
+        <SkeletonSection>
+          <div className="mx-auto max-w-2xl space-y-3">
+            <Line width="35%" height="1.25rem" />
+            <Line width="100%" />
+            <Line width="92%" />
+            <Line width="70%" />
           </div>
-        </section>
+        </SkeletonSection>
 
         {/* Leaderboard */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1200px' }}>
-            <div className="flex items-end justify-center gap-3 mb-6">
-              <Block height="10rem" className="w-full md:w-44" />
-              <Block height="14rem" className="w-full md:w-48" />
-              <Block height="10rem" className="w-full md:w-44" />
+        <SkeletonSection>
+          <div
+            className="mx-auto"
+            style={{ maxWidth: '1000px' }}
+          >
+            <div className="flex items-end justify-center gap-3 mb-5">
+              <Block height="8rem" className="w-full md:w-36" />
+              <Block height="11rem" className="w-full md:w-40" />
+              <Block height="8rem" className="w-full md:w-36" />
             </div>
+            <Block height="8rem" />
+          </div>
+        </SkeletonSection>
+
+        {/* Neighborhoods */}
+        <SkeletonSection>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <Block height="12rem" />
+            <Block height="12rem" />
             <Block height="12rem" />
           </div>
-        </section>
+        </SkeletonSection>
 
-        {/* Neighborhoods / cards */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Block height="16rem" />
-              <Block height="16rem" />
-              <Block height="16rem" />
-            </div>
+        {/* Community (gallery / partners / testimonials / poll / faq tabs) */}
+        <SkeletonSection>
+          <div className="flex gap-2 mb-4">
+            <Block height="2rem" className="w-20" />
+            <Block height="2rem" className="w-20" />
+            <Block height="2rem" className="w-20" />
+            <Block height="2rem" className="w-20" />
           </div>
-        </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Block height="8rem" />
+            <Block height="8rem" />
+          </div>
+        </SkeletonSection>
 
-        {/* Community / testimonials */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Block height="10rem" />
-              <Block height="10rem" />
-            </div>
+        {/* Air quality */}
+        <SkeletonSection>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Block height="6rem" />
+            <Block height="6rem" />
+            <Block height="6rem" />
           </div>
-        </section>
+        </SkeletonSection>
+
+        {/* How to join */}
+        <SkeletonSection>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Block height="10rem" />
+            <Block height="10rem" />
+            <Block height="10rem" />
+          </div>
+        </SkeletonSection>
 
         {/* Campaigns */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Block height="18rem" />
-              <Block height="18rem" />
-              <Block height="18rem" />
-            </div>
+        <SkeletonSection>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <Block height="14rem" />
+            <Block height="14rem" />
+            <Block height="14rem" />
           </div>
-        </section>
+        </SkeletonSection>
 
         {/* Contact */}
-        <section style={{ paddingBottom: 'var(--section-gap)' }}>
-          <div style={{ padding: '0 var(--page-margin)', maxWidth: '1200px' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Block height="20rem" />
-              <Block height="20rem" />
-            </div>
+        <SkeletonSection>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Block height="14rem" />
+            <Block height="14rem" />
           </div>
-        </section>
+        </SkeletonSection>
+
+        {/* Donation */}
+        <SkeletonSection>
+          <Block height="12rem" />
+        </SkeletonSection>
       </main>
 
       {/* Footer placeholder */}
       <footer
-        className="h-32 animate-pulse"
+        className="h-24 animate-pulse"
         style={{
           background: 'var(--bg-surface)',
           borderTop: '1px solid var(--bg-surface-light)',
