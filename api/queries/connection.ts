@@ -1,4 +1,3 @@
-import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import * as schema from "@db/schema";
 import * as relations from "@db/relations";
@@ -15,8 +14,7 @@ export function getDb() {
   }
   
   if (!instance) {
-    const client = new (Database as any)("local.db");
-    instance = drizzle(client, { schema: fullSchema });
+    instance = drizzle("local.db", { schema: fullSchema });
   }
   return instance;
 }

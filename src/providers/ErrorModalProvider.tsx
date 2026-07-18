@@ -1,23 +1,7 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { ErrorModalState } from '@/hooks/useErrorModal';
+import { useState, useCallback, type ReactNode } from 'react';
 import ErrorModal from '@/components/ErrorModal';
-
-interface ErrorModalContextType {
-  state: ErrorModalState;
-  showError: (message: string, options?: Partial<Omit<ErrorModalState, 'open' | 'message'>>) => void;
-  showWarning: (message: string, options?: Partial<Omit<ErrorModalState, 'open' | 'message'>>) => void;
-  showInfo: (message: string, options?: Partial<Omit<ErrorModalState, 'open' | 'message'>>) => void;
-  showSuccess: (message: string, options?: Partial<Omit<ErrorModalState, 'open' | 'message'>>) => void;
-  closeError: () => void;
-}
-
-const ErrorModalContext = createContext<ErrorModalContextType | null>(null);
-
-export function useErrorModalContext() {
-  const ctx = useContext(ErrorModalContext);
-  if (!ctx) throw new Error('useErrorModalContext must be used within ErrorModalProvider');
-  return ctx;
-}
+import { ErrorModalContext } from '@/contexts/error-modal-context';
+import type { ErrorModalState } from '@/hooks/useErrorModal';
 
 export function ErrorModalProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ErrorModalState>({

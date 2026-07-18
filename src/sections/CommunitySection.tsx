@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -77,8 +77,6 @@ function GalleryTab({ t, lang }: { t: (k: string) => string; lang: string }) {
     }).filter(g => g.pairs.length > 0);
   }, [galleryData]);
 
-  if (campaignGroups.length === 0) return <EmptyState message={t('gallery.empty')} icon={<Camera size={32} />} />;
-
   const getCurrentPairIndex = (campaignId: number) => pairIndices[campaignId] ?? 0;
   const cyclePair = (campaignId: number, pairsLength: number) => {
     setPairIndices(prev => ({ ...prev, [campaignId]: ((prev[campaignId] ?? 0) + 1) % pairsLength }));
@@ -111,6 +109,8 @@ function GalleryTab({ t, lang }: { t: (k: string) => string; lang: string }) {
     setSelectedCampaign(campaignGroups[next].campaign.id);
     setSelectedPairIndex(0);
   }, [selectedCampaign, campaignGroups]);
+
+  if (campaignGroups.length === 0) return <EmptyState message={t('gallery.empty')} icon={<Camera size={32} />} />;
 
   return (
     <>
@@ -372,8 +372,15 @@ function PollTab({ t, lang }: { t: (k: string) => string; lang: string }) {
     { pollId: poll?.id ?? 0 },
     { enabled: false }
   );
-  const [hasVoted, setHasVoted] = useState(false);
-  const [votedOption, setVotedOption] = useState<number | null>(null);
+  const [hasVoted, setHasVoted] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(POLL_VOTE_KEY) !== null;
+  });
+  const [votedOption, setVotedOption] = useState<number | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const saved = localStorage.getItem(POLL_VOTE_KEY);
+    return saved !== null ? parseInt(saved, 10) : null;
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const pollRef = useRef<HTMLDivElement>(null);
 
@@ -399,11 +406,6 @@ function PollTab({ t, lang }: { t: (k: string) => string; lang: string }) {
     },
     onError: () => showError(t('toast.error_generic')),
   });
-
-  useEffect(() => {
-    const saved = localStorage.getItem(POLL_VOTE_KEY);
-    if (saved !== null) { setHasVoted(true); setVotedOption(parseInt(saved, 10)); }
-  }, []);
 
   const handleVote = (optionIndex: number) => {
     if (!poll || hasVoted || isSubmitting) return;

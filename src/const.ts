@@ -1,4 +1,4 @@
-import type { Lang } from "@/contexts/LanguageContext";
+import type { Lang } from "@/contexts/language-context";
 
 export const LOGIN_PATH = "/login";
 

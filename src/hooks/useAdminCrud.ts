@@ -1,8 +1,22 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
+
+interface MutationLike {
+  useMutation: (opts: {
+    onSuccess: () => void;
+    onError: (err?: { message?: string }) => void;
+  }) => { mutate: (payload: unknown) => void };
+}
+
+interface RouterProxy {
+  create: MutationLike;
+  update: MutationLike;
+  delete: MutationLike;
+  toggleActive?: MutationLike;
+}
 
 interface UseAdminCrudOptions<T extends Record<string, unknown>> {
   router: string;
@@ -31,7 +45,7 @@ export function useAdminCrud<T extends Record<string, unknown>>(options: UseAdmi
   });
 
   // Dynamically access tRPC router
-  const router = trpc[options.router as keyof typeof trpc] as any;
+  const router = trpc[options.router as keyof typeof trpc] as unknown as RouterProxy;
 
   const invalidateQueries = () => {
     const base = options.queryKey as keyof typeof utils;
@@ -39,17 +53,17 @@ export function useAdminCrud<T extends Record<string, unknown>>(options: UseAdmi
     const list = `${base}.list` as keyof typeof utils;
     
     // Use type assertion to call invalidate on dynamic keys
-    (utils as any)[listAll]?.invalidate?.();
-    (utils as any)[list]?.invalidate?.();
-    
+    (utils as unknown as Record<string, { invalidate?: () => void }>)[listAll]?.invalidate?.();
+    (utils as unknown as Record<string, { invalidate?: () => void }>)[list]?.invalidate?.();
+
     // Extra invalidations (e.g., nextCampaign, upcoming, calendar)
     options.extraInvalidate?.forEach((key) => {
       const parts = key.split('.');
-      let target: any = utils;
+      let target: unknown = utils;
       for (const part of parts) {
-        target = target?.[part];
+        target = (target as Record<string, unknown>)?.[part];
       }
-      target?.invalidate?.();
+      (target as { invalidate?: () => void })?.invalidate?.();
     });
   };
 
@@ -95,20 +109,20 @@ export function useAdminCrud<T extends Record<string, unknown>>(options: UseAdmi
     setFormData(options.formDefaults);
   }
 
-  function handleEdit(item: any) {
-    setEditingId(item.id);
+  function handleEdit(item: Record<string, unknown>) {
+    setEditingId(item.id as number);
     // Default: copy all fields from item, falling back to defaults for missing fields
     const merged = { ...options.formDefaults };
     for (const key of Object.keys(options.formDefaults)) {
       if (item[key] !== undefined && item[key] !== null) {
-        (merged as any)[key] = item[key];
+        (merged as Record<string, unknown>)[key] = item[key];
       }
     }
-    setFormData(merged);
+    setFormData(merged as T);
     setShowForm(true);
   }
 
-  function handleSubmit(getPayload: () => any) {
+  function handleSubmit(getPayload: () => Record<string, unknown>) {
     const payload = getPayload();
     if (editingId) {
       updateMutation.mutate({ id: editingId, ...payload });

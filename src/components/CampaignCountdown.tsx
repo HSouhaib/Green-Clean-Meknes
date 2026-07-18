@@ -58,16 +58,20 @@ interface CampaignCountdownProps {
 }
 
 export default function CampaignCountdown({ eventDate, labels, compact = false }: CampaignCountdownProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
+    eventDate ? calculateTimeLeft(new Date(eventDate)) : { days: 0, hours: 0, minutes: 0, seconds: 0 }
+  );
 
   useEffect(() => {
     if (!eventDate) return;
     const target = new Date(eventDate);
-    setTimeLeft(calculateTimeLeft(target));
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(target));
-    }, 1000);
-    return () => clearInterval(timer);
+    const update = () => setTimeLeft(calculateTimeLeft(target));
+    const immediate = setTimeout(update, 0);
+    const timer = setInterval(update, 1000);
+    return () => {
+      clearTimeout(immediate);
+      clearInterval(timer);
+    };
   }, [eventDate]);
 
   if (!eventDate) return null;

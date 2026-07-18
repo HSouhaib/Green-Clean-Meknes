@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
-import { trpc } from "@/providers/trpc";
+import { trpc } from '@/lib/trpc';
 import {
   Sun,
   Moon,
@@ -421,7 +421,7 @@ export default function Admin() {
         style={{ maxWidth: "1400px" }}
       >
         {activeTab === "dashboard" && (
-          <DashboardTab onNavigate={setActiveTab} />
+          <DashboardTab onNavigate={(tab) => setActiveTab(tab as TabKey)} />
         )}
         {activeTab === "landing" && <LandingPageTab />}
         {activeTab === "campaigns" && <CampaignsTab />}

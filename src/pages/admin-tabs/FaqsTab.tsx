@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { DeleteModal } from './shared';
 import { useErrorModal } from '@/hooks/useErrorModal';
@@ -69,7 +69,7 @@ export function FaqsTab() {
     });
   };
 
-  const handleEdit = (faq: any) => {
+  const handleEdit = (faq: NonNullable<typeof faqs>[number]) => {
     setEditingId(faq.id);
     setFormData({
       questionEn: faq.questionEn,

@@ -1,4 +1,4 @@
-import { useErrorModalContext } from '@/providers/ErrorModalProvider';
+import { useErrorModalContext } from '@/hooks/useErrorModalContext';
 
 export type ErrorSeverity = 'error' | 'warning' | 'info' | 'success';
 

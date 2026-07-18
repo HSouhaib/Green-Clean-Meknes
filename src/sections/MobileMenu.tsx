@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from "@/hooks/useTheme";
 import { langOptions } from "@/const";
 import { useEffect, type CSSProperties } from "react";

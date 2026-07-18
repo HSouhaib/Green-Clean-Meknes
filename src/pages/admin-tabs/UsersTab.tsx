@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "@/providers/trpc";
+import { trpc } from '@/lib/trpc';
 import { toast } from "sonner";
 import { useErrorModal } from "@/hooks/useErrorModal";
 import { DataTable } from "./shared/DataTable";

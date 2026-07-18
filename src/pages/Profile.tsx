@@ -1,6 +1,6 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from "@/hooks/useAuth";
-import { trpc } from "@/providers/trpc";
+import { trpc } from '@/lib/trpc';
 import { Card, CardContent } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
 import LanguageSwitcher from "@/components/LanguageSwitcher";

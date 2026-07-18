@@ -8,7 +8,6 @@ import { createContext } from "./context";
 import { env } from "./lib/env";
 import { createProviderOAuthCallbackHandler, PKCE_COOKIE_NAME, PKCE_MAX_AGE } from "./oauth/callback";
 import { getOAuthProviders } from "./oauth/providers";
-import { getSessionCookieOptions } from "./lib/cookies";
 import { setCookie } from "hono/cookie";
 import { checkRateLimit } from "./lib/rate-limit";
 

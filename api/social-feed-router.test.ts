@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createTestDb, createTestUser, createTestContext } from "./test-helpers";
 import { getDb, setTestDb, clearTestDb } from "./queries/connection";
 import { socialFeedRouter } from "./social-feed-router";
+import type { SocialFeedPost } from "@db/schema";
 import { socialFeedPosts } from "@db/schema";
 import { eq } from "drizzle-orm";
 
@@ -99,7 +100,7 @@ describe("social feed router", () => {
       const caller = socialFeedRouter.createCaller(createTestContext(admin));
       await expect(
         caller.create({
-          platform: "youtube" as any,
+          platform: "youtube" as SocialFeedPost["platform"],
           postUrl: "https://youtube.com/test",
         })
       ).rejects.toThrow();

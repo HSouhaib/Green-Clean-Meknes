@@ -1,4 +1,4 @@
-import { trpc } from "@/providers/trpc";
+import { trpc } from '@/lib/trpc';
 
 export function useSectionVisibility() {
   const { data: sections } = trpc.section.list.useQuery();

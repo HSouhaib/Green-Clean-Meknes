@@ -1,19 +1,10 @@
 import React, {
-  createContext,
-  useContext,
   useState,
   useCallback,
   useEffect,
 } from "react";
 
-export type Lang = "en" | "fr" | "ar";
-
-interface LanguageContextType {
-  lang: Lang;
-  setLang: (lang: Lang) => void;
-  t: (key: string) => string;
-  dir: "ltr" | "rtl";
-}
+import { LanguageContext, type Lang } from "@/contexts/language-context";
 
 const translations: Record<Lang, Record<string, string>> = {
   en: {
@@ -1521,13 +1512,6 @@ const translations: Record<Lang, Record<string, string>> = {
   },
 };
 
-const LanguageContext = createContext<LanguageContextType>({
-  lang: "en",
-  setLang: () => {},
-  t: (key: string) => key,
-  dir: "ltr",
-});
-
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
 
@@ -1558,6 +1542,4 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useLanguage() {
-  return useContext(LanguageContext);
-}
+

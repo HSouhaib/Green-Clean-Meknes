@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { DeleteModal, ImageUpload } from './shared';
 import { useErrorModal } from '@/hooks/useErrorModal';
@@ -67,7 +67,7 @@ export function NeighborhoodsTab() {
     });
   };
 
-  const handleEdit = (n: any) => {
+  const handleEdit = (n: NonNullable<typeof neighborhoods>[number]) => {
     setEditingId(n.id);
     setFormData({
       nameEn: n.nameEn,

@@ -27,9 +27,9 @@ export function DataTable<T>({ data, columns, keyExtractor, onRowClick }: DataTa
 
   const sortedData = [...data];
   if (sortKey) {
-    sortedData.sort((a: any, b: any) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
+    sortedData.sort((a, b) => {
+      const aVal = (a as Record<string, unknown>)[sortKey] as string | number;
+      const bVal = (b as Record<string, unknown>)[sortKey] as string | number;
       if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
       if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
       return 0;
@@ -74,7 +74,7 @@ export function DataTable<T>({ data, columns, keyExtractor, onRowClick }: DataTa
                   className="px-3 sm:px-4 py-3"
                   style={{ color: 'var(--text-primary)' }}
                 >
-                  {col.render ? col.render(item) : (item as any)[col.key]}
+                  {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? '')}
                 </td>
               ))}
             </tr>

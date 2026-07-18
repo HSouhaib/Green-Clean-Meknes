@@ -1,5 +1,5 @@
 // useState imported for future use
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { SortableList } from './shared/SortableList';
 import { useErrorModal } from '@/hooks/useErrorModal';

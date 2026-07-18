@@ -1,4 +1,4 @@
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 
 export function useCampaignRegistration(campaignId: number) {
   const utils = trpc.useUtils();

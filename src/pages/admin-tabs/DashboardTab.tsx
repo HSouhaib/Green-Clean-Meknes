@@ -1,4 +1,4 @@
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { StatCard } from './shared/StatCard';
 import { ActivityFeed } from './shared/ActivityFeed';
 import {
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 interface DashboardTabProps {
-  onNavigate: (tab: any) => void;
+  onNavigate: (tab: string) => void;
 }
 
 export function DashboardTab({ onNavigate }: DashboardTabProps) {

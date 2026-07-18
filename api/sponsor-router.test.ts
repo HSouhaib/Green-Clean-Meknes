@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createTestDb, createTestUser, createTestContext } from "./test-helpers";
 import { getDb, setTestDb, clearTestDb } from "./queries/connection";
 import { sponsorRouter } from "./sponsor-router";
+import type { Sponsor } from "@db/schema";
 import { sponsors } from "@db/schema";
 import { eq } from "drizzle-orm";
 
@@ -116,7 +117,7 @@ describe("sponsor router", () => {
         caller.create({
           name: "Bad",
           logoUrl: "http://example.com/logo.png",
-          sponsorType: "invalid" as any,
+          sponsorType: "invalid" as Sponsor["sponsorType"],
         })
       ).rejects.toThrow();
     });

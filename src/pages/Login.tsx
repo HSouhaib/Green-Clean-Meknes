@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { trpc } from "@/providers/trpc";
+import { trpc } from '@/lib/trpc';
 import { LoginPanel } from "@/components/LoginModal";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from '@/hooks/useLanguage';
 import { useSearchParams, useNavigate } from "react-router";
 import TwoFactorVerifyModal from "@/components/TwoFactorVerifyModal";
 

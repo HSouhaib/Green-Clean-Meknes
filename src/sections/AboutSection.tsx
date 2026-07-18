@@ -1,7 +1,7 @@
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import SectionLabel from '@/components/SectionLabel';
 import StatCounter from '@/components/StatCounter';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 
 export default function AboutSection() {
   const { t, dir } = useLanguage();

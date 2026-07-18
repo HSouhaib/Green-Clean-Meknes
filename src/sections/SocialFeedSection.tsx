@@ -1,7 +1,7 @@
 // useState imported for future use
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { Rss, Instagram, ExternalLink } from 'lucide-react';
 
 const PLATFORM_ICONS: Record<string, React.ReactNode> = {

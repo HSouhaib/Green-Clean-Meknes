@@ -2,7 +2,7 @@ import { Routes, Route, useLocation } from "react-router";
 import { lazy, Suspense } from "react";
 import { PageLoader } from "@/components/PageLoader";
 import MaintenanceModal from "@/components/MaintenanceModal";
-import { trpc } from "@/providers/trpc";
+import { trpc } from '@/lib/trpc';
 
 const Home = lazy(() => import("@/pages/Home"));
 const Login = lazy(() => import("@/pages/Login"));

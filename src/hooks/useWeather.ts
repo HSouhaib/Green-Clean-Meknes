@@ -140,12 +140,18 @@ export function useWeather() {
   }, []);
 
   useEffect(() => {
-    fetchWeather();
-    
+    // Defer initial fetch to avoid synchronous setState in effect
+    const timeout = setTimeout(() => {
+      fetchWeather();
+    }, 0);
+
     // Poll every 10 minutes
     const interval = setInterval(fetchWeather, CACHE_DURATION);
-    
-    return () => clearInterval(interval);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, [fetchWeather]);
 
   // Dispatch day/night updates for theme auto mode

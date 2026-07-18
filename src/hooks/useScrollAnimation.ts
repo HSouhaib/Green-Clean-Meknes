@@ -18,5 +18,5 @@ export function useScrollAnimation(threshold = 0.2) {
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
 }

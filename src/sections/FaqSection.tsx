@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 

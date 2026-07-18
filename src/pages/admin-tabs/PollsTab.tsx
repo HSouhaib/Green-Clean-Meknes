@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { DeleteModal } from './shared';
 import { useErrorModal } from '@/hooks/useErrorModal';
@@ -67,7 +67,7 @@ export function PollsTab() {
     });
   };
 
-  const handleEdit = (poll: any) => {
+  const handleEdit = (poll: NonNullable<typeof polls>[number]) => {
     setEditingId(poll.id);
     setFormData({
       question: poll.question,

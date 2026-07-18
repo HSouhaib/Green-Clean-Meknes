@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { DeleteModal, ImageUpload } from './shared';
 import { Camera, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
@@ -79,7 +79,7 @@ export function CampaignPhotosTab() {
     });
   }
 
-  function handleEdit(photo: any) {
+  function handleEdit(photo: NonNullable<typeof photos>[number]) {
     setEditingId(photo.id);
     setFormData({
       campaignId: photo.campaignId.toString(),

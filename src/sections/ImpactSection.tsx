@@ -1,5 +1,5 @@
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { useEffect, useRef, useState } from 'react';
 import { TreePine, Users, Trash2, MapPin, Sprout } from 'lucide-react';
 

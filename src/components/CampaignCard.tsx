@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from '@/hooks/useLanguage';
 import ShareButton from "./ShareButton";
 import { useCampaignRegistration } from "@/hooks/useCampaignRegistration";
 import { useAuth } from "@/hooks/useAuth";

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 
 export function ImageUpload({
   value,

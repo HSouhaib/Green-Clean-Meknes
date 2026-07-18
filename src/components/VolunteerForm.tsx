@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { trpc } from "@/providers/trpc";
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from "sonner";
 import { useErrorModal } from "@/hooks/useErrorModal";
 import { motion, AnimatePresence } from "framer-motion";

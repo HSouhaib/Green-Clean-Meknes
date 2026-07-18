@@ -1,6 +1,5 @@
 import { env } from "../lib/env";
-import { Google, generateCodeVerifier, generateState } from "arctic";
-import { checkRateLimit } from "../lib/rate-limit";
+import { Google, generateCodeVerifier } from "arctic";
 
 export type OAuthProvider = "google";
 

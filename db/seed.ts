@@ -1,12 +1,17 @@
 import { getDb } from "../api/queries/connection";
 import * as schema from "@db/schema";
+import type { InsertSocialFeedPost } from "@db/schema";
+
+interface SqliteClient {
+  exec(sql: string): void;
+}
 
 async function seed() {
   const db = getDb();
   console.log("Creating tables...");
 
   // Access the underlying SQLite client for raw SQL
-  const sqlite = (db as any).$client as any;
+  const sqlite = (db as unknown as { $client: SqliteClient }).$client;
 
   // Create tables
   sqlite.exec(`
@@ -674,7 +679,7 @@ async function seed() {
   console.log(`Inserted ${sectionOrders.length} section order defaults.`);
 
   // Seed sample social feed posts
-  const sampleSocialPosts = [
+  const sampleSocialPosts: InsertSocialFeedPost[] = [
     {
       platform: "instagram",
       postUrl: "https://instagram.com/greenmeknes",
@@ -720,7 +725,7 @@ async function seed() {
   for (const post of sampleSocialPosts) {
     try {
       db.insert(schema.socialFeedPosts)
-        .values(post as any)
+        .values(post)
         .run();
     } catch {
       // may already exist

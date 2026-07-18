@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
 import { AlertTriangle, RefreshCw, Shield } from "lucide-react";

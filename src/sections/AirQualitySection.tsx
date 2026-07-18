@@ -1,4 +1,4 @@
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useEffect, useRef, useState } from 'react';
 import { Wind, AlertTriangle, CheckCircle, Info, BookOpen, Gauge } from 'lucide-react';
 

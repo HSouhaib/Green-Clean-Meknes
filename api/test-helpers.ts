@@ -4,6 +4,13 @@ import * as relations from "@db/relations";
 import * as schema from "@db/schema";
 import type { User } from "@db/schema";
 import type { TrpcContext } from "./context";
+
+interface SqliteClient {
+  prepare(sql: string): {
+    run(...params: unknown[]): { lastInsertRowid: number | bigint };
+  };
+}
+
 /**
  * Create an in-memory SQLite database for testing.
  * Returns a Drizzle ORM instance with all tables created.
@@ -209,7 +216,7 @@ export function createTestUser(
   db: ReturnType<typeof createTestDb>["db"],
   overrides: Partial<User> = {}
 ): User {
-  const sqlite = (db as any).$client as any;
+  const sqlite = (db as unknown as { $client: SqliteClient }).$client;
   const unionId = overrides.unionId ?? `test_user_${Date.now()}`;
   const result = sqlite
     .prepare(
@@ -260,7 +267,7 @@ export function createTestContext(
  * Seed basic test data.
  */
 export function seedTestData(db: ReturnType<typeof createTestDb>["db"]) {
-  const sqlite = (db as any).$client as any;
+  const sqlite = (db as unknown as { $client: SqliteClient }).$client;
   // Insert default section visibility
   const sections = [
     { sectionKey: "hero", isVisible: 1 },

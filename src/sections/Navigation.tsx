@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from '@/hooks/useLanguage';
 import MobileMenu from "./MobileMenu";
 import Logo from "@/components/Logo";
 import { useTheme } from "@/hooks/useTheme";

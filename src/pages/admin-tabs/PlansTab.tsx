@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
+import type { Plan } from '@db/schema';
 import {
   Plus,
   X,
@@ -40,7 +41,6 @@ const COLUMNS = [
 export function PlansTab() {
   const [isCreating, setIsCreating] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
-  const [filterStatus, _setFilterStatus] = useState('');
   const [filterPriority, setFilterPriority] = useState('');
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
   const [newComment, setNewComment] = useState('');
@@ -48,7 +48,6 @@ export function PlansTab() {
   const utils = trpc.useUtils();
   const { showError } = useErrorModal();
   const { data: plans } = trpc.plan.list.useQuery({
-    status: filterStatus || undefined,
     priority: filterPriority || undefined,
   });
   const { data: selectedPlan } = trpc.plan.getById.useQuery(
@@ -99,8 +98,8 @@ export function PlansTab() {
     createMutation.mutate({
       title: formData.get('title') as string,
       description: (formData.get('description') as string) || undefined,
-      status: formData.get('status') as any,
-      priority: formData.get('priority') as any,
+      status: formData.get('status') as Plan['status'],
+      priority: formData.get('priority') as Plan['priority'],
       category: (formData.get('category') as string) || undefined,
       assignedTo: formData.get('assignedTo') ? Number(formData.get('assignedTo')) : undefined,
       targetDate: (formData.get('targetDate') as string) || undefined,
@@ -108,7 +107,7 @@ export function PlansTab() {
   };
 
   const handleMove = (planId: number, newStatus: string) => {
-    updateMutation.mutate({ id: planId, status: newStatus as any });
+    updateMutation.mutate({ id: planId, status: newStatus as Plan['status'] });
   };
 
   const plansByStatus = COLUMNS.map((col) => ({

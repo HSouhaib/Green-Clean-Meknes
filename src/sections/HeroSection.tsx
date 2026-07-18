@@ -1,6 +1,6 @@
 import { openLoginModal } from '@/hooks/useLoginModal';
 import { motion } from 'framer-motion';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import TreeCanvas from '@/components/TreeCanvas';
 import WeatherEffects from '@/components/WeatherEffects';
 import { useWeather, getWeatherIcon, getWeatherTranslationKey } from '@/hooks/useWeather';

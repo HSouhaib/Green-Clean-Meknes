@@ -1,4 +1,4 @@
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import SectionLabel from '@/components/SectionLabel';
 import VolunteerForm from '@/components/VolunteerForm';
 import { Leaf, Users, Heart } from 'lucide-react';

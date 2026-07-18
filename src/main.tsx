@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
-// @ts-ignore
+// @ts-expect-error missing type declarations for font package
 import '@fontsource-variable/inter';
-// @ts-ignore
+// @ts-expect-error missing type declarations for font package
 import '@fontsource-variable/noto-sans-arabic';
 import './index.css';
 import App from './App';

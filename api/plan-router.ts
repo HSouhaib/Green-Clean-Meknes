@@ -2,6 +2,8 @@ import { z } from "zod";
 import { createRouter, adminQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { plans, planComments, users } from "@db/schema";
+import type { Plan } from "@db/schema";
+
 import { eq, desc, inArray } from "drizzle-orm";
 import { logActivity } from "./lib/activity";
 import { sanitizeString } from "./lib/sanitize";
@@ -18,11 +20,11 @@ export const planRouter = createRouter({
     )
     .query(async ({ input }) => {
       const db = getDb();
-      let query = db.select().from(plans).orderBy(desc(plans.createdAt));
+      const query = db.select().from(plans).orderBy(desc(plans.createdAt));
 
       const conditions = [];
-      if (input.status) conditions.push(eq(plans.status, input.status as any));
-      if (input.priority) conditions.push(eq(plans.priority, input.priority as any));
+      if (input.status) conditions.push(eq(plans.status, input.status as Plan["status"]));
+      if (input.priority) conditions.push(eq(plans.priority, input.priority as Plan["priority"]));
       if (input.category) conditions.push(eq(plans.category, input.category));
 
       const planList = await query;

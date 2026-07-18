@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { polls, pollVotes } from "@db/schema";
-import { eq, desc, count } from "drizzle-orm";
+import { eq, desc, count, and } from "drizzle-orm";
 import { sanitizeString } from "./lib/sanitize";
 import { checkRateLimit } from "./lib/rate-limit";
 
@@ -154,7 +154,7 @@ export const pollRouter = createRouter({
         .select({ id: pollVotes.id })
         .from(pollVotes)
         .where(
-          eq(pollVotes.pollId, input.pollId) && eq(pollVotes.ipHash, ipHash)
+          and(eq(pollVotes.pollId, input.pollId), eq(pollVotes.ipHash, ipHash))
         )
         .limit(1);
 
@@ -194,6 +194,8 @@ export const pollRouter = createRouter({
       questionAr: r.questionAr,
       questionFr: r.questionFr,
       options: JSON.parse(r.options || '[]'),
+      optionsAr: JSON.parse(r.optionsAr || '[]'),
+      optionsFr: JSON.parse(r.optionsFr || '[]'),
       isActive: r.isActive,
       voteCount: voteCountMap.get(r.id) ?? 0,
       createdAt: r.createdAt,

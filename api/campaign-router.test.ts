@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createTestDb, createTestUser, createTestContext, seedTestData } from "./test-helpers";
-import { getDb, setTestDb, clearTestDb } from "./queries/connection";
+import { setTestDb, clearTestDb } from "./queries/connection";
 import { campaignRouter } from "./campaign-router";
 
 describe("campaign router", () => {

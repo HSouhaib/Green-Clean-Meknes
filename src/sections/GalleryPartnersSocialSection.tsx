@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { Camera, Handshake, Rss, X, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 
 interface PhotoPair {

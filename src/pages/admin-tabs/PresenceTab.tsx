@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { trpc } from "@/providers/trpc";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { trpc } from '@/lib/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
 import BadgeVerifyModal from "@/components/BadgeVerifyModal";
 import { Search, ScanLine, Users, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { trpc } from "@/providers/trpc";
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from "sonner";
 import { X, Users, Trash2 } from "lucide-react";
 import { CAMPAIGN_STATUSES } from "@contracts/constants";
@@ -199,7 +199,7 @@ export function CampaignsTab() {
     });
   }
 
-  function handleEdit(campaign: any) {
+  function handleEdit(campaign: NonNullable<typeof campaigns>[number]) {
     setEditingId(campaign.id);
     setFormData({
       titleEn: campaign.titleEn,
@@ -253,7 +253,7 @@ export function CampaignsTab() {
     if (editingId) {
       updateMutation.mutate({ id: editingId, ...payload });
     } else {
-      createMutation.mutate(payload as any);
+      createMutation.mutate(payload as Parameters<typeof createMutation.mutate>[0]);
     }
   }
 
@@ -866,7 +866,7 @@ export function CampaignsTab() {
                     </tr>
                   </thead>
                   <tbody>
-                    {registrations.map((reg: any) => (
+                    {registrations.map((reg: NonNullable<typeof registrations>[number]) => (
                       <tr
                         key={reg.id}
                         className="transition-colors hover:bg-[var(--bg-surface-light)]"

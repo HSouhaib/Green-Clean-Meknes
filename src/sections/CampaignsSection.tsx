@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import CampaignDetailModal from '@/components/CampaignDetailModal';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import CampaignCard from '@/components/CampaignCard';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -175,8 +175,6 @@ function CampaignCountdownBanner({
   lang: string;
   t: (key: string) => string;
 }) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
   // Handle both Drizzle Date object and API number/string timestamp
   const eventTimestamp = (() => {
     if (!campaign.eventDate) return null;
@@ -187,14 +185,20 @@ function CampaignCountdownBanner({
     return isNaN(parsed) ? null : parsed * 1000;
   })();
 
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
+    eventTimestamp ? calculateTimeLeft(new Date(eventTimestamp)) : { days: 0, hours: 0, minutes: 0, seconds: 0 }
+  );
+
   useEffect(() => {
     if (!eventTimestamp) return;
     const target = new Date(eventTimestamp);
-    setTimeLeft(calculateTimeLeft(target));
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(target));
-    }, 1000);
-    return () => clearInterval(timer);
+    const update = () => setTimeLeft(calculateTimeLeft(target));
+    const immediate = setTimeout(update, 0);
+    const timer = setInterval(update, 1000);
+    return () => {
+      clearTimeout(immediate);
+      clearInterval(timer);
+    };
   }, [eventTimestamp]);
 
   const title = lang === 'fr' && campaign.titleFr

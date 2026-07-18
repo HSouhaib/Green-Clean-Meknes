@@ -1,6 +1,6 @@
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
-import { useEffect, useRef, useState } from 'react';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
 import { BarChart3, CheckCircle2, Vote } from 'lucide-react';
@@ -26,8 +26,15 @@ function getPollOptions(t: (key: string) => string): PollOption[] {
 export default function PollSection() {
   const { t, lang } = useLanguage();
   const { showError } = useErrorModal();
-  const [hasVoted, setHasVoted] = useState(false);
-  const [votedOption, setVotedOption] = useState<number | null>(null);
+  const [hasVoted, setHasVoted] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(POLL_VOTE_KEY) !== null;
+  });
+  const [votedOption, setVotedOption] = useState<number | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const saved = localStorage.getItem(POLL_VOTE_KEY);
+    return saved !== null ? parseInt(saved, 10) : null;
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -52,14 +59,6 @@ export default function PollSection() {
     },
     onError: () => showError(t('toast.error_generic')),
   });
-
-  useEffect(() => {
-    const saved = localStorage.getItem(POLL_VOTE_KEY);
-    if (saved !== null) {
-      setHasVoted(true);
-      setVotedOption(parseInt(saved, 10));
-    }
-  }, []);
 
   const handleVote = (optionIndex: number) => {
     if (!poll || hasVoted || isSubmitting) return;

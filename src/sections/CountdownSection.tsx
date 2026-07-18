@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 
@@ -52,16 +52,22 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 export default function CountdownSection() {
   const { t, lang } = useLanguage();
   const { data: nextCampaign, isLoading } = trpc.campaign.nextCampaign.useQuery();
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
+    nextCampaign?.eventDate
+      ? calculateTimeLeft(new Date(nextCampaign.eventDate))
+      : { days: 0, hours: 0, minutes: 0, seconds: 0 }
+  );
 
   useEffect(() => {
     if (!nextCampaign?.eventDate) return;
     const target = new Date(nextCampaign.eventDate);
-    setTimeLeft(calculateTimeLeft(target));
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(target));
-    }, 1000);
-    return () => clearInterval(timer);
+    const update = () => setTimeLeft(calculateTimeLeft(target));
+    const immediate = setTimeout(update, 0);
+    const timer = setInterval(update, 1000);
+    return () => {
+      clearTimeout(immediate);
+      clearInterval(timer);
+    };
   }, [nextCampaign?.eventDate]);
 
   if (isLoading) {

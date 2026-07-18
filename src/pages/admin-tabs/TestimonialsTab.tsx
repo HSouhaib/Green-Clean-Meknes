@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { DeleteModal, ImageUpload } from './shared';
 import { useErrorModal } from '@/hooks/useErrorModal';
@@ -78,7 +78,7 @@ export function TestimonialsTab() {
     });
   }
 
-  function handleEdit(tItem: any) {
+  function handleEdit(tItem: NonNullable<typeof testimonials>[number]) {
     setEditingId(tItem.id);
     setFormData({
       name: tItem.name,

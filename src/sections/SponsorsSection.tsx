@@ -1,7 +1,7 @@
 // useState imported for future use
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
-import { trpc } from '@/providers/trpc';
+import { trpc } from '@/lib/trpc';
 import { Handshake, ExternalLink } from 'lucide-react';
 
 export default function SponsorsSection() {

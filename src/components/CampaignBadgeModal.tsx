@@ -1,5 +1,5 @@
-import { useLanguage } from "@/contexts/LanguageContext";
-import { trpc } from "@/providers/trpc";
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { X, Copy, CheckCircle2, AlertCircle, BadgeCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

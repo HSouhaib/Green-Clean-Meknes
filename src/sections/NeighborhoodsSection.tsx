@@ -1,5 +1,5 @@
-import { useLanguage } from '@/contexts/LanguageContext';
-import { trpc } from '@/providers/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
+import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
 import { MapPin, Users, TreePine, Trash2, Calendar } from 'lucide-react';
 import { Link } from 'react-router';
