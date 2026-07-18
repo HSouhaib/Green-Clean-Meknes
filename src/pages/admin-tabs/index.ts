@@ -16,3 +16,4 @@ export { SocialFeedTab } from "./SocialFeedTab";
 export { CampaignPhotosTab } from "./CampaignPhotosTab";
 export { SponsorsTab } from "./SponsorsTab";
 export { PresenceTab } from "./PresenceTab";
+export { LeaderboardTab } from "./LeaderboardTab";

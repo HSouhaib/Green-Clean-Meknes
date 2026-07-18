@@ -96,6 +96,33 @@ describe("badge router", () => {
       expect(result.user?.id).toBe(user.id);
       expect(result.campaign?.id).toBe(campaignId);
       expect(result.role).toBe("user");
+
+      const points = testDb.client.prepare(
+        "SELECT SUM(points) as total FROM volunteer_points WHERE user_id = ? AND reason = ?"
+      ).get(user.id, "attendance") as { total: number } | undefined;
+      expect(points?.total).toBe(5);
+    });
+
+    it("does not award duplicate attendance points", async () => {
+      const user = createTestUser(testDb.db, { unionId: "dup_user" });
+      const admin = createTestUser(testDb.db, {
+        unionId: "admin_dup",
+        role: "admin",
+      });
+      const campaignId = insertCampaign(testDb.client, "Clean Up", "clean-up-dup");
+      insertRegistration(testDb.client, campaignId, user.id);
+
+      const userCaller = badgeRouter.createCaller(createTestContext(user));
+      const badge = await userCaller.myBadge({ campaignId });
+
+      const adminCaller = badgeRouter.createCaller(createTestContext(admin));
+      await adminCaller.verify({ token: badge.token });
+      await adminCaller.verify({ token: badge.token });
+
+      const rows = testDb.client.prepare(
+        "SELECT COUNT(*) as count FROM volunteer_points WHERE user_id = ? AND reason = ? AND campaign_id = ?"
+      ).get(user.id, "attendance", campaignId) as { count: number };
+      expect(rows.count).toBe(1);
     });
 
     it("rejects an invalid token", async () => {

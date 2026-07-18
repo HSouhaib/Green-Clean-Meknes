@@ -213,6 +213,22 @@ export type CampaignRegistration = typeof campaignRegistrations.$inferSelect;
 export type InsertCampaignRegistration =
   typeof campaignRegistrations.$inferInsert;
 
+// ===== VOLUNTEER POINTS (gamified leaderboard) =====
+export const volunteerPoints = sqliteTable("volunteer_points", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  userId: integer("user_id").notNull(),
+  campaignId: integer("campaign_id"),
+  points: integer("points").notNull(),
+  reason: text("reason").notNull().default(""),
+  awardedBy: integer("awarded_by"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export type VolunteerPoint = typeof volunteerPoints.$inferSelect;
+export type InsertVolunteerPoint = typeof volunteerPoints.$inferInsert;
+
 // ===== VOLUNTEER REGISTRATIONS (self-registration form, no OAuth required) =====
 export const volunteerRegistrations = sqliteTable("volunteer_registrations", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),

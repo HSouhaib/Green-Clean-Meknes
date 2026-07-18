@@ -10,6 +10,7 @@ import ContactSection from '@/sections/ContactSection';
 import DonationSection from '@/sections/DonationSection';
 import ImpactSection from '@/sections/ImpactSection';
 import AirQualitySection from '@/sections/AirQualitySection';
+import LeaderboardSection from '@/sections/LeaderboardSection';
 import NeighborhoodsSection from '@/sections/NeighborhoodsSection';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
 
@@ -24,6 +25,7 @@ export default function Home() {
         {isVisible('hero') && <HeroSection />}
         {isVisible('impact') && <ImpactSection />}
         {isVisible('about') && <AboutSection />}
+        {isVisible('leaderboard') && <LeaderboardSection />}
         {isVisible('neighborhoods') && <NeighborhoodsSection />}
         <CommunitySection />
         {isVisible('airQuality') && <AirQualitySection />}

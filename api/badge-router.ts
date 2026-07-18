@@ -10,6 +10,10 @@ import {
   generateBadgeQr,
   type BadgePayload,
 } from "./lib/badge";
+import {
+  awardAttendancePoints,
+  hasAttendancePoints,
+} from "./lib/leaderboard-points";
 
 const campaignIdSchema = z.object({
   campaignId: z.number().int().positive(),
@@ -136,6 +140,14 @@ export const badgeRouter = createRouter({
         .update(campaignRegistrations)
         .set({ attended: true })
         .where(eq(campaignRegistrations.id, registration.id));
+
+      const alreadyHasPoints = await hasAttendancePoints(
+        payload.userId,
+        payload.campaignId
+      );
+      if (!alreadyHasPoints) {
+        await awardAttendancePoints(payload.userId, payload.campaignId);
+      }
     }
 
     return {
@@ -169,10 +181,35 @@ export const badgeRouter = createRouter({
     .input(markAttendanceSchema)
     .mutation(async ({ input }) => {
       const db = getDb();
+
+      const [registration] = await db
+        .select()
+        .from(campaignRegistrations)
+        .where(eq(campaignRegistrations.id, input.registrationId))
+        .limit(1);
+
       await db
         .update(campaignRegistrations)
         .set({ attended: input.attended })
         .where(eq(campaignRegistrations.id, input.registrationId));
+
+      if (
+        input.attended &&
+        registration?.userId &&
+        !(registration.attended ?? false)
+      ) {
+        const alreadyHasPoints = await hasAttendancePoints(
+          registration.userId,
+          registration.campaignId
+        );
+        if (!alreadyHasPoints) {
+          await awardAttendancePoints(
+            registration.userId,
+            registration.campaignId
+          );
+        }
+      }
+
       return { success: true };
     }),
 

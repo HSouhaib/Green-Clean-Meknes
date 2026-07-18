@@ -206,6 +206,15 @@ export function createTestDb() {
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
+    CREATE TABLE IF NOT EXISTS volunteer_points (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      campaign_id INTEGER,
+      points INTEGER NOT NULL,
+      reason TEXT NOT NULL DEFAULT '',
+      awarded_by INTEGER,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
   `);
   return { db, client };
 }
@@ -285,6 +294,7 @@ export function seedTestData(db: ReturnType<typeof createTestDb>["db"]) {
     { sectionKey: "donation", isVisible: 0 },
     { sectionKey: "airQuality", isVisible: 1 },
     { sectionKey: "poll", isVisible: 1 },
+    { sectionKey: "leaderboard", isVisible: 1 },
   ];
   for (const section of sections) {
     sqlite
@@ -298,6 +308,9 @@ export function seedTestData(db: ReturnType<typeof createTestDb>["db"]) {
     { key: "stat_waste_kg", value: "2400" },
     { key: "stat_trees", value: "120" },
     { key: "contact_email", value: "contact@greenmeknes.ma" },
+    { key: "points_registration", value: "1" },
+    { key: "points_attendance", value: "5" },
+    { key: "leaderboard_show_admins", value: "false" },
   ];
   for (const setting of settings) {
     sqlite

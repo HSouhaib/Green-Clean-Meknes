@@ -197,4 +197,44 @@ describe("campaign router", () => {
       expect(updated.is_active).toBe(0);
     });
   });
+
+  // Authed: register / unregister
+  describe("register", () => {
+    it("awards registration points when a user registers", async () => {
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).run("Reg Campaign", "Meknes", "Desc", "15 JUL 2025", "reg-campaign", 1);
+
+      const campaign = testDb.client.prepare("SELECT id FROM campaigns WHERE slug = ?").get("reg-campaign");
+      const user = createTestUser(testDb.db, { role: "user", unionId: "reg_user_1" });
+      const caller = campaignRouter.createCaller(createTestContext(user));
+
+      await caller.register({ id: campaign.id });
+
+      const points = testDb.client.prepare(
+        "SELECT SUM(points) as total FROM volunteer_points WHERE user_id = ? AND reason = ?"
+      ).get(user.id, "registration") as { total: number } | undefined;
+      expect(points?.total).toBe(1);
+    });
+
+    it("removes registration points when a user unregisters", async () => {
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).run("Unreg Campaign", "Meknes", "Desc", "15 JUL 2025", "unreg-campaign", 1);
+
+      const campaign = testDb.client.prepare("SELECT id FROM campaigns WHERE slug = ?").get("unreg-campaign");
+      const user = createTestUser(testDb.db, { role: "user", unionId: "unreg_user_1" });
+      const caller = campaignRouter.createCaller(createTestContext(user));
+
+      await caller.register({ id: campaign.id });
+      await caller.unregister({ id: campaign.id });
+
+      const points = testDb.client.prepare(
+        "SELECT SUM(points) as total FROM volunteer_points WHERE user_id = ? AND reason = ?"
+      ).get(user.id, "registration") as { total: number } | undefined;
+      expect(points?.total ?? 0).toBe(0);
+    });
+  });
 });

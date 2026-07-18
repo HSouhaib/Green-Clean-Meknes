@@ -7,6 +7,10 @@ import { eq, desc, and, count, inArray, gte, isNotNull, sum } from "drizzle-orm"
 import { sanitizeString } from "./lib/sanitize";
 import { safeUrl } from "./lib/zod-helpers";
 import { checkRateLimit } from "./lib/rate-limit";
+import {
+  awardRegistrationPoints,
+  removeRegistrationPoints,
+} from "./lib/leaderboard-points";
 import { CAMPAIGN_STATUSES } from "@contracts/constants";
 
 // ===== ZOD SCHEMAS =====
@@ -318,6 +322,7 @@ export const campaignRouter = createRouter({
           .update(campaignRegistrations)
           .set({ status: "registered" })
           .where(eq(campaignRegistrations.id, existing[0].id));
+        await awardRegistrationPoints(userId, input.id);
         return { success: true, message: "Re-registered" };
       }
 
@@ -326,6 +331,7 @@ export const campaignRouter = createRouter({
         userId,
         status: "registered",
       });
+      await awardRegistrationPoints(userId, input.id);
 
       return { success: true, message: "Registered" };
     }),
@@ -346,6 +352,8 @@ export const campaignRouter = createRouter({
             eq(campaignRegistrations.userId, userId)
           )
         );
+
+      await removeRegistrationPoints(userId, input.id);
 
       return { success: true };
     }),

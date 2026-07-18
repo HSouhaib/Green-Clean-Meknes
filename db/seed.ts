@@ -66,6 +66,15 @@ async function seed() {
       is_visible INTEGER NOT NULL DEFAULT 1,
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
+    CREATE TABLE IF NOT EXISTS volunteer_points (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      campaign_id INTEGER,
+      points INTEGER NOT NULL,
+      reason TEXT NOT NULL DEFAULT '',
+      awarded_by INTEGER,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
   `);
 
   console.log("Seeding data...");
@@ -215,6 +224,7 @@ async function seed() {
     { sectionKey: "donation", isVisible: false },
     { sectionKey: "airQuality", isVisible: true },
     { sectionKey: "poll", isVisible: true },
+    { sectionKey: "leaderboard", isVisible: true },
   ];
   for (const section of sections) {
     try {
@@ -240,6 +250,10 @@ async function seed() {
 
     { key: "contact_email", value: "contact@greenmeknes.ma" },
     { key: "contact_phone", value: "+212 5 35 52 12 34" },
+
+    { key: "points_registration", value: "1" },
+    { key: "points_attendance", value: "5" },
+    { key: "leaderboard_show_admins", value: "false" },
     { key: "social_whatsapp", value: "https://wa.me/212600000000" },
     { key: "social_instagram", value: "https://instagram.com/greenmeknes" },
     { key: "donation_title_fr", value: "Soutenez Notre Mission" },
@@ -668,6 +682,7 @@ async function seed() {
     { sectionKey: "donation", sortOrder: 10 },
     { sectionKey: "airQuality", sortOrder: 11 },
     { sectionKey: "poll", sortOrder: 12 },
+    { sectionKey: "leaderboard", sortOrder: 13 },
   ];
   for (const so of sectionOrders) {
     try {

@@ -32,6 +32,7 @@ export function SectionsTab() {
     campaigns: 'Campaigns Section',
     contact: 'Contact Section',
     donation: 'Donation Section',
+    leaderboard: 'Leaderboard Section',
   };
 
   if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>Loading sections...</div>;

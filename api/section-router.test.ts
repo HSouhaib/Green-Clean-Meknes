@@ -22,7 +22,7 @@ describe("section router", () => {
       const caller = sectionRouter.createCaller(createTestContext());
       const result = await caller.list();
 
-      expect(result).toHaveLength(15); // from seedTestData (including gallery, socialFeed and sponsors)
+      expect(result).toHaveLength(16); // from seedTestData (including gallery, socialFeed, sponsors and leaderboard)
       const hero = result.find((s) => s.sectionKey === "hero");
       expect(hero).toBeDefined();
       expect(hero?.isVisible).toBe(true);

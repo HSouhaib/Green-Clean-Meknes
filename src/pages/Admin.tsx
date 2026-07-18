@@ -28,6 +28,7 @@ import {
   Handshake,
   Camera,
   ScanLine,
+  Trophy,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
@@ -49,6 +50,7 @@ import {
   CampaignPhotosTab,
   SponsorsTab,
   PresenceTab,
+  LeaderboardTab,
 } from "./admin-tabs";
 
 type TabKey =
@@ -69,7 +71,8 @@ type TabKey =
   | "neighborhoods"
   | "faqs"
   | "testimonials"
-  | "polls";
+  | "polls"
+  | "leaderboard";
 
 interface TabConfig {
   key: TabKey;
@@ -101,6 +104,7 @@ const tabs: TabConfig[] = [
     icon: <MessageSquare size={16} />,
   },
   { key: "polls", label: "Polls", icon: <BarChart3 size={16} /> },
+  { key: "leaderboard", label: "Leaderboard", icon: <Trophy size={16} /> },
 ];
 
 export default function Admin() {
@@ -440,6 +444,7 @@ export default function Admin() {
         {activeTab === "faqs" && <FaqsTab />}
         {activeTab === "testimonials" && <TestimonialsTab />}
         {activeTab === "polls" && <PollsTab />}
+        {activeTab === "leaderboard" && <LeaderboardTab />}
       </div>
 
       {/* Admin styles */}
