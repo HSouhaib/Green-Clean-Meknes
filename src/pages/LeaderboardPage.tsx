@@ -45,25 +45,28 @@ function Avatar({
 
 const rankStyles: Record<
   number,
-  { border: string; glow: string; text: string; bg: string }
+  { border: string; glow: string; text: string; bg: string; shadow: string }
 > = {
   1: {
-    border: 'rgba(107, 142, 90, 0.35)',
-    glow: 'rgba(107, 142, 90, 0.12)',
+    border: 'var(--accent-green)',
+    glow: 'rgba(107, 142, 90, 0.18)',
     text: 'var(--accent-green)',
     bg: 'rgba(107, 142, 90, 0.10)',
+    shadow: '0 8px 24px rgba(107, 142, 90, 0.18)',
   },
   2: {
-    border: 'rgba(107, 142, 90, 0.25)',
-    glow: 'rgba(107, 142, 90, 0.08)',
+    border: 'rgba(107, 142, 90, 0.55)',
+    glow: 'rgba(107, 142, 90, 0.12)',
     text: 'var(--accent-green-light)',
-    bg: 'rgba(107, 142, 90, 0.06)',
+    bg: 'rgba(107, 142, 90, 0.07)',
+    shadow: '0 6px 18px rgba(107, 142, 90, 0.12)',
   },
   3: {
-    border: 'rgba(107, 142, 90, 0.18)',
-    glow: 'rgba(107, 142, 90, 0.05)',
+    border: 'rgba(107, 142, 90, 0.35)',
+    glow: 'rgba(107, 142, 90, 0.08)',
     text: 'var(--text-secondary)',
     bg: 'rgba(107, 142, 90, 0.04)',
+    shadow: '0 4px 12px rgba(107, 142, 90, 0.08)',
   },
 };
 
@@ -87,19 +90,19 @@ function PodiumCard({
         ? 'order-1 md:order-2'
         : 'order-3';
 
-  const heightClass = isCenter ? 'h-56 md:h-64' : 'h-44 md:h-52';
-  const avatarSize = isCenter ? 'w-18 h-18 md:w-20 md:h-20' : 'w-14 h-14 md:w-16 md:h-16';
-  const nameSize = isCenter ? 'text-sm' : 'text-xs';
+  const heightClass = isCenter ? 'h-44 md:h-52' : 'h-36 md:h-44';
+  const avatarSize = isCenter ? 'w-16 h-16 md:w-18 md:h-18' : 'w-12 h-12 md:w-14 md:h-14';
 
   return (
     <div
-      className={`${orderClass} w-full md:w-48 ${heightClass} flex flex-col`}
+      className={`${orderClass} w-full md:w-40 ${heightClass} flex flex-col`}
     >
       <div
         className="relative flex-1 flex flex-col items-center justify-end rounded-xl p-4 overflow-hidden"
         style={{
           background: styles.bg,
           border: `1px solid ${styles.border}`,
+          boxShadow: styles.shadow,
         }}
       >
         <div
@@ -126,13 +129,13 @@ function PodiumCard({
             <Avatar
               src={leader.avatar}
               name={leader.name}
-              className="text-base"
+              className="text-sm"
             />
           </div>
         </div>
 
         <span
-          className={`${nameSize} font-semibold text-center truncate max-w-full`}
+          className="text-xs font-semibold text-center truncate max-w-full"
           style={{ color: 'var(--text-primary)' }}
         >
           {leader.name}
@@ -166,13 +169,13 @@ function RunnerRow({ leader }: { leader: Leader }) {
 
   return (
     <div
-      className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--bg-surface-light)]"
+      className="group flex items-center gap-3 px-4 py-2 transition-colors hover:bg-[var(--bg-surface-light)]"
       style={{
         borderBottom: '1px solid var(--bg-surface-light)',
       }}
     >
       <div
-        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold"
+        className="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold"
         style={{
           background: 'var(--bg-surface-light)',
           color: 'var(--text-tertiary)',
@@ -305,7 +308,7 @@ export default function LeaderboardPage() {
         }}
       >
         <div
-          className="mx-auto flex items-center justify-between py-4"
+          className="mx-auto flex items-center justify-between py-3"
           style={{ padding: '0 var(--page-margin)', maxWidth: '1400px' }}
         >
           <Link
@@ -317,7 +320,7 @@ export default function LeaderboardPage() {
             {t('nav.home')}
           </Link>
           <h1
-            className="font-display text-lg"
+            className="font-display text-base"
             style={{ color: 'var(--text-primary)' }}
           >
             {t('leaderboard.heading')}
@@ -327,52 +330,52 @@ export default function LeaderboardPage() {
       </header>
 
       <main
-        className="mx-auto py-8"
-        style={{ padding: '0 var(--page-margin)', maxWidth: '900px' }}
+        className="mx-auto py-6"
+        style={{ padding: '0 var(--page-margin)', maxWidth: '800px' }}
       >
         {/* Hero */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-5">
           <h2
-            className="font-display mb-2 flex items-center justify-center gap-2"
+            className="font-display mb-1.5 flex items-center justify-center gap-2"
             style={{
               color: 'var(--text-primary)',
-              fontSize: 'clamp(1.25rem, 3vw, 1.75rem)',
+              fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
               letterSpacing: '-0.02em',
             }}
           >
-            <Trophy size={18} style={{ color: 'var(--accent-green)' }} />
+            <Trophy size={16} style={{ color: 'var(--accent-green)' }} />
             {t('leaderboard.heading')}
           </h2>
           <p
-            className="text-xs font-light max-w-md mx-auto flex items-center justify-center gap-1.5"
+            className="text-[11px] font-light max-w-md mx-auto flex items-center justify-center gap-1.5"
             style={{ color: 'var(--text-secondary)' }}
           >
-            <Sparkles size={12} style={{ color: 'var(--accent-green)' }} />
+            <Sparkles size={11} style={{ color: 'var(--accent-green)' }} />
             {t('leaderboard.subheading')}
           </p>
         </div>
 
         {/* Stats */}
         <div
-          className="grid grid-cols-2 gap-3 mb-6"
+          className="grid grid-cols-2 gap-3 mb-5"
           style={{ direction: isRtl ? 'rtl' : 'ltr' }}
         >
           <div
-            className="rounded-xl p-4 flex items-center gap-3"
+            className="rounded-xl p-3 flex items-center gap-2.5"
             style={{
               background: 'var(--bg-surface)',
               border: '1px solid var(--bg-surface-light)',
             }}
           >
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ background: 'rgba(107,142,90,0.12)' }}
             >
-              <Users size={18} style={{ color: 'var(--accent-green)' }} />
+              <Users size={16} style={{ color: 'var(--accent-green)' }} />
             </div>
             <div>
               <p
-                className="text-xl font-bold"
+                className="text-lg font-bold"
                 style={{ color: 'var(--text-primary)' }}
               >
                 {filtered.length}
@@ -384,21 +387,21 @@ export default function LeaderboardPage() {
           </div>
 
           <div
-            className="rounded-xl p-4 flex items-center gap-3"
+            className="rounded-xl p-3 flex items-center gap-2.5"
             style={{
               background: 'var(--bg-surface)',
               border: '1px solid var(--bg-surface-light)',
             }}
           >
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ background: 'rgba(107,142,90,0.12)' }}
             >
-              <TrendingUp size={18} style={{ color: 'var(--accent-green)' }} />
+              <TrendingUp size={16} style={{ color: 'var(--accent-green)' }} />
             </div>
             <div>
               <p
-                className="text-xl font-bold"
+                className="text-lg font-bold"
                 style={{ color: 'var(--text-primary)' }}
               >
                 {totalPoints}
@@ -412,7 +415,7 @@ export default function LeaderboardPage() {
 
         {/* Filters */}
         <div
-          className="flex flex-col sm:flex-row gap-3 mb-6"
+          className="flex flex-col sm:flex-row gap-3 mb-5"
           style={{ direction: isRtl ? 'rtl' : 'ltr' }}
         >
           <div
@@ -466,22 +469,22 @@ export default function LeaderboardPage() {
 
         {isLoading ? (
           <>
-            <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-8">
+            <div className="flex flex-col md:flex-row items-end justify-center gap-3 mb-6">
               <div
-                className="w-full md:w-48 h-44 rounded-xl"
+                className="w-full md:w-40 h-36 rounded-xl"
                 style={{ background: 'var(--bg-surface)' }}
               />
               <div
-                className="w-full md:w-52 h-56 rounded-xl"
+                className="w-full md:w-44 h-44 rounded-xl"
                 style={{ background: 'var(--bg-surface)' }}
               />
               <div
-                className="w-full md:w-48 h-44 rounded-xl"
+                className="w-full md:w-40 h-36 rounded-xl"
                 style={{ background: 'var(--bg-surface)' }}
               />
             </div>
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-xl overflow-hidden"
               style={{
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--bg-surface-light)',
@@ -515,7 +518,7 @@ export default function LeaderboardPage() {
         ) : (
           <>
             {topThree.length > 0 && (
-              <div className="flex flex-col md:flex-row items-end justify-center gap-3 md:gap-5 mb-8">
+              <div className="flex flex-col md:flex-row items-end justify-center gap-3 md:gap-4 mb-6">
                 {topThree[1] && (
                   <PodiumCard
                     key={topThree[1].identity}

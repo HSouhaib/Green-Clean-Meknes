@@ -27,25 +27,28 @@ function Avatar({ src, name, className }: { src: string | null; name: string; cl
 
 const rankStyles: Record<
   number,
-  { border: string; glow: string; text: string; bg: string }
+  { border: string; glow: string; text: string; bg: string; shadow: string }
 > = {
   1: {
-    border: 'rgba(107, 142, 90, 0.35)',
-    glow: 'rgba(107, 142, 90, 0.12)',
+    border: 'var(--accent-green)',
+    glow: 'rgba(107, 142, 90, 0.18)',
     text: 'var(--accent-green)',
     bg: 'rgba(107, 142, 90, 0.10)',
+    shadow: '0 8px 24px rgba(107, 142, 90, 0.18)',
   },
   2: {
-    border: 'rgba(107, 142, 90, 0.25)',
-    glow: 'rgba(107, 142, 90, 0.08)',
+    border: 'rgba(107, 142, 90, 0.55)',
+    glow: 'rgba(107, 142, 90, 0.12)',
     text: 'var(--accent-green-light)',
-    bg: 'rgba(107, 142, 90, 0.06)',
+    bg: 'rgba(107, 142, 90, 0.07)',
+    shadow: '0 6px 18px rgba(107, 142, 90, 0.12)',
   },
   3: {
-    border: 'rgba(107, 142, 90, 0.18)',
-    glow: 'rgba(107, 142, 90, 0.05)',
+    border: 'rgba(107, 142, 90, 0.35)',
+    glow: 'rgba(107, 142, 90, 0.08)',
     text: 'var(--text-secondary)',
     bg: 'rgba(107, 142, 90, 0.04)',
+    shadow: '0 4px 12px rgba(107, 142, 90, 0.08)',
   },
 };
 
@@ -69,34 +72,34 @@ function PodiumCard({
         ? 'order-1 md:order-2'
         : 'order-3';
 
-  const heightClass = isCenter ? 'h-48 md:h-56' : 'h-40 md:h-48';
-  const avatarSize = isCenter ? 'w-16 h-16 md:w-18 md:h-18' : 'w-12 h-12 md:w-14 md:h-14';
-  const nameSize = isCenter ? 'text-sm' : 'text-xs';
+  const heightClass = isCenter ? 'h-36 md:h-44' : 'h-32 md:h-40';
+  const avatarSize = isCenter ? 'w-14 h-14 md:w-16 md:h-16' : 'w-10 h-10 md:w-12 md:h-12';
 
   return (
-    <div className={`${orderClass} w-full md:w-44 ${heightClass} flex flex-col`}>
+    <div className={`${orderClass} w-full md:w-36 ${heightClass} flex flex-col`}>
       <div
-        className="relative flex-1 flex flex-col items-center justify-end rounded-xl p-4 overflow-hidden"
+        className="relative flex-1 flex flex-col items-center justify-end rounded-xl p-3 overflow-hidden"
         style={{
           background: styles.bg,
           border: `1px solid ${styles.border}`,
+          boxShadow: styles.shadow,
         }}
       >
         {/* Rank badge */}
         <div
-          className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center justify-center w-7 h-7 rounded-full text-[10px] font-bold"
+          className="absolute top-2.5 left-1/2 -translate-x-1/2 flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold"
           style={{
             background: styles.glow,
             color: styles.text,
             border: `1px solid ${styles.border}`,
           }}
         >
-          {rank === 1 ? <Crown size={12} /> : `#${rank}`}
+          {rank === 1 ? <Crown size={10} /> : `#${rank}`}
         </div>
 
         {/* Avatar */}
         <div
-          className={`${avatarSize} rounded-full p-0.5 mb-3`}
+          className={`${avatarSize} rounded-full p-0.5 mb-2`}
           style={{
             background: styles.border,
           }}
@@ -108,20 +111,20 @@ function PodiumCard({
             <Avatar
               src={leader.avatar}
               name={leader.name}
-              className="text-base"
+              className="text-sm"
             />
           </div>
         </div>
 
         <span
-          className={`${nameSize} font-semibold text-center truncate max-w-full`}
+          className="text-xs font-semibold text-center truncate max-w-full"
           style={{ color: 'var(--text-primary)' }}
         >
           {leader.name}
         </span>
 
         <span
-          className="text-[11px] mt-0.5 flex items-center gap-1"
+          className="text-[10px] mt-0.5 flex items-center gap-1"
           style={{ color: 'var(--text-secondary)' }}
         >
           {leader.totalPoints} {t('leaderboard.points')}
@@ -129,7 +132,7 @@ function PodiumCard({
 
         {leader.isGuest && (
           <span
-            className="mt-1.5 text-[9px] px-1.5 py-0.5 rounded-full"
+            className="mt-1 text-[9px] px-1.5 py-0.5 rounded-full"
             style={{
               background: 'var(--bg-surface-light)',
               color: 'var(--text-tertiary)',
@@ -148,13 +151,13 @@ function RunnerRow({ leader }: { leader: Leader }) {
 
   return (
     <div
-      className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--bg-surface-light)]"
+      className="group flex items-center gap-3 px-3 py-2 transition-colors hover:bg-[var(--bg-surface-light)]"
       style={{
         borderBottom: '1px solid var(--bg-surface-light)',
       }}
     >
       <div
-        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold"
+        className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold"
         style={{
           background: 'var(--bg-surface-light)',
           color: 'var(--text-tertiary)',
@@ -164,15 +167,15 @@ function RunnerRow({ leader }: { leader: Leader }) {
       </div>
 
       <div
-        className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+        className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
         style={{ background: 'var(--bg-surface-light)' }}
       >
-        <Avatar src={leader.avatar} name={leader.name} className="text-xs" />
+        <Avatar src={leader.avatar} name={leader.name} className="text-[10px]" />
       </div>
 
       <div className="flex-1 min-w-0">
         <p
-          className="text-xs font-medium truncate flex items-center gap-1.5"
+          className="text-[11px] font-medium truncate flex items-center gap-1.5"
           style={{ color: 'var(--text-primary)' }}
         >
           {leader.name}
@@ -189,16 +192,16 @@ function RunnerRow({ leader }: { leader: Leader }) {
           )}
         </p>
         <p
-          className="text-[10px] flex items-center gap-1"
+          className="text-[9px] flex items-center gap-1"
           style={{ color: 'var(--text-tertiary)' }}
         >
-          <Users size={10} />
+          <Users size={9} />
           {leader.attendedCount} {t('leaderboard.campaigns_attended')}
         </p>
       </div>
 
       <div
-        className="text-xs font-semibold px-2 py-0.5 rounded-full"
+        className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
         style={{
           background: 'rgba(107,142,90,0.1)',
           color: 'var(--accent-green-light)',
@@ -224,45 +227,45 @@ export default function LeaderboardSection() {
   const rest = leaders?.slice(3) ?? [];
 
   return (
-    <section id="leaderboard" style={{ padding: 'var(--section-gap) 0' }}>
+    <section id="leaderboard" style={{ padding: 'calc(var(--section-gap) * 0.65) 0' }}>
       <div
         className="mx-auto"
-        style={{ padding: '0 var(--page-margin)', maxWidth: '1200px' }}
+        style={{ padding: '0 var(--page-margin)', maxWidth: '900px' }}
       >
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-5">
           <h2
-            className="font-display mb-2 flex items-center justify-center gap-2"
+            className="font-display mb-1.5 flex items-center justify-center gap-2"
             style={{
               color: 'var(--text-primary)',
-              fontSize: 'clamp(1.25rem, 3vw, 1.75rem)',
+              fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
               letterSpacing: '-0.02em',
             }}
           >
-            <Trophy size={18} style={{ color: 'var(--accent-green)' }} />
+            <Trophy size={16} style={{ color: 'var(--accent-green)' }} />
             {t('leaderboard.heading')}
           </h2>
           <p
-            className="text-xs font-light mx-auto max-w-md flex items-center justify-center gap-1.5"
+            className="text-[11px] font-light mx-auto max-w-md flex items-center justify-center gap-1.5"
             style={{ color: 'var(--text-secondary)' }}
           >
-            <Sparkles size={12} style={{ color: 'var(--accent-green)' }} />
+            <Sparkles size={11} style={{ color: 'var(--accent-green)' }} />
             {t('leaderboard.subheading')}
           </p>
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-8">
+          <div className="flex flex-col md:flex-row items-end justify-center gap-3 mb-6">
             <div
-              className="w-full md:w-44 h-40 rounded-xl"
+              className="w-full md:w-36 h-32 rounded-xl"
               style={{ background: 'var(--bg-surface)' }}
             />
             <div
-              className="w-full md:w-48 h-48 rounded-xl"
+              className="w-full md:w-40 h-36 rounded-xl"
               style={{ background: 'var(--bg-surface)' }}
             />
             <div
-              className="w-full md:w-44 h-40 rounded-xl"
+              className="w-full md:w-36 h-32 rounded-xl"
               style={{ background: 'var(--bg-surface)' }}
             />
           </div>
@@ -286,7 +289,7 @@ export default function LeaderboardSection() {
           <>
             {/* Podium */}
             {topThree.length > 0 && (
-              <div className="flex flex-col md:flex-row items-end justify-center gap-3 md:gap-5 mb-8">
+              <div className="flex flex-col md:flex-row items-end justify-center gap-3 md:gap-4 mb-6">
                 {topThree[1] && (
                   <PodiumCard
                     key={topThree[1].identity}
@@ -317,7 +320,7 @@ export default function LeaderboardSection() {
             {/* Runners-up */}
             {rest.length > 0 && (
               <div
-                className="rounded-xl overflow-hidden mb-6"
+                className="rounded-xl overflow-hidden mb-5"
                 style={{
                   background: 'var(--bg-surface)',
                   border: '1px solid var(--bg-surface-light)',
@@ -336,14 +339,14 @@ export default function LeaderboardSection() {
             <div className="flex justify-center">
               <Link
                 to="/leaderboard"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 hover:gap-2"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 hover:gap-2"
                 style={{
                   background: 'var(--accent-green)',
                   color: 'var(--bg-primary)',
                 }}
               >
                 {t('leaderboard.view_all')}
-                <ArrowRight size={14} />
+                <ArrowRight size={12} />
               </Link>
             </div>
           </>

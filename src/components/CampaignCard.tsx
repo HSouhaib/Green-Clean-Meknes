@@ -7,6 +7,26 @@ import GuestRegisterModal from "./GuestRegisterModal";
 import type { Campaign } from "@/types/campaign";
 import { Trash2, Sprout, Users, MapPin, ImageOff } from "lucide-react";
 
+function CampaignImage({ src, alt }: { src: string; alt: string }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+        <ImageOff size={32} style={{ color: "var(--text-tertiary)" }} />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover"
+      loading="lazy"
+      onError={() => setError(true)}
+    />
+  );
+}
+
 interface CampaignCardProps {
   campaign: Campaign;
   isActive: boolean;
@@ -25,7 +45,6 @@ export default function CampaignCard({
   const { isRegistered, count, isLoading, register, unregister } =
     useCampaignRegistration(campaign.id);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
-  const [imageError, setImageError] = useState(!campaign.image);
   const isClosed =
     campaign.status === "completed" || campaign.status === "cancelled";
 
@@ -83,7 +102,7 @@ export default function CampaignCard({
         className="relative w-full overflow-hidden"
         style={{ height: "180px", flexShrink: 0 }}
       >
-        {imageError ? (
+        {!campaign.image ? (
           <div
             className="w-full h-full flex flex-col items-center justify-center gap-2"
             style={{ background: "var(--bg-surface)" }}
@@ -97,13 +116,7 @@ export default function CampaignCard({
             </span>
           </div>
         ) : (
-          <img
-            src={campaign.image!}
-            alt={title}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            onError={() => setImageError(true)}
-          />
+          <CampaignImage key={campaign.image} src={campaign.image!} alt={title} />
         )}
         {/* Date badge overlay */}
         <div

@@ -16,6 +16,26 @@ import {
 import type { Campaign } from "@/types/campaign";
 import { useState } from "react";
 
+function CampaignImage({ src, alt }: { src: string; alt: string }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+        <ImageOff size={40} style={{ color: "var(--text-tertiary)" }} />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover"
+      loading="lazy"
+      onError={() => setError(true)}
+    />
+  );
+}
+
 interface CampaignDetailModalProps {
   campaign: Campaign;
   onClose: () => void;
@@ -47,8 +67,7 @@ export default function CampaignDetailModal({
   const { user } = useAuth();
   const isRtl = dir === "rtl";
   const [guestModalOpen, setGuestModalOpen] = useState(false);
-  const [imageBroken, setImageBroken] = useState(false);
-  const showImagePlaceholder = !campaign.image || imageBroken;
+  const showImagePlaceholder = !campaign.image;
 
   const { isRegistered, count, isLoading, register, unregister } =
     useCampaignRegistration(campaign.id);
@@ -122,13 +141,7 @@ export default function CampaignDetailModal({
               </span>
             </div>
           ) : (
-            <img
-              src={campaign.image!}
-              alt={title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={() => setImageBroken(true)}
-            />
+            <CampaignImage key={campaign.image} src={campaign.image!} alt={title} />
           )}
           {/* Date badge */}
           <div

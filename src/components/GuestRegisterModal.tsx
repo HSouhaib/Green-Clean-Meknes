@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useErrorModal } from "@/hooks/useErrorModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Mail, CheckCircle2, Loader2, Send, Leaf } from "lucide-react";
+import { langOptions } from "@/const";
 
 interface GuestRegisterModalProps {
   campaignId: number;
@@ -19,7 +20,8 @@ export default function GuestRegisterModal({
   open,
   onClose,
 }: GuestRegisterModalProps) {
-  const { t } = useLanguage();
+  const { t, lang, setLang, dir } = useLanguage();
+  const isRtl = dir === "rtl";
   const utils = trpc.useUtils();
   const { showError } = useErrorModal();
   const [name, setName] = useState("");
@@ -35,6 +37,8 @@ export default function GuestRegisterModal({
         // Invalidate queries to update UI without reload
         utils.campaign.registrationCount.invalidate({ id: campaignId });
         utils.campaign.registrationTotalCount.invalidate();
+        utils.campaign.stats.invalidate();
+        utils.leaderboard.getTop.invalidate();
       } else {
         showError(data.message || t("toast.error_generic"));
       }
@@ -64,7 +68,7 @@ export default function GuestRegisterModal({
         ? "1.5px solid var(--accent-green)"
         : "1.5px solid var(--bg-surface-light)",
     borderRadius: "12px",
-    padding: "14px 16px 14px 48px",
+    padding: isRtl ? "14px 48px 14px 16px" : "14px 16px 14px 48px",
     fontSize: "14px",
     color: "var(--text-primary)",
     outline: "none",
@@ -84,6 +88,7 @@ export default function GuestRegisterModal({
         className="fixed inset-0 z-[300] flex items-center justify-center p-4"
         style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
         onClick={handleClose}
+        dir={dir}
       >
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.96 }}
@@ -128,13 +133,43 @@ export default function GuestRegisterModal({
                 )}
               </div>
             </div>
-            <button
-              onClick={handleClose}
-              className="p-1.5 rounded-lg transition-colors cursor-pointer border-none"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              <X size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Inline language switcher for guests */}
+              <div
+                className="flex items-center rounded-full"
+                style={{
+                  border: "1px solid rgba(128, 128, 128, 0.25)",
+                  padding: "2px",
+                }}
+                role="group"
+                aria-label="Language"
+              >
+                {langOptions.map(l => (
+                  <button
+                    key={l.code}
+                    onClick={() => setLang(l.code)}
+                    aria-pressed={lang === l.code}
+                    className="rounded-full border-none cursor-pointer transition-all duration-200"
+                    style={{
+                      padding: "0.25rem 0.6rem",
+                      fontSize: "0.7rem",
+                      background:
+                        lang === l.code ? "var(--accent-green)" : "transparent",
+                      color: lang === l.code ? "#ffffff" : "var(--text-secondary)",
+                    }}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleClose}
+                className="p-1.5 rounded-lg transition-colors cursor-pointer border-none"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Body */}
@@ -194,7 +229,7 @@ export default function GuestRegisterModal({
                 <div className="relative">
                   <User
                     size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                    className={`absolute top-1/2 -translate-y-1/2 pointer-events-none ${isRtl ? "right-4" : "left-4"}`}
                     style={{
                       color:
                         focusedField === "name"
@@ -218,7 +253,7 @@ export default function GuestRegisterModal({
                 <div className="relative">
                   <Mail
                     size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                    className={`absolute top-1/2 -translate-y-1/2 pointer-events-none ${isRtl ? "right-4" : "left-4"}`}
                     style={{
                       color:
                         focusedField === "email"

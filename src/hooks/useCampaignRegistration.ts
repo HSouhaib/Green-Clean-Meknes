@@ -34,7 +34,10 @@ export function useCampaignRegistration(campaignId: number) {
     onSettled: async () => {
       await utils.campaign.myRegistrationStatus.invalidate({ id: campaignId });
       await utils.campaign.registrationCount.invalidate({ id: campaignId });
+      await utils.campaign.registrationTotalCount.invalidate();
       await utils.campaign.myRegistrations.invalidate();
+      await utils.campaign.stats.invalidate();
+      await utils.leaderboard.getTop.invalidate();
     },
   });
 
@@ -59,7 +62,10 @@ export function useCampaignRegistration(campaignId: number) {
     onSettled: async () => {
       await utils.campaign.myRegistrationStatus.invalidate({ id: campaignId });
       await utils.campaign.registrationCount.invalidate({ id: campaignId });
+      await utils.campaign.registrationTotalCount.invalidate();
       await utils.campaign.myRegistrations.invalidate();
+      await utils.campaign.stats.invalidate();
+      await utils.leaderboard.getTop.invalidate();
     },
   });
 

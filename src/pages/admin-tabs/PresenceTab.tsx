@@ -2,11 +2,12 @@ import { useState } from "react";
 import { trpc } from '@/lib/trpc';
 import { useLanguage } from '@/hooks/useLanguage';
 import BadgeVerifyModal from "@/components/BadgeVerifyModal";
-import { Search, ScanLine, Users, CheckCircle2, XCircle } from "lucide-react";
+import { Search, ScanLine, Users, CheckCircle2, XCircle, Save } from "lucide-react";
 import { toast } from "sonner";
 
 export function PresenceTab() {
   const { t } = useLanguage();
+  const utils = trpc.useUtils();
   const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(
     null
   );
@@ -14,22 +15,46 @@ export function PresenceTab() {
   const [verifyOpen, setVerifyOpen] = useState(false);
 
   const { data: campaigns } = trpc.campaign.listAll.useQuery();
-  const { data: registrations, refetch } =
+  const { data: registrations } =
     trpc.campaign.registrationsByCampaign.useQuery(
       { id: selectedCampaignId! },
       { enabled: selectedCampaignId !== null }
     );
 
   const markAttendance = trpc.badge.markAttendance.useMutation({
+    onMutate: async ({ registrationId, attended }) => {
+      await utils.campaign.registrationsByCampaign.cancel({ id: selectedCampaignId! });
+      const previous = utils.campaign.registrationsByCampaign.getData({ id: selectedCampaignId! });
+      if (previous) {
+        utils.campaign.registrationsByCampaign.setData(
+          { id: selectedCampaignId! },
+          previous.map(reg =>
+            reg.id === registrationId ? { ...reg, attended } : reg
+          )
+        );
+      }
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous !== undefined) {
+        utils.campaign.registrationsByCampaign.setData(
+          { id: selectedCampaignId! },
+          context.previous
+        );
+      }
+      toast.error(t("badge.attendance_update_failed"));
+    },
     onSuccess: () => {
-      refetch();
+      utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! });
+      utils.leaderboard.getTop.invalidate();
       toast.success(t("badge.attendance_updated"));
     },
-    onError: () => toast.error(t("badge.attendance_update_failed")),
   });
 
   const updateWaste = trpc.campaign.updateRegistrationWaste.useMutation({
     onSuccess: () => {
+      utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! });
+      utils.leaderboard.getTop.invalidate();
       toast.success(t("badge.waste_updated"));
     },
     onError: () => toast.error(t("badge.waste_update_failed")),
@@ -45,8 +70,9 @@ export function PresenceTab() {
     initialWasteKg: number | null;
   }) {
     const [value, setValue] = useState(String(initialWasteKg ?? 0));
+    const hasChanges = value !== String(initialWasteKg ?? 0);
 
-    const handleBlur = () => {
+    const handleSave = () => {
       const parsed = parseInt(value, 10);
       const normalized = isNaN(parsed) || parsed < 0 ? 0 : parsed;
       if (normalized !== (initialWasteKg ?? 0)) {
@@ -55,21 +81,42 @@ export function PresenceTab() {
       setValue(String(normalized));
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+
     return (
-      <input
-        type="number"
-        min={0}
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onBlur={handleBlur}
-        disabled={updateWaste.isPending}
-        className="w-20 rounded-lg px-2 py-1 text-right text-sm disabled:opacity-50"
-        style={{
-          background: "var(--bg-primary)",
-          border: "1px solid var(--bg-surface-light)",
-          color: "var(--text-primary)",
-        }}
-      />
+      <div className="flex items-center gap-2 justify-end">
+        <input
+          type="number"
+          min={0}
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={updateWaste.isPending}
+          className="w-20 rounded-lg px-2 py-1 text-right text-sm disabled:opacity-50"
+          style={{
+            background: "var(--bg-primary)",
+            border: "1px solid var(--bg-surface-light)",
+            color: "var(--text-primary)",
+          }}
+        />
+        <button
+          onClick={handleSave}
+          disabled={!hasChanges || updateWaste.isPending}
+          className="p-1.5 rounded-md transition-colors disabled:opacity-30 border-none cursor-pointer"
+          style={{
+            background: hasChanges ? "rgba(107,142,90,0.15)" : "transparent",
+            color: "var(--accent-green)",
+          }}
+          title={t("badge.save_waste")}
+        >
+          <Save size={14} />
+        </button>
+      </div>
     );
   }
 
@@ -339,7 +386,10 @@ export function PresenceTab() {
       <BadgeVerifyModal
         open={verifyOpen}
         onClose={() => setVerifyOpen(false)}
-        onVerified={() => refetch()}
+        onVerified={() => {
+          utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! });
+          utils.leaderboard.getTop.invalidate();
+        }}
       />
     </div>
   );

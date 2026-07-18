@@ -6,11 +6,16 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is required to run drizzle commands");
 }
 
+// The runtime app uses better-sqlite3; ensure drizzle-kit targets SQLite.
+const sqliteUrl = connectionString.startsWith("file:")
+  ? connectionString
+  : `file:${connectionString}`;
+
 export default defineConfig({
   schema: "./db/schema.ts",
   out: "./db/migrations",
-  dialect: "mysql",
+  dialect: "sqlite",
   dbCredentials: {
-    url: connectionString,
+    url: sqliteUrl,
   },
 });

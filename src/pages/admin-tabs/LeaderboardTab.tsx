@@ -258,9 +258,7 @@ export function LeaderboardTab() {
               }}
             >
               <option value="">{t('admin.leaderboard.select_user')}</option>
-              {users?.users
-                .filter((u) => u.role !== 'super_admin' && u.role !== 'admin')
-                .map((user) => (
+              {users?.users.map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.name ?? user.email ?? user.unionId}
                   </option>
@@ -356,7 +354,7 @@ export function LeaderboardTab() {
         >
           {filtered?.map((leader) => (
             <div
-              key={leader.userId}
+              key={leader.identity}
               className="flex items-center gap-4 p-4"
               style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
             >

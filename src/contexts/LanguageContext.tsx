@@ -513,6 +513,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "badge.waste_kg": "Waste (kg)",
     "badge.waste_updated": "Waste recorded",
     "badge.waste_update_failed": "Failed to update waste",
+    "badge.save_waste": "Save waste",
     "badge.no_registrations": "No registrations yet.",
     "badge.paste_token": "Paste token",
     "badge.scan_with_camera": "Scan with camera",
@@ -1064,6 +1065,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "badge.waste_kg": "Déchets (kg)",
     "badge.waste_updated": "Déchets enregistrés",
     "badge.waste_update_failed": "Échec de la mise à jour des déchets",
+    "badge.save_waste": "Enregistrer les déchets",
     "badge.no_registrations": "Aucune inscription pour le moment.",
     "badge.paste_token": "Coller le token",
     "badge.scan_with_camera": "Scanner avec l'appareil",
@@ -1584,6 +1586,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "badge.waste_kg": "النفايات (كغ)",
     "badge.waste_updated": "تم تسجيل النفايات",
     "badge.waste_update_failed": "فشل تحديث النفايات",
+    "badge.save_waste": "حفظ النفايات",
     "badge.no_registrations": "لا توجد تسجيلات بعد.",
     "badge.paste_token": "لصق الرمز",
     "badge.scan_with_camera": "مسح بالكاميرا",
@@ -1626,11 +1629,23 @@ const translations: Record<Lang, Record<string, string>> = {
   },
 };
 
+const LANG_STORAGE_KEY = "gcm-language";
+
+function getInitialLang(): Lang {
+  if (typeof window === "undefined") return "en";
+  const stored = localStorage.getItem(LANG_STORAGE_KEY);
+  if (stored === "en" || stored === "fr" || stored === "ar") return stored;
+  return "en";
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>(getInitialLang);
 
   const setLang = useCallback((newLang: Lang) => {
     setLangState(newLang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(LANG_STORAGE_KEY, newLang);
+    }
     document.documentElement.dir = newLang === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = newLang;
   }, []);
