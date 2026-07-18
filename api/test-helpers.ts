@@ -310,7 +310,7 @@ export function seedTestData(db: ReturnType<typeof createTestDb>["db"]) {
     { key: "contact_email", value: "contact@greenmeknes.ma" },
     { key: "points_registration", value: "1" },
     { key: "points_attendance", value: "5" },
-    { key: "leaderboard_show_admins", value: "false" },
+    { key: "leaderboard_show_admins", value: "true" },
   ];
   for (const setting of settings) {
     sqlite

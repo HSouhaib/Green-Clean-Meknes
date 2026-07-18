@@ -253,7 +253,7 @@ async function seed() {
 
     { key: "points_registration", value: "1" },
     { key: "points_attendance", value: "5" },
-    { key: "leaderboard_show_admins", value: "false" },
+    { key: "leaderboard_show_admins", value: "true" },
     { key: "social_whatsapp", value: "https://wa.me/212600000000" },
     { key: "social_instagram", value: "https://instagram.com/greenmeknes" },
     { key: "donation_title_fr", value: "Soutenez Notre Mission" },

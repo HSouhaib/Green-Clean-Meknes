@@ -250,10 +250,13 @@ export function LeaderboardTab() {
               </div>
               <button
                 onClick={() => {
-                  setSelectedUserId(leader.userId);
-                  setReasonInput('');
+                  if (leader.userId) {
+                    setSelectedUserId(leader.userId);
+                    setReasonInput('');
+                  }
                 }}
-                className="px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                disabled={!leader.userId}
+                className="px-3 py-1.5 rounded text-xs font-medium transition-colors disabled:opacity-30"
                 style={{
                   background: 'rgba(58,90,42,0.3)',
                   color: 'var(--accent-green-light)',

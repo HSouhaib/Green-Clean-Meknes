@@ -529,6 +529,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.period.month": "This month",
     "leaderboard.search_placeholder": "Search volunteers...",
     "leaderboard.no_search_results": "No volunteers match your search.",
+    "leaderboard.guest": "Guest",
 
     "admin.leaderboard.title": "Leaderboard",
     "admin.leaderboard.award_points": "Award points",
@@ -1067,6 +1068,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.period.month": "Ce mois",
     "leaderboard.search_placeholder": "Rechercher des bénévoles...",
     "leaderboard.no_search_results": "Aucun bénévole ne correspond à votre recherche.",
+    "leaderboard.guest": "Invité",
 
     "admin.leaderboard.title": "Classement",
     "admin.leaderboard.award_points": "Attribuer des points",
@@ -1574,6 +1576,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.period.month": "هذا الشهر",
     "leaderboard.search_placeholder": "البحث عن متطوعين...",
     "leaderboard.no_search_results": "لا يوجد متطوعون مطابقون لبحثك.",
+    "leaderboard.guest": "ضيف",
 
     "admin.leaderboard.title": "لوحة المتصدرين",
     "admin.leaderboard.award_points": "منح نقاط",

@@ -155,13 +155,13 @@ export default function LeaderboardSection() {
             {topThree.length > 0 && (
               <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-10">
                 {topThree[1] && (
-                  <PodiumCard leader={topThree[1]} rank={2} order="order-2 md:order-1" height="h-64" />
+                  <PodiumCard key={topThree[1].identity} leader={topThree[1]} rank={2} order="order-2 md:order-1" height="h-64" />
                 )}
                 {topThree[0] && (
-                  <PodiumCard leader={topThree[0]} rank={1} order="order-1 md:order-2" height="h-80" />
+                  <PodiumCard key={topThree[0].identity} leader={topThree[0]} rank={1} order="order-1 md:order-2" height="h-80" />
                 )}
                 {topThree[2] && (
-                  <PodiumCard leader={topThree[2]} rank={3} order="order-3" height="h-56" />
+                  <PodiumCard key={topThree[2].identity} leader={topThree[2]} rank={3} order="order-3" height="h-56" />
                 )}
               </div>
             )}
@@ -176,7 +176,7 @@ export default function LeaderboardSection() {
               >
                 {rest.map((leader) => (
                   <div
-                    key={leader.userId}
+                    key={leader.identity}
                     className="flex items-center gap-4 p-4"
                     style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
                   >
@@ -189,10 +189,21 @@ export default function LeaderboardSection() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className="text-sm font-medium truncate"
+                        className="text-sm font-medium truncate flex items-center gap-2"
                         style={{ color: 'var(--text-primary)' }}
                       >
                         {leader.name}
+                        {leader.isGuest && (
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full font-normal"
+                            style={{
+                              background: 'var(--bg-surface-light)',
+                              color: 'var(--text-tertiary)',
+                            }}
+                          >
+                            {t('leaderboard.guest')}
+                          </span>
+                        )}
                       </p>
                       <p
                         className="text-xs flex items-center gap-1"

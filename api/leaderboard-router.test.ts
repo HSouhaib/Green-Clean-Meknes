@@ -62,8 +62,39 @@ describe("leaderboard router", () => {
     expect(result[2].rank).toBe(3);
   });
 
+  it("includes guest volunteers in leaderboard rankings", async () => {
+    const db = getDb();
+    const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => void } } }).$client;
+    const user = createTestUser(db, { name: "Alice", unionId: "alice_guest_test" });
+
+    insertPoint(user.id, 5, "attendance");
+
+    // Guest with one registered campaign that was attended => 1 registration + 1 attendance = 6 points
+    sqlite
+      .prepare(
+        "INSERT INTO campaign_registrations (campaign_id, user_id, guest_name, guest_email, status, attended, created_at) VALUES (?, ?, ?, ?, ?, ?, unixepoch())"
+      )
+      .run(1, null, "Guest Hero", "guest@example.com", "registered", 1);
+
+    const caller = appRouter.createCaller(createTestContext());
+    const result = await caller.leaderboard.getTop({ limit: 10 });
+
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe("Guest Hero");
+    expect(result[0].isGuest).toBe(true);
+    expect(result[0].totalPoints).toBe(6);
+    expect(result[0].userId).toBeUndefined();
+    expect(result[1].userId).toBe(user.id);
+    expect(result[1].totalPoints).toBe(5);
+  });
+
   it("excludes admins when leaderboard_show_admins is false", async () => {
     const db = getDb();
+    const sqlite = (db as unknown as { $client: { prepare: (sql: string) => { run: (...params: unknown[]) => void } } }).$client;
+    sqlite
+      .prepare("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)")
+      .run("leaderboard_show_admins", "false");
+
     const admin = createTestUser(db, { name: "Admin", role: "admin", unionId: "admin_1" });
     const user = createTestUser(db, { name: "Volunteer", unionId: "volunteer_1" });
 

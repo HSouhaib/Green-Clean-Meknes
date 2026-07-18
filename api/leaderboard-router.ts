@@ -14,7 +14,8 @@ import { logActivity } from "./lib/activity";
 const periodSchema = z.enum(["all", "year", "month"]);
 
 interface RawLeaderboardRow {
-  user_id: number;
+  identity: string;
+  user_id: number | null;
   name: string | null;
   avatar: string | null;
   role: string;
@@ -71,42 +72,66 @@ export const leaderboardRouter = createRouter({
 
       const rawClient = getRawClient(db);
 
-      const timeFilter = periodStart
-        ? `AND vp.created_at >= ?`
-        : "";
-      const params: (number | string)[] = [];
-      if (periodStart) params.push(periodStart);
-      params.push(input.limit);
+      const registrationPoints = await getSetting(db, "points_registration", 1);
+      const attendancePoints = await getSetting(db, "points_attendance", 5);
 
+      const userTimeFilter = periodStart ? `AND vp.created_at >= ?` : "";
+      const guestTimeFilter = periodStart ? `AND cr.created_at >= ?` : "";
       const roleFilter = showAdmins
         ? ""
         : "AND u.role NOT IN ('admin', 'super_admin')";
 
       const query = `
-        SELECT
-          u.id AS user_id,
-          u.name,
-          u.avatar,
-          u.role,
-          COALESCE(SUM(vp.points), 0) AS total_points,
-          COALESCE(att.attended_count, 0) AS attended_count
-        FROM users u
-        INNER JOIN volunteer_points vp ON vp.user_id = u.id
-        LEFT JOIN (
-          SELECT user_id, COUNT(*) AS attended_count
-          FROM campaign_registrations
-          WHERE attended = 1 AND user_id IS NOT NULL
-          GROUP BY user_id
-        ) att ON att.user_id = u.id
-        WHERE 1=1
-          ${timeFilter}
-          ${roleFilter}
-        GROUP BY u.id
+        SELECT * FROM (
+          SELECT
+            'user:' || u.id AS identity,
+            u.id AS user_id,
+            u.name,
+            u.avatar,
+            u.role,
+            COALESCE(SUM(vp.points), 0) AS total_points,
+            COALESCE(att.attended_count, 0) AS attended_count
+          FROM users u
+          INNER JOIN volunteer_points vp ON vp.user_id = u.id
+          LEFT JOIN (
+            SELECT user_id, COUNT(*) AS attended_count
+            FROM campaign_registrations
+            WHERE attended = 1 AND user_id IS NOT NULL
+            GROUP BY user_id
+          ) att ON att.user_id = u.id
+          WHERE 1=1
+            ${userTimeFilter}
+            ${roleFilter}
+          GROUP BY u.id
+
+          UNION ALL
+
+          SELECT
+            'guest:' || COALESCE(cr.guest_email, cr.guest_name) AS identity,
+            NULL AS user_id,
+            cr.guest_name AS name,
+            NULL AS avatar,
+            'guest' AS role,
+            (COUNT(*) * ?) + (SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) * ?) AS total_points,
+            SUM(CASE WHEN cr.attended = 1 THEN 1 ELSE 0 END) AS attended_count
+          FROM campaign_registrations cr
+          WHERE cr.user_id IS NULL
+            AND cr.guest_name IS NOT NULL
+            AND cr.status = 'registered'
+            ${guestTimeFilter}
+          GROUP BY cr.guest_email, cr.guest_name
+        )
         ORDER BY total_points DESC
         LIMIT ?
       `;
 
-      const rows = rawClient.prepare(query).all(...params) as RawLeaderboardRow[];
+      const queryParams: (number | string)[] = [];
+      if (periodStart) queryParams.push(periodStart);
+      queryParams.push(registrationPoints, attendancePoints);
+      if (periodStart) queryParams.push(periodStart);
+      queryParams.push(input.limit);
+
+      const rows = rawClient.prepare(query).all(...queryParams) as RawLeaderboardRow[];
 
       let rank = 0;
       let previousPoints: number | null = null;
@@ -121,10 +146,12 @@ export const leaderboardRouter = createRouter({
 
         return {
           rank: displayRank,
-          userId: row.user_id,
+          identity: row.identity,
+          userId: row.user_id ?? undefined,
           name: row.name ?? "Anonymous",
           avatar: row.avatar ?? null,
           role: row.role,
+          isGuest: row.user_id === null,
           totalPoints: row.total_points,
           attendedCount: row.attended_count,
         };

@@ -286,17 +286,17 @@ export default function LeaderboardPage() {
             {topThree.length > 0 && (
               <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-10">
                 {topThree[1] && (
-                  <div className="order-2 md:order-1 w-full md:w-auto">
+                  <div key={topThree[1].identity} className="order-2 md:order-1 w-full md:w-auto">
                     <PodiumCard leader={topThree[1]} rank={2} height="h-72" />
                   </div>
                 )}
                 {topThree[0] && (
-                  <div className="order-1 md:order-2 w-full md:w-auto">
+                  <div key={topThree[0].identity} className="order-1 md:order-2 w-full md:w-auto">
                     <PodiumCard leader={topThree[0]} rank={1} height="h-96" />
                   </div>
                 )}
                 {topThree[2] && (
-                  <div className="order-3 w-full md:w-auto">
+                  <div key={topThree[2].identity} className="order-3 w-full md:w-auto">
                     <PodiumCard leader={topThree[2]} rank={3} height="h-64" />
                   </div>
                 )}
@@ -314,7 +314,7 @@ export default function LeaderboardPage() {
               >
                 {rest.map((leader) => (
                   <div
-                    key={leader.userId}
+                    key={leader.identity}
                     className="flex items-center gap-4 p-4"
                     style={{
                       borderBottom: '1px solid var(--bg-surface-light)',
@@ -329,10 +329,21 @@ export default function LeaderboardPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className="text-base font-medium truncate"
+                        className="text-base font-medium truncate flex items-center gap-2"
                         style={{ color: 'var(--text-primary)' }}
                       >
                         {leader.name}
+                        {leader.isGuest && (
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full font-normal"
+                            style={{
+                              background: 'var(--bg-surface-light)',
+                              color: 'var(--text-tertiary)',
+                            }}
+                          >
+                            {t('leaderboard.guest')}
+                          </span>
+                        )}
                       </p>
                       <p
                         className="text-xs flex items-center gap-1"
