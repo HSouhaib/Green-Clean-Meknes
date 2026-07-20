@@ -73,7 +73,7 @@ npm run start
 
 ```bash
 npm run db:migrate
-npx tsx db/seed.ts
+npm run db:seed
 ```
 
 ### Tests
