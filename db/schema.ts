@@ -101,6 +101,7 @@ export const campaigns = sqliteTable("campaigns", {
   eventDate: integer("event_date", { mode: "timestamp" }),
   slug: text("slug").notNull().unique(),
   image: text("image"),
+  galleryImages: text("gallery_images"),
   filterTags: text("filter_tags").notNull().default("all"),
   mapX: real("map_x"),
   mapY: real("map_y"),

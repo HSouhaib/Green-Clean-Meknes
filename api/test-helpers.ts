@@ -50,6 +50,7 @@ export function createTestDb() {
       event_date INTEGER,
       slug TEXT NOT NULL UNIQUE,
       image TEXT,
+      gallery_images TEXT,
       filter_tags TEXT NOT NULL DEFAULT 'all',
       map_x REAL,
       map_y REAL,

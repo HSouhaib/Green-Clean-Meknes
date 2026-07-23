@@ -35,6 +35,9 @@ const createCampaignSchema = z.object({
   eventDate: z.number().optional().transform((n) => n ? new Date(n * 1000) : undefined),
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).transform((s) => sanitizeString(s, 100)),
   image: safeUrl(500).optional().transform((s) => s ? sanitizeString(s, 500) : undefined),
+  galleryImages: z.array(safeUrl(500)).max(10).optional().transform((arr) =>
+    arr ? JSON.stringify(arr.map((s) => sanitizeString(s, 500))) : undefined
+  ),
   filterTags: z.string().max(255).default("all").transform((s) => sanitizeString(s, 255)),
   mapX: z.number().optional(),
   mapY: z.number().optional(),
@@ -59,6 +62,9 @@ const updateCampaignSchema = z.object({
   date: z.string().max(50).optional().transform((s) => s ? sanitizeString(s, 50) : undefined),
   eventDate: z.number().optional().transform((n) => n ? new Date(n * 1000) : undefined),
   image: safeUrl(500).optional().transform((s) => s ? sanitizeString(s, 500) : undefined),
+  galleryImages: z.array(safeUrl(500)).max(10).optional().transform((arr) =>
+    arr ? JSON.stringify(arr.map((s) => sanitizeString(s, 500))) : undefined
+  ),
   filterTags: z.string().max(255).optional().transform((s) => s ? sanitizeString(s, 255) : undefined),
   isActive: z.boolean().optional(),
   mapX: z.number().optional(),
@@ -69,6 +75,15 @@ const updateCampaignSchema = z.object({
   statsVolunteers: z.number().int().min(0).optional(),
   statsNeighborhoods: z.number().int().min(0).optional(),
 });
+
+function parseGalleryImages<T extends { galleryImages: string | null | undefined }>(
+  campaign: T
+): Omit<T, "galleryImages"> & { galleryImages: string[] | null } {
+  return {
+    ...campaign,
+    galleryImages: campaign.galleryImages ? (JSON.parse(campaign.galleryImages) as string[]) : null,
+  };
+}
 
 // ===== ROUTER =====
 export const campaignRouter = createRouter({
@@ -139,11 +154,12 @@ export const campaignRouter = createRouter({
   }),
   list: publicQuery.query(async () => {
     const db = getDb();
-    return db
+    const rows = await db
       .select()
       .from(campaigns)
       .where(eq(campaigns.isActive, true))
       .orderBy(desc(campaigns.createdAt));
+    return rows.map(parseGalleryImages);
   }),
 
   // Public: get upcoming campaigns (with eventDate in the future)
@@ -151,7 +167,7 @@ export const campaignRouter = createRouter({
     const db = getDb();
     const now = new Date();
 
-    return db
+    const rows = await db
       .select()
       .from(campaigns)
       .where(
@@ -161,6 +177,7 @@ export const campaignRouter = createRouter({
         )
       )
       .orderBy(campaigns.eventDate);
+    return rows.map(parseGalleryImages);
   }),
 
   // Public: get next campaign countdown target
@@ -180,14 +197,14 @@ export const campaignRouter = createRouter({
       .orderBy(campaigns.eventDate)
       .limit(1);
 
-    return result[0] ?? null;
+    return result[0] ? parseGalleryImages(result[0]) : null;
   }),
 
   // Public: get all campaigns with eventDate for calendar view
   calendar: publicQuery.query(async () => {
     const db = getDb();
 
-    return db
+    const rows = await db
       .select({
         id: campaigns.id,
         titleEn: campaigns.titleEn,
@@ -200,6 +217,7 @@ export const campaignRouter = createRouter({
         locationFr: campaigns.locationFr,
         locationAr: campaigns.locationAr,
         image: campaigns.image,
+        galleryImages: campaigns.galleryImages,
       })
       .from(campaigns)
       .where(
@@ -209,6 +227,7 @@ export const campaignRouter = createRouter({
         )
       )
       .orderBy(campaigns.eventDate);
+    return rows.map(parseGalleryImages);
   }),
 
   // Public: get single campaign by slug
@@ -221,7 +240,7 @@ export const campaignRouter = createRouter({
         .from(campaigns)
         .where(eq(campaigns.slug, sanitizeString(input.slug, 100)))
         .limit(1);
-      return result[0] ?? null;
+      return result[0] ? parseGalleryImages(result[0]) : null;
     }),
 
   // Public: get registration count for a campaign
@@ -405,7 +424,9 @@ export const campaignRouter = createRouter({
       : [];
 
     // Map by id for lookup
-    const campaignMap = new Map(campaignData.map((c) => [c.id, c]));
+    const campaignMap = new Map(
+      campaignData.map((c) => [c.id, parseGalleryImages(c)])
+    );
 
     return regs.map((reg) => ({
       ...reg,
@@ -481,10 +502,11 @@ export const campaignRouter = createRouter({
   // Admin: list all campaigns (including inactive)
   listAll: adminQuery.query(async () => {
     const db = getDb();
-    return db
+    const rows = await db
       .select()
       .from(campaigns)
       .orderBy(desc(campaigns.createdAt));
+    return rows.map(parseGalleryImages);
   }),
 
   // Admin: create campaign

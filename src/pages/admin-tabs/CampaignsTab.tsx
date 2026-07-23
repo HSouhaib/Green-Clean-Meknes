@@ -4,7 +4,7 @@ import { trpc } from '@/lib/trpc';
 import { toast } from "sonner";
 import { X, Users, Trash2 } from "lucide-react";
 import { CAMPAIGN_STATUSES } from "@contracts/constants";
-import { DeleteModal, ImageUpload } from "./shared";
+import { DeleteModal, ImageUpload, GalleryUpload } from "./shared";
 import UserAvatar from "@/components/UserAvatar";
 import { useErrorModal } from "@/hooks/useErrorModal";
 
@@ -62,6 +62,7 @@ export function CampaignsTab() {
     eventTime: string;
     slug: string;
     image: string;
+    galleryImages: string[];
     filterTags: string;
     mapX: string;
     mapY: string;
@@ -84,6 +85,7 @@ export function CampaignsTab() {
     eventTime: "",
     slug: "",
     image: "",
+    galleryImages: [],
     filterTags: "all",
     mapX: "",
     mapY: "",
@@ -191,6 +193,7 @@ export function CampaignsTab() {
       eventTime: "",
       slug: "",
       image: "",
+      galleryImages: [],
       filterTags: "all",
       mapX: "",
       mapY: "",
@@ -225,6 +228,7 @@ export function CampaignsTab() {
           : "",
       slug: campaign.slug,
       image: campaign.image ?? "",
+      galleryImages: campaign.galleryImages ?? [],
       filterTags: campaign.filterTags,
       mapX: campaign.mapX?.toString() ?? "",
       mapY: campaign.mapY?.toString() ?? "",
@@ -258,6 +262,7 @@ export function CampaignsTab() {
     const { eventTime, ...baseForm } = formData;
     const payload = {
       ...baseForm,
+      galleryImages: formData.galleryImages.filter(Boolean),
       mapX: formData.mapX ? parseFloat(formData.mapX) : undefined,
       mapY: formData.mapY ? parseFloat(formData.mapY) : undefined,
       eventDate: parseDisplayDateToTimestamp(formData.date, eventTime),
@@ -586,6 +591,10 @@ export function CampaignsTab() {
           <ImageUpload
             value={formData.image}
             onChange={url => setFormData({ ...formData, image: url })}
+          />
+          <GalleryUpload
+            value={formData.galleryImages}
+            onChange={urls => setFormData({ ...formData, galleryImages: urls })}
           />
           <div className="flex gap-3 pt-2">
             <button

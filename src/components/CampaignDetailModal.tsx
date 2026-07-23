@@ -12,6 +12,8 @@ import {
   Trash2,
   Sprout,
   ImageOff,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { Campaign } from "@/types/campaign";
 import { useState } from "react";
@@ -68,7 +70,11 @@ export default function CampaignDetailModal({
   const { user } = useAuth();
   const isRtl = dir === "rtl";
   const [guestModalOpen, setGuestModalOpen] = useState(false);
-  const showImagePlaceholder = !campaign.image;
+  const [imageIndex, setImageIndex] = useState(0);
+  const images = [campaign.image, ...(campaign.galleryImages ?? [])].filter(
+    (url): url is string => !!url
+  );
+  const showImagePlaceholder = images.length === 0;
 
   const { isRegistered, count, isLoading, register, unregister } =
     useCampaignRegistration(campaign.id);
@@ -143,7 +149,39 @@ export default function CampaignDetailModal({
               </span>
             </div>
           ) : (
-            <CampaignImage key={campaign.image} src={campaign.image!} alt={title} />
+            <>
+              <CampaignImage
+                key={images[imageIndex]}
+                src={images[imageIndex]}
+                alt={title}
+              />
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setImageIndex((i) => (i === 0 ? images.length - 1 : i - 1))
+                    }
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.5)", color: "#fff" }}
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setImageIndex((i) => (i === images.length - 1 ? 0 : i + 1))
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ background: "rgba(0,0,0,0.5)", color: "#fff" }}
+                    aria-label="Next image"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </>
+              )}
+            </>
           )}
           {/* Date badge */}
           <div
@@ -157,6 +195,40 @@ export default function CampaignDetailModal({
             {eventDateTime}
           </div>
         </div>
+
+        {/* Gallery thumbnails */}
+        {images.length > 1 && (
+          <div
+            className="flex gap-2 px-4 pt-3 overflow-x-auto"
+            style={{
+              background: "var(--bg-surface)",
+              borderBottom: "1px solid var(--bg-surface-light)",
+            }}
+          >
+            {images.map((url, i) => (
+              <button
+                key={`${url}-${i}`}
+                type="button"
+                onClick={() => setImageIndex(i)}
+                className="relative shrink-0 rounded overflow-hidden"
+                style={{
+                  width: "64px",
+                  height: "48px",
+                  outline:
+                    i === imageIndex ? "2px solid var(--accent-green)" : "none",
+                  outlineOffset: "2px",
+                }}
+              >
+                <img
+                  src={url}
+                  alt={`Thumbnail ${i + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Countdown bar */}
         {campaign.eventDate && !isClosed && (

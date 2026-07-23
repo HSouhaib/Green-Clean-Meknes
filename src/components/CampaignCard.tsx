@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import GuestRegisterModal from "./GuestRegisterModal";
 import type { Campaign } from "@/types/campaign";
-import { Trash2, Sprout, Users, MapPin, ImageOff } from "lucide-react";
+import { Trash2, Sprout, Users, MapPin, ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCampaignTime } from "@/lib/utils";
 
 function CampaignImage({ src, alt }: { src: string; alt: string }) {
@@ -46,6 +46,10 @@ export default function CampaignCard({
   const { isRegistered, count, isLoading, register, unregister } =
     useCampaignRegistration(campaign.id);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+  const images = [campaign.image, ...(campaign.galleryImages ?? [])].filter(
+    (url): url is string => !!url
+  );
   const isClosed =
     campaign.status === "completed" || campaign.status === "cancelled";
 
@@ -101,10 +105,10 @@ export default function CampaignCard({
     >
       {/* Image - fixed height at top */}
       <div
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden group"
         style={{ height: "180px", flexShrink: 0 }}
       >
-        {!campaign.image ? (
+        {images.length === 0 ? (
           <div
             className="w-full h-full flex flex-col items-center justify-center gap-2"
             style={{ background: "var(--bg-surface)" }}
@@ -118,7 +122,61 @@ export default function CampaignCard({
             </span>
           </div>
         ) : (
-          <CampaignImage key={campaign.image} src={campaign.image!} alt={title} />
+          <>
+            <CampaignImage
+              key={images[imageIndex]}
+              src={images[imageIndex]}
+              alt={title}
+            />
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: "rgba(0,0,0,0.5)", color: "#fff" }}
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setImageIndex((i) => (i === images.length - 1 ? 0 : i + 1));
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: "rgba(0,0,0,0.5)", color: "#fff" }}
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={16} />
+                </button>
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setImageIndex(i);
+                      }}
+                      className="w-1.5 h-1.5 rounded-full transition-colors"
+                      style={{
+                        background:
+                          i === imageIndex
+                            ? "var(--accent-green)"
+                            : "rgba(255,255,255,0.5)",
+                      }}
+                      aria-label={`Go to image ${i + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
         {/* Date badge overlay */}
         <div

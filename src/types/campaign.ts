@@ -13,6 +13,7 @@ export interface Campaign {
   date: string;
   slug: string;
   image: string | null;
+  galleryImages: string[] | null;
   filterTags: string;
   mapX: number | null;
   mapY: number | null;
