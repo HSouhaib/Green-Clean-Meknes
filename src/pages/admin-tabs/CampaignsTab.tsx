@@ -4,7 +4,7 @@ import { trpc } from '@/lib/trpc';
 import { toast } from "sonner";
 import { X, Users, Trash2 } from "lucide-react";
 import { CAMPAIGN_STATUSES } from "@contracts/constants";
-import { DeleteModal, ImageUpload, GalleryUpload } from "./shared";
+import { DeleteModal, GalleryUpload } from "./shared";
 import UserAvatar from "@/components/UserAvatar";
 import { useErrorModal } from "@/hooks/useErrorModal";
 
@@ -61,7 +61,6 @@ export function CampaignsTab() {
     date: string;
     eventTime: string;
     slug: string;
-    image: string;
     galleryImages: string[];
     filterTags: string;
     mapX: string;
@@ -84,7 +83,6 @@ export function CampaignsTab() {
     date: "",
     eventTime: "",
     slug: "",
-    image: "",
     galleryImages: [],
     filterTags: "all",
     mapX: "",
@@ -192,7 +190,6 @@ export function CampaignsTab() {
       date: "",
       eventTime: "",
       slug: "",
-      image: "",
       galleryImages: [],
       filterTags: "all",
       mapX: "",
@@ -227,7 +224,6 @@ export function CampaignsTab() {
             })
           : "",
       slug: campaign.slug,
-      image: campaign.image ?? "",
       galleryImages: campaign.galleryImages ?? [],
       filterTags: campaign.filterTags,
       mapX: campaign.mapX?.toString() ?? "",
@@ -588,13 +584,10 @@ export function CampaignsTab() {
               </div>
             </div>
           </div>
-          <ImageUpload
-            value={formData.image}
-            onChange={url => setFormData({ ...formData, image: url })}
-          />
           <GalleryUpload
             value={formData.galleryImages}
             onChange={urls => setFormData({ ...formData, galleryImages: urls })}
+            label="Campaign Images"
           />
           <div className="flex gap-3 pt-2">
             <button

@@ -34,7 +34,6 @@ const createCampaignSchema = z.object({
   date: z.string().min(1).max(50).transform((s) => sanitizeString(s, 50)),
   eventDate: z.number().optional().transform((n) => n ? new Date(n * 1000) : undefined),
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).transform((s) => sanitizeString(s, 100)),
-  image: safeUrl(500).optional().transform((s) => s ? sanitizeString(s, 500) : undefined),
   galleryImages: z.array(safeUrl(500)).max(10).optional().transform((arr) =>
     arr ? JSON.stringify(arr.map((s) => sanitizeString(s, 500))) : undefined
   ),
@@ -61,7 +60,6 @@ const updateCampaignSchema = z.object({
   descriptionAr: z.string().max(2000).optional().transform((s) => s ? sanitizeString(s, 2000) : undefined),
   date: z.string().max(50).optional().transform((s) => s ? sanitizeString(s, 50) : undefined),
   eventDate: z.number().optional().transform((n) => n ? new Date(n * 1000) : undefined),
-  image: safeUrl(500).optional().transform((s) => s ? sanitizeString(s, 500) : undefined),
   galleryImages: z.array(safeUrl(500)).max(10).optional().transform((arr) =>
     arr ? JSON.stringify(arr.map((s) => sanitizeString(s, 500))) : undefined
   ),
@@ -216,7 +214,6 @@ export const campaignRouter = createRouter({
         locationEn: campaigns.locationEn,
         locationFr: campaigns.locationFr,
         locationAr: campaigns.locationAr,
-        image: campaigns.image,
         galleryImages: campaigns.galleryImages,
       })
       .from(campaigns)

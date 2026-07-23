@@ -71,9 +71,7 @@ export default function CampaignDetailModal({
   const isRtl = dir === "rtl";
   const [guestModalOpen, setGuestModalOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
-  const images = [campaign.image, ...(campaign.galleryImages ?? [])].filter(
-    (url): url is string => !!url
-  );
+  const images = campaign.galleryImages ?? [];
   const showImagePlaceholder = images.length === 0;
 
   const { isRegistered, count, isLoading, register, unregister } =

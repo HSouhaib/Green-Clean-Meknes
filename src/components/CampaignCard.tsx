@@ -47,9 +47,7 @@ export default function CampaignCard({
     useCampaignRegistration(campaign.id);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
-  const images = [campaign.image, ...(campaign.galleryImages ?? [])].filter(
-    (url): url is string => !!url
-  );
+  const images = campaign.galleryImages ?? [];
   const isClosed =
     campaign.status === "completed" || campaign.status === "cancelled";
 

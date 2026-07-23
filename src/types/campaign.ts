@@ -12,7 +12,6 @@ export interface Campaign {
   descriptionAr: string | null;
   date: string;
   slug: string;
-  image: string | null;
   galleryImages: string[] | null;
   filterTags: string;
   mapX: number | null;
