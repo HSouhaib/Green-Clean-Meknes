@@ -1,30 +1,54 @@
 # Green Clean Meknes
 
-A full-stack web platform for the **Green Clean Meknes** community environmental campaign in Meknes, Morocco. The app connects volunteers, showcases cleanup campaigns, and provides an admin dashboard for managing content across the site.
+A full-stack web platform for the **Green Clean Meknes** community environmental campaign in Meknes, Morocco. It connects volunteers, showcases cleanup campaigns, and gives admins the tools to manage content, attendance, and volunteer recognition.
 
 ## Live Demo
 
-Visit the deployed application at: `https://github.com/HSouhaib/Green-Clean-Meknes`
+Deployment URL: *coming soon*
+
+Repository: `https://github.com/HSouhaib/Green-Clean-Meknes`
 
 ## Tech Stack
 
 - **Frontend:** React 19 + TypeScript + Vite + Tailwind CSS + shadcn/ui
-- **Backend:** Hono + tRPC + better-sqlite3 (SQLite)
-- **Auth:** Google OAuth 2.0 (PKCE) with JWT session cookies
+- **Routing:** React Router v7 (code-split pages)
+- **Backend:** Hono 4 + tRPC 11 + better-sqlite3 (SQLite)
 - **ORM:** Drizzle ORM
+- **Auth:** Google OAuth 2.0 (PKCE) with JWT session cookies; dev-login bypass for local development
+- **State / Data:** TanStack Query + tRPC React Query
+- **Maps:** Leaflet + React-Leaflet
+- **QR Scanning:** html5-qrcode
+- **2FA:** otpauth
 - **Testing:** Vitest
-- **Tooling:** ESLint, Prettier, TypeScript
+- **Tooling:** ESLint 9, Prettier, TypeScript
 
 ## Features
 
-- Multilingual support (English, French, Arabic) with RTL layout
-- Animated hero section with day/night ambience and interactive squirrel mascot
-- Campaign listings with map integration and registration
-- Community voices section (gallery, partners, social feed, testimonials, polls, FAQ)
-- Admin dashboard with role-based access control
-- Volunteer self-registration
+### Public site
+
+- Multilingual support (English, French, Arabic) with full RTL layout
+- Animated hero section with day/night ambience
+- Dynamic leaderboard with configurable points (registration, attendance, waste per kg) and period filters
+- Campaign listings with interactive map, countdown timer, and multi-image galleries
+- Campaign detail modal with registration / unregister, share buttons, and image carousel
+- Guest volunteer registration portal
+- Before & after photo gallery
+- Community voices: testimonials, polls, FAQ, sponsors, partners, and social feed
 - Air quality data integration (Open-Meteo)
-- Responsive mobile-first design with polished navigation and mobile menu
+- Skeleton loading state for the landing page
+- Responsive mobile-first design with navigation, language switcher, and theme toggle
+
+### Admin dashboard
+
+- Role-based access control (`super_admin`, `admin`, custom roles with granular permissions)
+- Admin tabs: Dashboard, Landing Page, Campaigns, Presence, Photos, Sponsors, Social Feed, Users, Volunteers, Leaderboard, Polls, Testimonials, FAQs, Contacts, Neighborhoods, Plans, Site Settings, Sections
+- Campaign CRUD including multi-image gallery and impact stats
+- Presence check with QR badge scanning and manual mark present/absent
+- Dynamic leaderboard points system (points per registration, attendance, and waste kg)
+- Manual points awarding to volunteers
+- Section visibility and ordering controls
+- Site settings and stat overrides
+- Activity audit log
 
 ## Getting Started
 
@@ -41,18 +65,22 @@ npm install
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` and fill in the required values:
+Copy `.env.example` to `.env` and fill in the values:
 
 ```bash
 cp .env.example .env
 ```
 
-Required variables for production:
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `APP_SECRET` | Production | JWT signing secret (random 32+ character string) |
+| `DATABASE_URL` | Yes | SQLite database file path, e.g. `local.db` |
+| `GOOGLE_CLIENT_ID` | For OAuth | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | For OAuth | Google OAuth client secret |
+| `OWNER_UNION_ID` | No | Google `sub` ID auto-promoted to `super_admin` on login |
+| `CORS_ORIGIN` | No | Comma-separated allowed CORS origins for production |
 
-- `APP_SECRET`
-- `DATABASE_URL`
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
+In development, you can use `auth.devLogin` / `auth.devLoginUser` tRPC mutations to bypass Google OAuth.
 
 ### Development
 
@@ -62,7 +90,7 @@ npm run dev
 
 The Vite dev server runs on `http://localhost:3000` and mounts the Hono API automatically.
 
-### Build
+### Build & Start
 
 ```bash
 npm run build
@@ -82,22 +110,32 @@ npm run db:seed
 npm run test
 ```
 
-### Lint & Type Check
+### Lint, Format & Type Check
 
 ```bash
 npm run lint
 npm run check
+npm run format
 ```
 
 ## Project Structure
 
 ```
-├── api/            # Backend Hono + tRPC routers
-├── contracts/      # Shared types and constants
-├── db/             # Drizzle schema, migrations, and seed
-├── src/            # React frontend
-└── public/         # Static assets
+├── api/            # Backend Hono + tRPC routers and helpers
+├── contracts/      # Shared types, constants, and errors
+├── db/             # Drizzle schema, SQL migrations, and seed data
+├── src/            # React frontend (pages, sections, components, hooks)
+├── public/         # Static assets and uploaded images
+└── dist/           # Production build output
 ```
+
+## Key Conventions
+
+- Frontend never imports from `api/`; backend never imports from `src/`. Shared code lives in `contracts/`.
+- Use path aliases: `@/` for `src/`, `@contracts/` for `contracts/`, `@db/` for `db/`.
+- User-facing strings are translated via `useLanguage()` with keys for EN, FR, and AR.
+- Mutations show toast notifications and invalidate related React Query caches.
+- New backend routes include Vitest tests and use Zod + sanitizers for input validation.
 
 ## Contributing
 
