@@ -72,7 +72,7 @@ async function migrate() {
         db.prepare("INSERT OR IGNORE INTO __migrations (filename) VALUES (?)").run(file);
       } else {
         db.close();
-        throw new Error(`Migration ${file} failed: ${message}`);
+        throw new Error(`Migration ${file} failed: ${message}`, { cause: err });
       }
     }
   }
