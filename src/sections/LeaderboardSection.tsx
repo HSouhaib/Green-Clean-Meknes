@@ -218,7 +218,7 @@ export default function LeaderboardSection() {
   const { isVisible } = useSectionVisibility();
   const { data: leaders, isLoading } = trpc.leaderboard.getTop.useQuery(
     { limit: 10 },
-    { staleTime: 1000 * 60 * 2 }
+    { staleTime: 1000 * 60 * 2, refetchOnWindowFocus: false }
   );
 
   if (!isVisible('leaderboard')) return null;

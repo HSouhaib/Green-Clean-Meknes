@@ -270,7 +270,7 @@ export default function LeaderboardPage() {
 
   const { data: leaders, isLoading } = trpc.leaderboard.getTop.useQuery(
     { limit: 50, period },
-    { staleTime: 1000 * 60 * 2 }
+    { staleTime: 1000 * 60 * 2, refetchOnWindowFocus: false }
   );
 
   const isRtl = lang === 'ar';

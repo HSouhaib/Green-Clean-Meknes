@@ -44,17 +44,21 @@ export function PresenceTab() {
       }
       toast.error(t("badge.attendance_update_failed"));
     },
-    onSuccess: () => {
-      utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! });
-      utils.leaderboard.getTop.invalidate();
+    onSuccess: async () => {
+      await Promise.all([
+        utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! }),
+        utils.leaderboard.getTop.invalidate(),
+      ]);
       toast.success(t("badge.attendance_updated"));
     },
   });
 
   const updateWaste = trpc.campaign.updateRegistrationWaste.useMutation({
-    onSuccess: () => {
-      utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! });
-      utils.leaderboard.getTop.invalidate();
+    onSuccess: async () => {
+      await Promise.all([
+        utils.campaign.registrationsByCampaign.invalidate({ id: selectedCampaignId! }),
+        utils.leaderboard.getTop.invalidate(),
+      ]);
       toast.success(t("badge.waste_updated"));
     },
     onError: () => toast.error(t("badge.waste_update_failed")),

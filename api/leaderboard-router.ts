@@ -136,7 +136,7 @@ export const leaderboardRouter = createRouter({
             WHERE vp.reason NOT IN ('registration', 'attendance') ${manualTimeFilter}
             GROUP BY vp.user_id
           ) manual_points ON manual_points.user_id = u.id
-          WHERE (reg_counts.reg_count > 0 OR manual_points.total > 0) ${roleFilter}
+          WHERE (COALESCE(reg_counts.reg_count, 0) > 0 OR COALESCE(manual_points.total, 0) > 0) ${roleFilter}
         ),
         guest_scores AS (
           SELECT
