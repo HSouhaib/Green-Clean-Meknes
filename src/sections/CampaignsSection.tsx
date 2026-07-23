@@ -24,31 +24,6 @@ L.Icon.Default.mergeOptions({
 
 import type { Campaign } from '@/types/campaign';
 
-const filterButtons = [
-  { key: 'all', labelKey: 'campaigns.filter.all', color: '#6B8E5A' },
-  { key: 'outdoor', labelKey: 'campaigns.filter.outdoor', color: '#4A8ABE' },
-  { key: 'community', labelKey: 'campaigns.filter.community', color: '#C45A5A' },
-  { key: 'green', labelKey: 'campaigns.filter.green', color: '#5AA85A' },
-  { key: 'trail', labelKey: 'campaigns.filter.trail', color: '#A08060' },
-  { key: 'water', labelKey: 'campaigns.filter.water', color: '#4A9AC0' },
-];
-
-const tagColors: Record<string, string> = {
-  outdoor: '#4A8ABE',
-  community: '#C45A5A',
-  green: '#5AA85A',
-  trail: '#A08060',
-  water: '#4A9AC0',
-};
-
-function getPinColor(filterTags: string): string {
-  const tags = filterTags.split(',').map(t => t.trim());
-  for (const tag of tags) {
-    if (tag !== 'all' && tagColors[tag]) return tagColors[tag];
-  }
-  return '#6B8E5A';
-}
-
 // Create custom colored marker icon
 function createCustomIcon(color: string, isLight: boolean): L.DivIcon {
   return L.divIcon({
@@ -285,8 +260,6 @@ export default function CampaignsSection() {
   const { t, lang } = useLanguage();
   const { data: apiCampaigns, isLoading } = trpc.campaign.list.useQuery();
   const { data: nextCampaign } = trpc.campaign.nextCampaign.useQuery();
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [filterActive, setFilterActive] = useState(false);
   const [isLight, setIsLight] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null);
@@ -306,12 +279,6 @@ export default function CampaignsSection() {
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
-  }, []);
-
-  const handleFilterClick = useCallback((filter: string) => {
-    setActiveFilter(filter);
-    setFilterActive(filter !== 'all');
-    setSelectedCampaign(null);
   }, []);
 
   const handleMarkerClick = useCallback((campaign: Campaign) => {
@@ -340,15 +307,11 @@ export default function CampaignsSection() {
     }
   }, []);
 
-  const filteredCampaigns = filterActive
-    ? campaigns.filter((c) => c.filterTags.split(',').map(t => t.trim()).includes(activeFilter))
-    : campaigns;
-
   // Carousel scroll logic (activated when 5+ campaigns)
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const useCarousel = filteredCampaigns.length >= 5;
+  const useCarousel = campaigns.length >= 5;
 
   const checkScroll = useCallback(() => {
     const el = carouselRef.current;
@@ -367,7 +330,7 @@ export default function CampaignsSection() {
       el.removeEventListener('scroll', checkScroll);
       window.removeEventListener('resize', checkScroll);
     };
-  }, [checkScroll, useCarousel, filteredCampaigns.length]);
+  }, [checkScroll, useCarousel, campaigns.length]);
 
   const scrollCarousel = useCallback((dir: 'left' | 'right') => {
     const el = carouselRef.current;
@@ -505,32 +468,6 @@ export default function CampaignsSection() {
             </div>
           </div>
 
-          {/* Legend */}
-          <div className="absolute top-3 right-3 z-[5] pointer-events-none">
-            <div
-              className="px-2.5 py-2 rounded text-[9px] font-mono"
-              style={{
-                background: isLight ? 'rgba(255,255,255,0.9)' : 'rgba(30,33,28,0.9)',
-                color: isLight ? '#5a5548' : '#6a7a5a',
-                border: `1px solid ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.05)'}`,
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="flex items-center gap-1.5 mb-1">
-                <span style={{ color: '#C45A5A', fontSize: '6px' }}>●</span> Community
-              </div>
-              <div className="flex items-center gap-1.5 mb-1">
-                <span style={{ color: '#4A8ABE', fontSize: '6px' }}>●</span> Outdoor/Water
-              </div>
-              <div className="flex items-center gap-1.5 mb-1">
-                <span style={{ color: '#5AA85A', fontSize: '6px' }}>●</span> Green
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span style={{ color: '#A08060', fontSize: '6px' }}>●</span> Trail
-              </div>
-            </div>
-          </div>
-
           {/* Map controls: zoom + theme toggle */}
           <div className="absolute top-1/2 -translate-y-1/2 left-3 z-[999] flex flex-col gap-1.5">
             <button
@@ -592,11 +529,11 @@ export default function CampaignsSection() {
               onReady={(map) => { mapRef.current = map; }}
               campaigns={campaigns}
             />
-            {filteredCampaigns.filter(c => c.mapX && c.mapY).map((campaign) => (
+            {campaigns.filter(c => c.mapX && c.mapY).map((campaign) => (
               <Marker
                 key={campaign.id}
                 position={[campaign.mapX!, campaign.mapY!]}
-                icon={createCustomIcon(getPinColor(campaign.filterTags), isLight)}
+                icon={createCustomIcon('#6B8E5A', isLight)}
                 eventHandlers={{
                   click: () => handleMarkerClick(campaign),
                 }}
@@ -607,7 +544,7 @@ export default function CampaignsSection() {
                       style={{
                         fontSize: '11px',
                         fontWeight: 600,
-                        color: getPinColor(campaign.filterTags),
+                        color: '#6B8E5A',
                         marginBottom: '4px',
                         fontFamily: 'monospace',
                         textTransform: 'uppercase',
@@ -648,7 +585,7 @@ export default function CampaignsSection() {
                     <button
                       onClick={() => handleMarkerClick(campaign)}
                       style={{
-                        background: getPinColor(campaign.filterTags),
+                        background: '#6B8E5A',
                         color: 'white',
                         border: 'none',
                         padding: '6px 14px',
@@ -666,28 +603,6 @@ export default function CampaignsSection() {
             ))}
           </MapContainer>
 
-          {/* Filter buttons */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-[5] flex-wrap justify-center">
-            {filterButtons.map((btn) => {
-              const isActive = activeFilter === btn.key && filterActive;
-              return (
-                <button
-                  key={btn.key}
-                  onClick={() => handleFilterClick(btn.key)}
-                  className="px-3.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-wider transition-all duration-200"
-                  style={{
-                    background: isActive ? btn.color : isLight ? 'rgba(255,255,255,0.9)' : 'rgba(30,33,28,0.9)',
-                    color: isActive ? '#fff' : isLight ? '#5a5548' : '#6a7a5a',
-                    border: `1px solid ${isActive ? btn.color : isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.06)'}`,
-                    boxShadow: isActive ? `0 0 8px ${btn.color}40` : 'none',
-                    backdropFilter: 'blur(8px)',
-                  }}
-                >
-                  {t(btn.labelKey)}
-                </button>
-              );
-            })}
-          </div>
         </div>
 
         {/* Campaign cards: horizontal scroll carousel when 5+, otherwise grid */}
@@ -739,7 +654,7 @@ export default function CampaignsSection() {
                 marginRight: `calc(-1 * var(--page-margin))`,
               }}
             >
-              {filteredCampaigns.map((campaign, index) => (
+              {campaigns.map((campaign, index) => (
                 <div
                   key={campaign.id}
                   id={`campaign-card-${campaign.id}`}
@@ -756,9 +671,9 @@ export default function CampaignsSection() {
                 >
                   <CampaignCard
                     campaign={campaign}
-                    isActive={filterActive && campaign.filterTags.split(',').map(t => t.trim()).includes(activeFilter)}
-                    isDimmed={filterActive && !campaign.filterTags.split(',').map(t => t.trim()).includes(activeFilter)}
-                    filterActive={filterActive}
+                    isActive={false}
+                    isDimmed={false}
+                    filterActive={false}
                   />
                 </div>
               ))}
@@ -766,7 +681,7 @@ export default function CampaignsSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filteredCampaigns.map((campaign, index) => (
+            {campaigns.map((campaign, index) => (
               <div
                 key={campaign.id}
                 id={`campaign-card-${campaign.id}`}
@@ -780,9 +695,9 @@ export default function CampaignsSection() {
               >
                 <CampaignCard
                   campaign={campaign}
-                  isActive={filterActive && campaign.filterTags.split(',').map(t => t.trim()).includes(activeFilter)}
-                  isDimmed={filterActive && !campaign.filterTags.split(',').map(t => t.trim()).includes(activeFilter)}
-                  filterActive={filterActive}
+                  isActive={false}
+                  isDimmed={false}
+                  filterActive={false}
                 />
               </div>
             ))}
