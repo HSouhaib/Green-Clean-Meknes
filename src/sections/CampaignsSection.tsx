@@ -443,6 +443,14 @@ export default function CampaignsSection() {
           <p className="text-sm font-light mt-2 mx-auto max-w-lg" style={{ color: 'var(--text-secondary)' }}>
             {t('campaigns.subheading')}
           </p>
+          <a
+            href="#community"
+            className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium transition-opacity hover:opacity-80"
+            style={{ color: 'var(--accent-green)' }}
+          >
+            {t('campaigns.see_gallery')}
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
 
         {/* Map container */}

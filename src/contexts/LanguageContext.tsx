@@ -144,7 +144,8 @@ const translations: Record<Lang, Record<string, string>> = {
 
     "campaigns.heading": "Upcoming Campaigns",
     "campaigns.subheading":
-      "Click a filter or hover pins on the tactical map to find campaigns by theme.",
+      "Explore upcoming cleanups on the map and see the impact we have already made.",
+    "campaigns.see_gallery": "See before & after photos",
     "campaigns.canvas.placeholder": "Draw your commitment",
     "campaigns.canvas.instruction":
       "Draw a shape to discover your next campaign",
@@ -693,7 +694,8 @@ const translations: Record<Lang, Record<string, string>> = {
       "Dessinez une forme ou appuyez sur un bouton pour filtrer les campagnes",
     "campaigns.heading": "Campagnes a Venir",
     "campaigns.subheading":
-      "Cliquez sur un filtre ou survolez les points sur la carte tactique pour trouver des campagnes par theme.",
+      "Explorez les prochaines actions de nettoyage sur la carte et decouvrez l'impact deja realise.",
+    "campaigns.see_gallery": "Voir les photos avant/apres",
     "campaigns.canvas.placeholder": "Dessinez votre engagement",
     "campaigns.canvas.instruction":
       "Dessinez une forme pour decouvrir votre prochaine campagne",
@@ -1240,7 +1242,8 @@ const translations: Record<Lang, Record<string, string>> = {
       "ارسم شكلًا أو اضغط على زر لتصفية الحملات",
     "campaigns.heading": "الحملات القادمة",
     "campaigns.subheading":
-      "انقر على فلتر أو مرر فوق الدبابيس على الخريطة التكتيكية للعثور على الحملات حسب الموضوع.",
+      "استكشف حملات التنظيف القادمة على الخريطة وشاهد الأثر الذي حققناه بالفعل.",
+    "campaigns.see_gallery": "شاهد صور قبل وبعد",
     "campaigns.canvas.placeholder": "ارسم التزامك",
     "campaigns.canvas.instruction": "ارسم شكلًا لاكتشاف حملتك القادمة",
     "campaigns.share": "مشاركة",
