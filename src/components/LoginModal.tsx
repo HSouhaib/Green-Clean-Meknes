@@ -86,7 +86,7 @@ export function LoginPanel() {
           className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200"
           style={{
             background: isSignIn ? 'var(--accent-green)' : 'transparent',
-            color: isSignIn ? 'var(--bg-primary)' : 'var(--text-secondary)',
+            color: isSignIn ? '#ffffff' : 'var(--text-secondary)',
           }}
         >
           {t('login.sign_in')}
@@ -97,7 +97,7 @@ export function LoginPanel() {
           className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200"
           style={{
             background: !isSignIn ? 'var(--accent-green)' : 'transparent',
-            color: !isSignIn ? 'var(--bg-primary)' : 'var(--text-secondary)',
+            color: !isSignIn ? '#ffffff' : 'var(--text-secondary)',
           }}
         >
           {t('login.sign_up')}
@@ -144,8 +144,8 @@ export function LoginPanel() {
       </button>
 
       <p
-        className="text-center text-xs mt-5"
-        style={{ color: 'var(--text-tertiary)' }}
+        className="text-center text-xs mt-5 leading-relaxed"
+        style={{ color: 'var(--text-secondary)' }}
       >
         {t('login.terms')}
       </p>
