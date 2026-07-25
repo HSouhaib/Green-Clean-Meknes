@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import GuestRegisterModal from "./GuestRegisterModal";
 import type { Campaign } from "@/types/campaign";
 import { Trash2, Sprout, Users, MapPin, ImageOff, ChevronLeft, ChevronRight, Clock } from "lucide-react";
-import { formatCampaignTime } from "@/lib/utils";
+import { formatCampaignTime, getEffectiveCampaignStatus } from "@/lib/utils";
 
 function CampaignImage({ src, alt }: { src: string; alt: string }) {
   const [error, setError] = useState(false);
@@ -67,6 +67,7 @@ export default function CampaignCard({
       `description${lang.charAt(0).toUpperCase() + lang.slice(1)}` as keyof Campaign
     ] as string) || campaign.descriptionEn;
   const eventTime = formatCampaignTime(campaign.eventDate, lang);
+  const effectiveStatus = getEffectiveCampaignStatus(campaign.status, campaign.eventDate);
 
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(() => {
     if (!campaign.eventDate || campaign.status !== 'upcoming') return null;
@@ -275,24 +276,24 @@ export default function CampaignCard({
             className="inline-block px-2 py-0.5 rounded text-[10px] font-medium capitalize"
             style={{
               background:
-                campaign.status === "ongoing"
+                effectiveStatus === "ongoing"
                   ? "rgba(58,90,42,0.15)"
-                  : campaign.status === "upcoming"
+                  : effectiveStatus === "upcoming"
                     ? "rgba(196,90,90,0.15)"
-                    : campaign.status === "completed"
+                    : effectiveStatus === "completed"
                       ? "rgba(74,138,190,0.15)"
                       : "rgba(85,85,85,0.15)",
               color:
-                campaign.status === "ongoing"
+                effectiveStatus === "ongoing"
                   ? "var(--accent-green-light)"
-                  : campaign.status === "upcoming"
+                  : effectiveStatus === "upcoming"
                     ? "var(--accent-terracotta)"
-                    : campaign.status === "completed"
+                    : effectiveStatus === "completed"
                       ? "#7fb3e0"
                       : "var(--text-tertiary)",
             }}
           >
-            {t(`campaigns.status.${campaign.status}`)}
+            {t(`campaigns.status.${effectiveStatus}`)}
           </span>
 
           {/* Countdown for upcoming campaigns */}

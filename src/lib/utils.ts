@@ -15,6 +15,19 @@ export function getEventTimestamp(
   return isNaN(parsed) ? null : parsed * 1000;
 }
 
+export type CampaignStatus = 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+
+export function getEffectiveCampaignStatus(
+  status: CampaignStatus,
+  eventDate: Date | string | number | null | undefined
+): CampaignStatus {
+  if (status === 'cancelled' || status === 'completed') return status;
+  const ts = getEventTimestamp(eventDate);
+  if (!ts) return status;
+  if (ts < Date.now() && status === 'upcoming') return 'ongoing';
+  return status;
+}
+
 export function formatCampaignDateTime(
   eventDate: Date | string | number | null | undefined,
   lang: string,
