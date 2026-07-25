@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router';
 import CampaignDetailModal from '@/components/CampaignDetailModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import CampaignCard from '@/components/CampaignCard';
@@ -260,6 +261,8 @@ export default function CampaignsSection() {
   const { t, lang } = useLanguage();
   const { data: apiCampaigns, isLoading } = trpc.campaign.list.useQuery();
   const { data: nextCampaign } = trpc.campaign.nextCampaign.useQuery();
+  const { data: neighborhoods } = trpc.neighborhood.list.useQuery();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLight, setIsLight] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<number | null>(null);
@@ -267,6 +270,20 @@ export default function CampaignsSection() {
   const mapRef = useRef<L.Map | null>(null);
 
   const campaigns = apiCampaigns || [];
+
+  const neighborhoodById = new Map(
+    (neighborhoods ?? []).map((n) => [n.id, n])
+  );
+
+  const selectedNeighborhoodSlug = searchParams.get("neighborhood") ?? undefined;
+  const selectedNeighborhood = selectedNeighborhoodSlug
+    ? (neighborhoods ?? []).find((n) => n.slug === selectedNeighborhoodSlug)
+    : undefined;
+  const selectedNeighborhoodId = selectedNeighborhood?.id;
+
+  const filteredCampaigns = selectedNeighborhoodId
+    ? campaigns.filter((c) => c.neighborhoodId === selectedNeighborhoodId)
+    : campaigns;
 
   useEffect(() => {
     const checkTheme = () => setIsLight(document.documentElement.getAttribute('data-theme') === 'light');
@@ -307,11 +324,32 @@ export default function CampaignsSection() {
     }
   }, []);
 
+  const handleNeighborhoodSelect = useCallback((slug: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (next.get("neighborhood") === slug) {
+        next.delete("neighborhood");
+      } else {
+        next.set("neighborhood", slug);
+      }
+      return next;
+    });
+  }, [setSearchParams]);
+
+  const handleClearNeighborhood = useCallback(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("neighborhood");
+      return next;
+    });
+  }, [setSearchParams]);
+
   // Carousel scroll logic (activated when 5+ campaigns)
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const useCarousel = campaigns.length >= 5;
+  const displayCampaigns = filteredCampaigns;
+  const useCarousel = displayCampaigns.length >= 5;
 
   const checkScroll = useCallback(() => {
     const el = carouselRef.current;
@@ -453,6 +491,72 @@ export default function CampaignsSection() {
           </a>
         </div>
 
+        {/* Neighborhood filter chips */}
+        {neighborhoods && neighborhoods.length > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+            <button
+              type="button"
+              onClick={handleClearNeighborhood}
+              className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+              style={{
+                background: !selectedNeighborhoodId ? 'var(--accent-green)' : 'var(--bg-primary)',
+                color: !selectedNeighborhoodId ? 'var(--bg-primary)' : 'var(--text-secondary)',
+                border: '1px solid var(--bg-surface-light)',
+              }}
+            >
+              {t('campaigns.all_neighborhoods')}
+            </button>
+            {neighborhoods.map((neighborhood) => {
+              const isActive = selectedNeighborhoodId === neighborhood.id;
+              const name =
+                lang === 'fr' && neighborhood.nameFr
+                  ? neighborhood.nameFr
+                  : lang === 'ar' && neighborhood.nameAr
+                    ? neighborhood.nameAr
+                    : neighborhood.nameEn;
+              return (
+                <button
+                  key={neighborhood.id}
+                  type="button"
+                  onClick={() => handleNeighborhoodSelect(neighborhood.slug)}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                  style={{
+                    background: isActive ? 'var(--accent-green)' : 'var(--bg-primary)',
+                    color: isActive ? 'var(--bg-primary)' : 'var(--text-secondary)',
+                    border: '1px solid var(--bg-surface-light)',
+                  }}
+                >
+                  {name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Active filter indicator */}
+        {selectedNeighborhood && (
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {t('campaigns.showing_neighborhood')}{' '}
+              <strong style={{ color: 'var(--text-primary)' }}>
+                {lang === 'fr' && selectedNeighborhood.nameFr
+                  ? selectedNeighborhood.nameFr
+                  : lang === 'ar' && selectedNeighborhood.nameAr
+                    ? selectedNeighborhood.nameAr
+                    : selectedNeighborhood.nameEn}
+              </strong>
+            </span>
+            <button
+              type="button"
+              onClick={handleClearNeighborhood}
+              className="text-xs underline"
+              style={{ color: 'var(--accent-green)' }}
+            >
+              {t('campaigns.clear_filter')}
+            </button>
+          </div>
+        )}
+
         {/* Map container */}
         <div
           className="relative rounded-xl overflow-hidden mb-10"
@@ -537,7 +641,7 @@ export default function CampaignsSection() {
               onReady={(map) => { mapRef.current = map; }}
               campaigns={campaigns}
             />
-            {campaigns.filter(c => c.mapX && c.mapY).map((campaign) => (
+            {displayCampaigns.filter(c => c.mapX && c.mapY).map((campaign) => (
               <Marker
                 key={campaign.id}
                 position={[campaign.mapX!, campaign.mapY!]}
@@ -662,7 +766,7 @@ export default function CampaignsSection() {
                 marginRight: `calc(-1 * var(--page-margin))`,
               }}
             >
-              {campaigns.map((campaign, index) => (
+              {displayCampaigns.map((campaign, index) => (
                 <div
                   key={campaign.id}
                   id={`campaign-card-${campaign.id}`}
@@ -682,6 +786,11 @@ export default function CampaignsSection() {
                     isActive={false}
                     isDimmed={false}
                     filterActive={false}
+                    neighborhoodName={
+                      campaign.neighborhoodId
+                        ? neighborhoodById.get(campaign.neighborhoodId)?.nameEn
+                        : null
+                    }
                   />
                 </div>
               ))}
@@ -689,7 +798,7 @@ export default function CampaignsSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {campaigns.map((campaign, index) => (
+            {displayCampaigns.map((campaign, index) => (
               <div
                 key={campaign.id}
                 id={`campaign-card-${campaign.id}`}
@@ -706,6 +815,11 @@ export default function CampaignsSection() {
                   isActive={false}
                   isDimmed={false}
                   filterActive={false}
+                  neighborhoodName={
+                    campaign.neighborhoodId
+                      ? neighborhoodById.get(campaign.neighborhoodId)?.nameEn
+                      : null
+                  }
                 />
               </div>
             ))}

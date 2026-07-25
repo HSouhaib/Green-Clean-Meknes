@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { motion } from 'framer-motion';
 import {
@@ -9,8 +9,8 @@ import {
   Trash2,
   Calendar,
   ImageOff,
+  ArrowRight,
 } from 'lucide-react';
-import CampaignDetailModal from './CampaignDetailModal';
 import type { Campaign } from '@/types/campaign';
 
 interface NeighborhoodWithCampaigns {
@@ -65,18 +65,12 @@ function getNeighborhoodDescription(n: NeighborhoodWithCampaigns, lang: string):
   return n.descriptionEn;
 }
 
-function getCampaignTitle(c: Campaign, lang: string): string {
-  if (lang === 'fr' && c.titleFr) return c.titleFr;
-  if (lang === 'ar' && c.titleAr) return c.titleAr;
-  return c.titleEn;
-}
-
 export default function NeighborhoodDetailModal({
   neighborhood,
   onClose,
 }: NeighborhoodDetailModalProps) {
   const { t, lang, dir } = useLanguage();
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const navigate = useNavigate();
 
   const name = getNeighborhoodName(neighborhood, lang);
   const description = getNeighborhoodDescription(neighborhood, lang);
@@ -175,84 +169,42 @@ export default function NeighborhoodDetailModal({
                   {description}
                 </p>
 
-                {/* Linked campaigns */}
-                {neighborhood.campaigns.length > 0 && (
-                  <div className="mt-10">
-                    <h3
-                      className="font-display text-lg mb-4"
+                {/* Browse campaigns CTA */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    navigate(`/?neighborhood=${neighborhood.slug}#campaigns`);
+                  }}
+                  className="group mt-8 flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02]"
+                  style={{
+                    background: 'var(--bg-primary)',
+                    border: '1px solid var(--bg-surface-light)',
+                  }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{ background: 'rgba(107, 142, 90, 0.15)' }}
+                  >
+                    <Calendar size={18} style={{ color: 'var(--accent-green)' }} />
+                  </div>
+                  <div className="text-left">
+                    <span
+                      className="block text-sm font-medium"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      {t('neighborhoods.campaigns_label')}
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {neighborhood.campaigns.map((campaign) => (
-                        <button
-                          key={campaign.id}
-                          type="button"
-                          onClick={() => setSelectedCampaign(campaign)}
-                          className="group block w-full text-left rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02]"
-                          style={{
-                            background: 'var(--bg-primary)',
-                            border: '1px solid var(--bg-surface-light)',
-                          }}
-                        >
-                          <div className="relative h-32 overflow-hidden">
-                            {campaign.galleryImages && campaign.galleryImages.length > 0 ? (
-                              <img
-                                src={campaign.galleryImages[0]}
-                                alt={getCampaignTitle(campaign, lang)}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div
-                                className="w-full h-full flex items-center justify-center"
-                                style={{ background: 'var(--bg-surface)' }}
-                              >
-                                <Calendar size={32} style={{ color: 'var(--text-tertiary)' }} />
-                              </div>
-                            )}
-                            <div
-                              className="absolute inset-0"
-                              style={{
-                                background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)',
-                              }}
-                            />
-                            <div className="absolute bottom-2 left-2 right-2">
-                              <span
-                                className="text-[10px] px-1.5 py-0.5 rounded capitalize"
-                                style={{
-                                  background:
-                                    campaign.status === 'ongoing'
-                                      ? 'rgba(58,90,42,0.6)'
-                                      : campaign.status === 'upcoming'
-                                        ? 'rgba(196,90,90,0.4)'
-                                        : campaign.status === 'completed'
-                                          ? 'rgba(74,138,190,0.4)'
-                                          : 'rgba(85,85,85,0.4)',
-                                  color: '#fff',
-                                }}
-                              >
-                                {t(`campaigns.status.${campaign.status}`)}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-3">
-                            <h4
-                              className="font-medium text-sm mb-0.5"
-                              style={{ color: 'var(--text-primary)' }}
-                            >
-                              {getCampaignTitle(campaign, lang)}
-                            </h4>
-                            <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                              {campaign.date}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+                      {t('neighborhoods.view_campaigns')}
+                    </span>
+                    <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                      {t('neighborhoods.view_campaigns_sub').replace('{count}', String(neighborhood.campaigns.length))}
+                    </span>
                   </div>
-                )}
+                  <ArrowRight
+                    size={18}
+                    className="ml-auto transition-transform group-hover:translate-x-1"
+                    style={{ color: 'var(--accent-green)' }}
+                  />
+                </button>
               </div>
 
               {/* Stats sidebar */}
@@ -304,12 +256,6 @@ export default function NeighborhoodDetailModal({
         </div>
       </motion.div>
 
-      {selectedCampaign && (
-        <CampaignDetailModal
-          campaign={selectedCampaign}
-          onClose={() => setSelectedCampaign(null)}
-        />
-      )}
     </div>
   );
 }

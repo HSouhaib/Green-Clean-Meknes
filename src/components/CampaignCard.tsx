@@ -33,6 +33,7 @@ interface CampaignCardProps {
   isActive: boolean;
   isDimmed: boolean;
   filterActive: boolean;
+  neighborhoodName?: string | null;
 }
 
 export default function CampaignCard({
@@ -40,6 +41,7 @@ export default function CampaignCard({
   isActive,
   isDimmed,
   filterActive,
+  neighborhoodName,
 }: CampaignCardProps) {
   const { t, lang } = useLanguage();
   const { user } = useAuth();
@@ -189,6 +191,20 @@ export default function CampaignCard({
             <span className="ml-1.5 opacity-90">• {eventTime}</span>
           )}
         </div>
+
+        {/* Neighborhood badge overlay */}
+        {neighborhoodName && (
+          <div
+            className="absolute top-3 right-3 px-2.5 py-1 rounded font-mono text-[10px] uppercase"
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              color: "#fff",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            {neighborhoodName}
+          </div>
+        )}
       </div>
 
       {/* Content - flex grow to fill remaining space */}
