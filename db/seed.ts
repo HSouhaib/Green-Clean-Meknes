@@ -207,6 +207,71 @@ async function seed() {
 
   console.log(`Inserted ${sampleCampaigns.length} campaigns.`);
 
+  // Insert sample neighborhoods
+  const sampleNeighborhoods = [
+    {
+      nameEn: "Bab Mansour",
+      nameFr: "Bab Mansour",
+      nameAr: "باب المنصور",
+      slug: "bab-mansour",
+      descriptionEn: "The historic gateway to Meknes' old medina, surrounded by bustling plazas and artisan shops.",
+      descriptionFr: "La porte historique de la vieille medina de Meknes, entouree de places animees et d'ateliers d'artisans.",
+      descriptionAr: "البوابة التاريخية للمدينة القديمة بمكناس، محاطة بساحات نابضة بالحياة ومحلات الحرفيين.",
+      image: "/assets/campaign-bab-mansour.jpg",
+      statsWasteKg: 1200,
+      statsTrees: 45,
+      statsVolunteers: 180,
+      statsCampaigns: 8,
+      mapX: 33.8933,
+      mapY: -5.5582,
+      isActive: true,
+    },
+    {
+      nameEn: "Hamria",
+      nameFr: "Hamria",
+      nameAr: "الحمريـة",
+      slug: "hamria",
+      descriptionEn: "A lively neighborhood known for its market and strong community spirit.",
+      descriptionFr: "Un quartier anime connu pour son marche et son fort esprit communautaire.",
+      descriptionAr: "حي نابض بالحياة يشتهر بسوقه وروحه المجتمعية القوية.",
+      image: "/assets/campaign-hamria.jpg",
+      statsWasteKg: 950,
+      statsTrees: 30,
+      statsVolunteers: 140,
+      statsCampaigns: 6,
+      mapX: 33.895,
+      mapY: -5.55,
+      isActive: true,
+    },
+    {
+      nameEn: "Ville Nouvelle",
+      nameFr: "Ville Nouvelle",
+      nameAr: "المدينة الجديدة",
+      slug: "ville-nouvelle",
+      descriptionEn: "The modern heart of Meknes with wide avenues, parks, and cafés.",
+      descriptionFr: "Le coeur moderne de Meknes avec ses larges avenues, ses parcs et ses cafes.",
+      descriptionAr: "قلب مكناس الحديثة مع شوارعها الواسعة وحدائقها ومقاهيها.",
+      image: "/assets/campaign-ville-nouvelle.jpg",
+      statsWasteKg: 780,
+      statsTrees: 60,
+      statsVolunteers: 110,
+      statsCampaigns: 5,
+      mapX: 33.89,
+      mapY: -5.565,
+      isActive: true,
+    },
+  ];
+
+  for (const neighborhood of sampleNeighborhoods) {
+    try {
+      db.insert(schema.neighborhoods).values(neighborhood).run();
+    } catch {
+      // may already exist
+    }
+  }
+
+  console.log(`Inserted ${sampleNeighborhoods.length} neighborhoods.`);
+
   // Insert default section visibility settings
   const sections = [
     { sectionKey: "hero", isVisible: true },

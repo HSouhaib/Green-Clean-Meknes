@@ -12,6 +12,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.about": "About",
     "nav.leaderboard": "Leaderboard",
     "nav.campaigns": "Campaigns",
+    "nav.neighborhoods": "Neighborhoods",
     "nav.contact": "Contact",
 
     "hero.heading": "Clean Meknes, One Campaign at a Time",
@@ -564,6 +565,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.about": "A propos",
     "nav.leaderboard": "Classement",
     "nav.campaigns": "Campagnes",
+    "nav.neighborhoods": "Quartiers",
     "nav.contact": "Contact",
 
     "hero.heading": "Meknes Propre, Une Campagne a la Fois",
@@ -1121,6 +1123,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.about": "من نحن",
     "nav.leaderboard": "المتصدرين",
     "nav.campaigns": "الحملات",
+    "nav.neighborhoods": "الأحياء",
     "nav.contact": "اتصل بنا",
 
     "hero.heading": "مكناس نظيفة، حملة بحملة",
