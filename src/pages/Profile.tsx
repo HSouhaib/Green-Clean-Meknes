@@ -70,7 +70,7 @@ export default function Profile() {
         className="fixed top-0 left-0 right-0 z-50"
         style={{
           height: "64px",
-          background: "rgba(var(--bg-surface-rgb, 30, 30, 30), 0.85)",
+          background: "rgba(var(--bg-surface-rgb), 0.9)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: "1px solid var(--bg-surface-light)",
@@ -197,7 +197,7 @@ export default function Profile() {
                         : "var(--bg-surface-light)",
                       color: user.twoFactorEnabled
                         ? "var(--accent-green)"
-                        : "var(--text-tertiary)",
+                        : "var(--text-secondary)",
                     }}
                   >
                     {user.twoFactorEnabled ? (
@@ -230,7 +230,7 @@ export default function Profile() {
                       : "var(--accent-green)",
                     color: user.twoFactorEnabled
                       ? "#ef4444"
-                      : "var(--bg-primary)",
+                      : "#ffffff",
                   }}
                 >
                   {user.twoFactorEnabled
@@ -313,7 +313,7 @@ export default function Profile() {
                             <div className="flex items-center gap-3 mt-1.5">
                               <span
                                 className="flex items-center gap-1 text-xs"
-                                style={{ color: "var(--text-tertiary)" }}
+                                style={{ color: "var(--text-secondary)" }}
                               >
                                 <Calendar size={12} />
                                 {formatCampaignDateTime(
@@ -324,7 +324,7 @@ export default function Profile() {
                               </span>
                               <span
                                 className="flex items-center gap-1 text-xs"
-                                style={{ color: "var(--text-tertiary)" }}
+                                style={{ color: "var(--text-secondary)" }}
                               >
                                 <MapPin size={12} />
                                 {campaignLocation}
@@ -340,7 +340,7 @@ export default function Profile() {
                             className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border-none cursor-pointer transition-colors"
                             style={{
                               background: "var(--accent-green)",
-                              color: "var(--bg-primary)",
+                              color: "#ffffff",
                             }}
                           >
                             {t("badge.show_badge")}
@@ -362,7 +362,7 @@ export default function Profile() {
                 <Calendar
                   size={32}
                   className="mx-auto mb-3"
-                  style={{ color: "var(--text-tertiary)" }}
+                  style={{ color: "var(--text-secondary)" }}
                 />
                 <p
                   className="text-sm"
