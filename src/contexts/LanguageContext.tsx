@@ -330,13 +330,8 @@ const translations: Record<Lang, Record<string, string>> = {
       "Two-factor authentication disabled successfully.",
     "two_factor.success_verified": "Two-factor authentication verified.",
 
-    "login.provider.kimi": "Sign in with Kimi",
     "login.provider.google": "Continue with Google",
     "login.provider.google_signup": "Sign up with Google",
-    "login.provider.facebook": "Sign in with Facebook",
-    "login.provider.tiktok": "Sign in with TikTok",
-    "login.provider.x": "Sign in with X",
-    "login.provider.microsoft": "Sign in with Microsoft",
 
     "air_quality.heading": "Meknes Air Quality",
     "air_quality.subheading":
@@ -893,13 +888,8 @@ const translations: Record<Lang, Record<string, string>> = {
       "Authentification a deux facteurs desactivee avec succes.",
     "two_factor.success_verified": "Authentification a deux facteurs verifiee.",
 
-    "login.provider.kimi": "Se connecter avec Kimi",
     "login.provider.google": "Continuer avec Google",
     "login.provider.google_signup": "S'inscrire avec Google",
-    "login.provider.facebook": "Se connecter avec Facebook",
-    "login.provider.tiktok": "Se connecter avec TikTok",
-    "login.provider.x": "Se connecter avec X",
-    "login.provider.microsoft": "Se connecter avec Microsoft",
 
     "air_quality.heading": "Qualité de l'Air à Meknès",
     "air_quality.subheading":
@@ -1434,13 +1424,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "two_factor.success_disabled": "تم تعطيل المصادقة الثنائية بنجاح.",
     "two_factor.success_verified": "تم التحقق من المصادقة الثنائية.",
 
-    "login.provider.kimi": "تسجيل الدخول عبر Kimi",
     "login.provider.google": "المتابعة عبر Google",
     "login.provider.google_signup": "إنشاء حساب عبر Google",
-    "login.provider.facebook": "تسجيل الدخول عبر Facebook",
-    "login.provider.tiktok": "تسجيل الدخول عبر TikTok",
-    "login.provider.x": "تسجيل الدخول عبر X",
-    "login.provider.microsoft": "تسجيل الدخول عبر Microsoft",
 
     "air_quality.heading": "جودة الهواء في مكناس",
     "air_quality.subheading":
