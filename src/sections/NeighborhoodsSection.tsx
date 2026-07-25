@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
 import { MapPin, Users, TreePine, Trash2, Calendar } from 'lucide-react';
-import { Link } from 'react-router';
+import NeighborhoodDetailModal from '@/components/NeighborhoodDetailModal';
 
 interface NeighborhoodStats {
   wasteKg?: number;
@@ -41,6 +42,7 @@ function getCampaignTitle(c: { titleEn: string; titleFr: string | null; titleAr:
 export default function NeighborhoodsSection() {
   const { t, lang } = useLanguage();
   const { data: neighborhoods, isLoading } = trpc.neighborhood.listWithCampaigns.useQuery();
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<NonNullable<typeof neighborhoods>[number] | null>(null);
 
   if (isLoading) {
     return (
@@ -107,12 +109,13 @@ export default function NeighborhoodsSection() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <Link
-                  to={`/neighborhood/${neighborhood.slug}`}
-                  className="block rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] group"
+                <button
+                  type="button"
+                  onClick={() => setSelectedNeighborhood(neighborhood)}
+                  className="block w-full text-left rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] group"
                   style={{
                     background: 'var(--bg-primary)',
-                    border: '1px solid rgba(255,255,255,0.05)',
+                    border: '1px solid var(--bg-surface-light)',
                   }}
                 >
                   {/* Image */}
@@ -208,12 +211,19 @@ export default function NeighborhoodsSection() {
                       </div>
                     )}
                   </div>
-                </Link>
+                </button>
               </motion.div>
             );
           })}
         </div>
       </div>
+
+      {selectedNeighborhood && (
+        <NeighborhoodDetailModal
+          neighborhood={selectedNeighborhood}
+          onClose={() => setSelectedNeighborhood(null)}
+        />
+      )}
     </section>
   );
 }

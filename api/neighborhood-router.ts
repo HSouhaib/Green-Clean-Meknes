@@ -108,17 +108,7 @@ export const neighborhoodRouter = createRouter({
       .orderBy(desc(neighborhoods.createdAt));
 
     const campaignRows = await db
-      .select({
-        id: campaigns.id,
-        titleEn: campaigns.titleEn,
-        titleFr: campaigns.titleFr,
-        titleAr: campaigns.titleAr,
-        slug: campaigns.slug,
-        date: campaigns.date,
-        status: campaigns.status,
-        galleryImages: campaigns.galleryImages,
-        neighborhoodId: campaigns.neighborhoodId,
-      })
+      .select()
       .from(campaigns)
       .where(eq(campaigns.isActive, true))
       .orderBy(desc(campaigns.eventDate));

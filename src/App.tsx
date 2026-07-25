@@ -9,7 +9,6 @@ const Login = lazy(() => import("@/pages/Login"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const NeighborhoodPage = lazy(() => import("@/pages/NeighborhoodPage"));
 const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage"));
 
 function MaintenanceGuard() {
@@ -34,7 +33,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/neighborhood/:slug" element={<NeighborhoodPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

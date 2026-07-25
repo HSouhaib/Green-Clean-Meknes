@@ -482,6 +482,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.location": "Meknes, Morocco",
     "neighborhoods.stats": "Impact Stats",
     "neighborhoods.campaigns_label": "Campaigns",
+    "neighborhoods.close": "Close",
     "campaigns.neighborhood_label": "Neighborhood",
     "campaigns.no_neighborhood": "None",
     "share.text": "Join the {title} cleanup in Meknes on {date}! {description}",
@@ -1041,6 +1042,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.location": "Meknès, Maroc",
     "neighborhoods.stats": "Statistiques d'Impact",
     "neighborhoods.campaigns_label": "Campagnes",
+    "neighborhoods.close": "Fermer",
     "campaigns.neighborhood_label": "Quartier",
     "campaigns.no_neighborhood": "Aucun",
     "share.text":
@@ -1572,6 +1574,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.location": "مكناس، المغرب",
     "neighborhoods.stats": "إحصائيات التأثير",
     "neighborhoods.campaigns_label": "الحملات",
+    "neighborhoods.close": "إغلاق",
     "campaigns.neighborhood_label": "الحي",
     "campaigns.no_neighborhood": "لا يوجد",
     "share.text":
