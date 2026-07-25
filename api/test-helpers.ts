@@ -54,6 +54,7 @@ export function createTestDb() {
       map_x REAL,
       map_y REAL,
       is_active INTEGER NOT NULL DEFAULT 1,
+      neighborhood_id INTEGER,
       status TEXT NOT NULL DEFAULT 'upcoming' CHECK(status IN ('upcoming', 'ongoing', 'completed', 'cancelled')),
       stats_waste_kg INTEGER DEFAULT 0,
       stats_trees INTEGER DEFAULT 0,

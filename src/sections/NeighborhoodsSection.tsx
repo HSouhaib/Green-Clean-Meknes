@@ -32,9 +32,15 @@ function getNeighborhoodDescription(n: { descriptionEn: string; descriptionFr: s
   return n.descriptionEn;
 }
 
+function getCampaignTitle(c: { titleEn: string; titleFr: string | null; titleAr: string | null }, lang: string): string {
+  if (lang === 'fr' && c.titleFr) return c.titleFr;
+  if (lang === 'ar' && c.titleAr) return c.titleAr;
+  return c.titleEn;
+}
+
 export default function NeighborhoodsSection() {
   const { t, lang } = useLanguage();
-  const { data: neighborhoods, isLoading } = trpc.neighborhood.list.useQuery();
+  const { data: neighborhoods, isLoading } = trpc.neighborhood.listWithCampaigns.useQuery();
 
   if (isLoading) {
     return (
@@ -170,6 +176,37 @@ export default function NeighborhoodsSection() {
                         </div>
                       )}
                     </div>
+
+                    {/* Linked campaigns */}
+                    {neighborhood.campaigns && neighborhood.campaigns.length > 0 && (
+                      <div className="mt-4">
+                        <p
+                          className="text-[10px] font-mono uppercase tracking-wider mb-2"
+                          style={{ color: 'var(--text-tertiary)' }}
+                        >
+                          {t('neighborhoods.campaigns_label')}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {neighborhood.campaigns.slice(0, 3).map((campaign) => (
+                            <span
+                              key={campaign.id}
+                              className="text-xs px-2 py-1 rounded truncate max-w-[140px]"
+                              style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
+                            >
+                              {getCampaignTitle(campaign, lang)}
+                            </span>
+                          ))}
+                          {neighborhood.campaigns.length > 3 && (
+                            <span
+                              className="text-xs px-2 py-1 rounded"
+                              style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
+                            >
+                              +{neighborhood.campaigns.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Link>
               </motion.div>

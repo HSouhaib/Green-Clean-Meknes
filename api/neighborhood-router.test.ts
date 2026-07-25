@@ -73,6 +73,87 @@ describe("neighborhood router", () => {
     });
   });
 
+  describe("listWithCampaigns", () => {
+    it("returns neighborhoods with linked active campaigns", async () => {
+      const admin = createTestUser(testDb.db, { role: "admin" });
+      const caller = neighborhoodRouter.createCaller(createTestContext(admin));
+
+      const created = await caller.create({
+        nameEn: "Hamria",
+        slug: uniqueSlug("hamria"),
+        descriptionEn: "A historic neighborhood",
+      });
+
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active, neighborhood_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run("Hamria Cleanup", "Hamria", "Desc", "15 JUL 2025", "hamria-cleanup", 1, created.id);
+
+      const publicCaller = neighborhoodRouter.createCaller(createTestContext());
+      const result = await publicCaller.listWithCampaigns();
+      const hamria = result.find((n) => n.id === created.id);
+      expect(hamria?.campaigns).toHaveLength(1);
+      expect(hamria?.campaigns[0].titleEn).toBe("Hamria Cleanup");
+    });
+
+    it("excludes inactive campaigns from the linked list", async () => {
+      const admin = createTestUser(testDb.db, { role: "admin" });
+      const caller = neighborhoodRouter.createCaller(createTestContext(admin));
+
+      const created = await caller.create({
+        nameEn: "Hamria",
+        slug: uniqueSlug("hamria"),
+        descriptionEn: "A historic neighborhood",
+      });
+
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active, neighborhood_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run("Active Cleanup", "Hamria", "Desc", "15 JUL 2025", "active-cleanup", 1, created.id);
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active, neighborhood_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run("Inactive Cleanup", "Hamria", "Desc", "15 JUL 2025", "inactive-cleanup", 0, created.id);
+
+      const publicCaller = neighborhoodRouter.createCaller(createTestContext());
+      const result = await publicCaller.listWithCampaigns();
+      const hamria = result.find((n) => n.id === created.id);
+      expect(hamria?.campaigns).toHaveLength(1);
+      expect(hamria?.campaigns[0].titleEn).toBe("Active Cleanup");
+    });
+  });
+
+  describe("getBySlugWithCampaigns", () => {
+    it("returns neighborhood with linked campaigns by slug", async () => {
+      const admin = createTestUser(testDb.db, { role: "admin" });
+      const caller = neighborhoodRouter.createCaller(createTestContext(admin));
+      const slug = uniqueSlug("bab-mansour");
+
+      const created = await caller.create({
+        nameEn: "Bab Mansour",
+        slug,
+        descriptionEn: "Near the famous gate",
+      });
+
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active, neighborhood_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run("Gate Cleanup", "Bab Mansour", "Desc", "15 JUL 2025", "gate-cleanup", 1, created.id);
+
+      const publicCaller = neighborhoodRouter.createCaller(createTestContext());
+      const result = await publicCaller.getBySlugWithCampaigns({ slug });
+      expect(result?.nameEn).toBe("Bab Mansour");
+      expect(result?.campaigns).toHaveLength(1);
+      expect(result?.campaigns[0].titleEn).toBe("Gate Cleanup");
+    });
+
+    it("returns null for non-existent slug", async () => {
+      const caller = neighborhoodRouter.createCaller(createTestContext());
+      const result = await caller.getBySlugWithCampaigns({ slug: "does-not-exist-12345" });
+      expect(result).toBeNull();
+    });
+  });
+
   describe("create", () => {
     it("creates a neighborhood as admin", async () => {
       const admin = createTestUser(testDb.db, { role: "admin" });

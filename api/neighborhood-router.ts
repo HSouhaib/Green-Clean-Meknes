@@ -1,10 +1,19 @@
 import { z } from "zod";
 import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { neighborhoods } from "@db/schema";
-import { eq, desc } from "drizzle-orm";
+import { neighborhoods, campaigns } from "@db/schema";
+import { eq, desc, and } from "drizzle-orm";
 import { sanitizeString } from "./lib/sanitize";
 import { safeUrl } from "./lib/zod-helpers";
+
+function parseGalleryImages<T extends { galleryImages: string | null | undefined }>(
+  campaign: T
+): Omit<T, "galleryImages"> & { galleryImages: string[] | null } {
+  return {
+    ...campaign,
+    galleryImages: campaign.galleryImages ? (JSON.parse(campaign.galleryImages) as string[]) : null,
+  };
+}
 
 // ===== ZOD SCHEMAS =====
 const neighborhoodIdSchema = z.object({
@@ -87,6 +96,78 @@ export const neighborhoodRouter = createRouter({
         .where(eq(neighborhoods.id, input.id))
         .limit(1);
       return result[0] ?? null;
+    }),
+
+  // Public: list all active neighborhoods with their linked active campaigns
+  listWithCampaigns: publicQuery.query(async () => {
+    const db = getDb();
+    const neighborhoodRows = await db
+      .select()
+      .from(neighborhoods)
+      .where(eq(neighborhoods.isActive, true))
+      .orderBy(desc(neighborhoods.createdAt));
+
+    const campaignRows = await db
+      .select({
+        id: campaigns.id,
+        titleEn: campaigns.titleEn,
+        titleFr: campaigns.titleFr,
+        titleAr: campaigns.titleAr,
+        slug: campaigns.slug,
+        date: campaigns.date,
+        status: campaigns.status,
+        galleryImages: campaigns.galleryImages,
+        neighborhoodId: campaigns.neighborhoodId,
+      })
+      .from(campaigns)
+      .where(eq(campaigns.isActive, true))
+      .orderBy(desc(campaigns.eventDate));
+
+    const campaignsByNeighborhood = new Map<number, typeof campaignRows>();
+    for (const campaign of campaignRows) {
+      if (!campaign.neighborhoodId) continue;
+      const list = campaignsByNeighborhood.get(campaign.neighborhoodId) ?? [];
+      list.push(campaign);
+      campaignsByNeighborhood.set(campaign.neighborhoodId, list);
+    }
+
+    return neighborhoodRows.map((neighborhood) => ({
+      ...neighborhood,
+      campaigns:
+        campaignsByNeighborhood
+          .get(neighborhood.id)
+          ?.map(parseGalleryImages) ?? [],
+    }));
+  }),
+
+  // Public: get single neighborhood by slug with its linked active campaigns
+  getBySlugWithCampaigns: publicQuery
+    .input(slugSchema)
+    .query(async ({ input }) => {
+      const db = getDb();
+      const result = await db
+        .select()
+        .from(neighborhoods)
+        .where(eq(neighborhoods.slug, sanitizeString(input.slug, 100)))
+        .limit(1);
+      const neighborhood = result[0] ?? null;
+      if (!neighborhood) return null;
+
+      const campaignRows = await db
+        .select()
+        .from(campaigns)
+        .where(
+          and(
+            eq(campaigns.isActive, true),
+            eq(campaigns.neighborhoodId, neighborhood.id)
+          )
+        )
+        .orderBy(desc(campaigns.eventDate));
+
+      return {
+        ...neighborhood,
+        campaigns: campaignRows.map(parseGalleryImages),
+      };
     }),
 
   // Admin: list all (including inactive)

@@ -38,6 +38,7 @@ const createCampaignSchema = z.object({
     arr ? JSON.stringify(arr.map((s) => sanitizeString(s, 500))) : undefined
   ),
   filterTags: z.string().max(255).default("all").transform((s) => sanitizeString(s, 255)),
+  neighborhoodId: z.number().int().positive().optional(),
   mapX: z.number().optional(),
   mapY: z.number().optional(),
   status: campaignStatusSchema.default("upcoming"),
@@ -64,6 +65,7 @@ const updateCampaignSchema = z.object({
     arr ? JSON.stringify(arr.map((s) => sanitizeString(s, 500))) : undefined
   ),
   filterTags: z.string().max(255).optional().transform((s) => s ? sanitizeString(s, 255) : undefined),
+  neighborhoodId: z.number().int().positive().optional().nullable(),
   isActive: z.boolean().optional(),
   mapX: z.number().optional(),
   mapY: z.number().optional(),

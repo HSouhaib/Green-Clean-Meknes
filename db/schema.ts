@@ -110,6 +110,7 @@ export const campaigns = sqliteTable("campaigns", {
     .default("upcoming")
     .$type<CampaignStatus>()
     .$defaultFn(() => "upcoming"),
+  neighborhoodId: integer("neighborhood_id"),
   statsWasteKg: integer("stats_waste_kg").default(0),
   statsTrees: integer("stats_trees").default(0),
   statsVolunteers: integer("stats_volunteers").default(0),

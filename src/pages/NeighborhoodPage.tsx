@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
@@ -5,6 +6,8 @@ import { motion } from 'framer-motion';
 import { MapPin, Users, TreePine, Trash2, Calendar, ArrowLeft, ImageOff } from 'lucide-react';
 import Navigation from '@/sections/Navigation';
 import Footer from '@/sections/Footer';
+import CampaignDetailModal from '@/components/CampaignDetailModal';
+import type { Campaign } from '@/types/campaign';
 
 interface NeighborhoodStats {
   wasteKg?: number;
@@ -34,13 +37,20 @@ function getNeighborhoodDescription(n: { descriptionEn: string; descriptionFr: s
   return n.descriptionEn;
 }
 
+function getCampaignTitle(c: { titleEn: string; titleFr: string | null; titleAr: string | null }, lang: string): string {
+  if (lang === 'fr' && c.titleFr) return c.titleFr;
+  if (lang === 'ar' && c.titleAr) return c.titleAr;
+  return c.titleEn;
+}
+
 export default function NeighborhoodPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t, lang, dir } = useLanguage();
-  const { data: neighborhood, isLoading } = trpc.neighborhood.getBySlug.useQuery(
+  const { data: neighborhood, isLoading } = trpc.neighborhood.getBySlugWithCampaigns.useQuery(
     { slug: slug || '' },
     { enabled: !!slug }
   );
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
 
   if (isLoading) {
     return (
@@ -205,8 +215,100 @@ export default function NeighborhoodPage() {
               </motion.div>
             )}
           </div>
+
+          {/* Linked campaigns */}
+          {neighborhood.campaigns && neighborhood.campaigns.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-10"
+            >
+              <h2
+                className="font-display text-xl mb-6"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                {t('neighborhoods.campaigns_label')}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {neighborhood.campaigns.map((campaign) => (
+                  <button
+                    key={campaign.id}
+                    type="button"
+                    onClick={() => setSelectedCampaign(campaign as Campaign)}
+                    className="group block w-full text-left rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02]"
+                    style={{
+                      background: 'var(--bg-surface)',
+                      border: '1px solid rgba(255,255,255,0.05)',
+                    }}
+                  >
+                    <div className="relative h-40 overflow-hidden">
+                      {campaign.galleryImages && campaign.galleryImages.length > 0 ? (
+                        <img
+                          src={campaign.galleryImages[0]}
+                          alt={getCampaignTitle(campaign, lang)}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ background: 'var(--bg-primary)' }}
+                        >
+                          <Calendar size={40} style={{ color: 'var(--text-tertiary)' }} />
+                        </div>
+                      )}
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)',
+                        }}
+                      />
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <span
+                          className="text-xs px-2 py-0.5 rounded capitalize"
+                          style={{
+                            background:
+                              campaign.status === 'ongoing'
+                                ? 'rgba(58,90,42,0.6)'
+                                : campaign.status === 'upcoming'
+                                  ? 'rgba(196,90,90,0.4)'
+                                  : campaign.status === 'completed'
+                                    ? 'rgba(74,138,190,0.4)'
+                                    : 'rgba(85,85,85,0.4)',
+                            color: '#fff',
+                          }}
+                        >
+                          {t(`campaigns.status.${campaign.status}`)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3
+                        className="font-medium text-sm mb-1"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        {getCampaignTitle(campaign, lang)}
+                      </h3>
+                      <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        {campaign.date}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </main>
+
+      {selectedCampaign && (
+        <CampaignDetailModal
+          campaign={selectedCampaign}
+          onClose={() => setSelectedCampaign(null)}
+        />
+      )}
+
       <Footer />
     </>
   );

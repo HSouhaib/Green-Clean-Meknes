@@ -21,6 +21,7 @@ export function CampaignsTab() {
   const utils = trpc.useUtils();
   const { showError } = useErrorModal();
   const { data: campaigns, isLoading } = trpc.campaign.listAll.useQuery();
+  const { data: allNeighborhoods } = trpc.neighborhood.listAll.useQuery();
   const deleteMutation = trpc.campaign.delete.useMutation({
     onSuccess: () => {
       utils.campaign.listAll.invalidate();
@@ -29,6 +30,7 @@ export function CampaignsTab() {
       utils.campaign.upcoming.invalidate();
       utils.campaign.calendar.invalidate();
       utils.campaign.stats.invalidate();
+      utils.neighborhood.listWithCampaigns.invalidate();
       toast.success(t("toast.campaign_deleted"));
     },
     onError: () => showError(t("toast.error_generic")),
@@ -41,6 +43,7 @@ export function CampaignsTab() {
       utils.campaign.upcoming.invalidate();
       utils.campaign.calendar.invalidate();
       utils.campaign.stats.invalidate();
+      utils.neighborhood.listWithCampaigns.invalidate();
       toast.success(t("toast.status_updated"));
     },
     onError: () => showError(t("toast.error_generic")),
@@ -65,6 +68,7 @@ export function CampaignsTab() {
     filterTags: string;
     mapX: string;
     mapY: string;
+    neighborhoodId: string;
     status: (typeof CAMPAIGN_STATUSES)[number];
     statsWasteKg: string;
     statsTrees: string;
@@ -87,6 +91,7 @@ export function CampaignsTab() {
     filterTags: "all",
     mapX: "",
     mapY: "",
+    neighborhoodId: "",
     status: "upcoming",
     statsWasteKg: "",
     statsTrees: "",
@@ -153,6 +158,7 @@ export function CampaignsTab() {
       utils.campaign.upcoming.invalidate();
       utils.campaign.calendar.invalidate();
       utils.campaign.stats.invalidate();
+      utils.neighborhood.listWithCampaigns.invalidate();
       setShowForm(false);
       resetForm();
       toast.success(t("toast.campaign_created"));
@@ -168,6 +174,7 @@ export function CampaignsTab() {
       utils.campaign.upcoming.invalidate();
       utils.campaign.calendar.invalidate();
       utils.campaign.stats.invalidate();
+      utils.neighborhood.listWithCampaigns.invalidate();
       setShowForm(false);
       setEditingId(null);
       resetForm();
@@ -194,6 +201,7 @@ export function CampaignsTab() {
       filterTags: "all",
       mapX: "",
       mapY: "",
+      neighborhoodId: "",
       status: "upcoming",
       statsWasteKg: "",
       statsTrees: "",
@@ -228,6 +236,7 @@ export function CampaignsTab() {
       filterTags: campaign.filterTags,
       mapX: campaign.mapX?.toString() ?? "",
       mapY: campaign.mapY?.toString() ?? "",
+      neighborhoodId: campaign.neighborhoodId?.toString() ?? "",
       status: campaign.status ?? "upcoming",
       statsWasteKg: campaign.statsWasteKg?.toString() ?? "",
       statsTrees: campaign.statsTrees?.toString() ?? "",
@@ -261,6 +270,7 @@ export function CampaignsTab() {
       galleryImages: formData.galleryImages.filter(Boolean),
       mapX: formData.mapX ? parseFloat(formData.mapX) : undefined,
       mapY: formData.mapY ? parseFloat(formData.mapY) : undefined,
+      neighborhoodId: formData.neighborhoodId ? parseInt(formData.neighborhoodId, 10) : undefined,
       eventDate: parseDisplayDateToTimestamp(formData.date, eventTime),
       statsWasteKg: parseStat(formData.statsWasteKg),
       statsTrees: parseStat(formData.statsTrees),
@@ -490,6 +500,28 @@ export function CampaignsTab() {
                 {CAMPAIGN_STATUSES.map(s => (
                   <option key={s} value={s}>
                     {t(`campaigns.status.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                className="block text-xs font-mono uppercase tracking-wider mb-1.5"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                {t("campaigns.neighborhood_label")}
+              </label>
+              <select
+                value={formData.neighborhoodId}
+                onChange={e =>
+                  setFormData({ ...formData, neighborhoodId: e.target.value })
+                }
+                className="admin-input w-full"
+              >
+                <option value="">{t("campaigns.no_neighborhood")}</option>
+                {allNeighborhoods?.map(neighborhood => (
+                  <option key={neighborhood.id} value={neighborhood.id}>
+                    {neighborhood.nameEn}
                   </option>
                 ))}
               </select>

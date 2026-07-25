@@ -481,6 +481,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.back_home": "Back to Home",
     "neighborhoods.location": "Meknes, Morocco",
     "neighborhoods.stats": "Impact Stats",
+    "neighborhoods.campaigns_label": "Campaigns",
+    "campaigns.neighborhood_label": "Neighborhood",
+    "campaigns.no_neighborhood": "None",
     "share.text": "Join the {title} cleanup in Meknes on {date}! {description}",
     "toast.copied": "Copied! Paste to share",
 
@@ -1037,6 +1040,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.back_home": "Retour à l'accueil",
     "neighborhoods.location": "Meknès, Maroc",
     "neighborhoods.stats": "Statistiques d'Impact",
+    "neighborhoods.campaigns_label": "Campagnes",
+    "campaigns.neighborhood_label": "Quartier",
+    "campaigns.no_neighborhood": "Aucun",
     "share.text":
       "Rejoignez le nettoyage {title} a Meknes le {date} ! {description}",
     "toast.copied": "Copie ! Coller pour partager",
@@ -1565,6 +1571,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.back_home": "العودة للرئيسية",
     "neighborhoods.location": "مكناس، المغرب",
     "neighborhoods.stats": "إحصائيات التأثير",
+    "neighborhoods.campaigns_label": "الحملات",
+    "campaigns.neighborhood_label": "الحي",
+    "campaigns.no_neighborhood": "لا يوجد",
     "share.text":
       "انضم إلى حملة تنظيف {title} في مكناس يوم {date}! {description}",
     "toast.copied": "تم النسخ! الصق للمشاركة",

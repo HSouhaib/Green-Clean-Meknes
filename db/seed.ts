@@ -46,6 +46,7 @@ async function seed() {
       slug TEXT NOT NULL UNIQUE,
       gallery_images TEXT,
       filter_tags TEXT NOT NULL DEFAULT 'all',
+      neighborhood_id INTEGER,
       is_active INTEGER NOT NULL DEFAULT 1,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
@@ -79,135 +80,7 @@ async function seed() {
 
   console.log("Seeding data...");
 
-  // Insert sample campaigns
-  const sampleCampaigns = [
-    {
-      titleEn: "Bab Mansour Cleanup",
-      titleFr: "Nettoyage Bab Mansour",
-      titleAr: "تنظيف باب المنصور",
-      locationEn: "Bab Mansour, Meknes",
-      locationFr: "Bab Mansour, Meknès",
-      locationAr: "باب المنصور، مكناس",
-      descriptionEn:
-        "Join us for a community cleanup around the historic Bab Mansour gate. We'll be removing litter, planting flowers, and painting murals.",
-      descriptionFr:
-        "Rejoignez-nous pour un nettoyage communautaire autour de la porte historique Bab Mansour. Nous enlèverons les déchets, planterons des fleurs et peindrons des fresques.",
-      descriptionAr:
-        "انضم إلينا في حملة تنظيف مجتمعية حول باب المنصور التاريخي. سنقوم بإزالة النفايات وزراعة الزهور ورسم الجداريات.",
-      date: "15 JUL 2025",
-      slug: "bab-mansour-cleanup",
-      galleryImages: JSON.stringify(["/assets/campaign-bab-mansour.jpg", "/assets/campaign-hamria.jpg"]),
-      filterTags: "outdoor,community",
-      isActive: true,
-    },
-    {
-      titleEn: "Heri es-Souani River Clean",
-      titleFr: "Nettoyage de la rivière Heri es-Souani",
-      titleAr: "تنظيف نهر حري السواني",
-      locationEn: "Heri es-Souani, Meknes",
-      locationFr: "Heri es-Souani, Meknès",
-      locationAr: "حري السواني، مكناس",
-      descriptionEn:
-        "Help us restore the beauty of the Heri es-Souani river area. Bring gloves and reusable bags. Refreshments provided!",
-      descriptionFr:
-        "Aidez-nous à restaurer la beauté de la zone de la rivière Heri es-Souani. Apportez des gants et des sacs réutilisables. Rafraîchissements fournis !",
-      descriptionAr:
-        "ساعدنا في استعادة جمال منطقة نهر حري السواني. أحضر قفازات وأكياس قابلة لإعادة الاستخدام. المشروبات متوفرة!",
-      date: "22 JUL 2025",
-      slug: "heri-essouani-river",
-      galleryImages: JSON.stringify(["/assets/campaign-hamria.jpg", "/assets/campaign-ville-nouvelle.jpg"]),
-      filterTags: "outdoor,water",
-      isActive: true,
-    },
-    {
-      titleEn: "Medina Plastic-Free Walk",
-      titleFr: "Marche sans plastique de la Médina",
-      titleAr: "مسيرة خالية من البلاستيك في المدينة",
-      locationEn: "Old Medina, Meknes",
-      locationFr: "Vieille Médina, Meknès",
-      locationAr: "المدينة القديمة، مكناس",
-      descriptionEn:
-        "A awareness walk through the old Medina to promote plastic-free living. Distribute reusable bags to local shopkeepers.",
-      descriptionFr:
-        "Une marche de sensibilisation à travers la vieille Médina pour promouvoir une vie sans plastique. Distribuez des sacs réutilisables aux commerçants locaux.",
-      descriptionAr:
-        "مسيرة توعية عبر المدينة القديمة للترويج لحياة خالية من البلاستيك. قم بتوزيع أكياس قابلة لإعادة الاستخدام على أصحاب المحلات التجارية المحليين.",
-      date: "05 AUG 2025",
-      slug: "medina-plastic-free",
-      galleryImages: JSON.stringify(["/assets/campaign-borj-belkari.jpg"]),
-      filterTags: "community,indoor",
-      isActive: true,
-    },
-    {
-      titleEn: "Bou Inania Garden Revival",
-      titleFr: "Renaissance du jardin Bou Inania",
-      titleAr: "إحياء حديقة بوعنانية",
-      locationEn: "Bou Inania, Meknes",
-      locationFr: "Bou Inania, Meknès",
-      locationAr: "بوعنانية، مكناس",
-      descriptionEn:
-        "Revive the historic Bou Inania garden with new plants, composting workshops, and a community picnic.",
-      descriptionFr:
-        "Faites revivre le jardin historique Bou Inania avec de nouvelles plantes, des ateliers de compostage et un pique-nique communautaire.",
-      descriptionAr:
-        "أحيِ حديقة بوعنانية التاريخية بنباتات جديدة وورش عمل للسماد ونزهة مجتمعية.",
-      date: "12 AUG 2025",
-      slug: "bou-inania-garden",
-      galleryImages: JSON.stringify(["/assets/campaign-ville-nouvelle.jpg"]),
-      filterTags: "outdoor,community",
-      isActive: true,
-    },
-    {
-      titleEn: "School Recycling Workshop",
-      titleFr: "Atelier de recyclage scolaire",
-      titleAr: "ورشة إعادة تدوير مدرسية",
-      locationEn: "Lycée Moulay Ismail, Meknes",
-      locationFr: "Lycée Moulay Ismail, Meknès",
-      locationAr: "ثانوية مولاي إسماعيل، مكناس",
-      descriptionEn:
-        "Teach students about recycling through hands-on activities. Create art from waste materials and set up school recycling bins.",
-      descriptionFr:
-        "Apprenez aux élèves le recyclage par des activités pratiques. Créez de l'art à partir de déchets et installez des poubelles de recyclage scolaires.",
-      descriptionAr:
-        "علّم الطلاب إعادة التدوير من خلال أنشطة عملية. أنشئ فنًا من مواد النفايات وقم بإعداد صناديق إعادة تدوير مدرسية.",
-      date: "20 AUG 2025",
-      slug: "school-recycling",
-      galleryImages: JSON.stringify(["/assets/campaign-bab-mansour.jpg"]),
-      filterTags: "indoor,education",
-      isActive: true,
-    },
-    {
-      titleEn: "Place el-Hedim Evening Clean",
-      titleFr: "Nettoyage du soir Place el-Hedim",
-      titleAr: "تنظيف مساء ساحل الحديم",
-      locationEn: "Place el-Hedim, Meknes",
-      locationFr: "Place el-Hedim, Meknès",
-      locationAr: "ساحة الحديم، مكناس",
-      descriptionEn:
-        "Evening cleanup of the main square. Perfect for those who work during the day. Street lights and music included!",
-      descriptionFr:
-        "Nettoyage du soir de la place principale. Parfait pour ceux qui travaillent pendant la journée. Éclairage de rue et musique inclus !",
-      descriptionAr:
-        "تنظيف مسائي للساحة الرئيسية. مثالي لأولئك الذين يعملون خلال النهار. أضواء الشوارع والموسيقى متضمنة!",
-      date: "28 AUG 2025",
-      slug: "place-elhedim-evening",
-      galleryImages: JSON.stringify(["/assets/campaign-hamria.jpg"]),
-      filterTags: "outdoor,community",
-      isActive: true,
-    },
-  ];
-
-  for (const campaign of sampleCampaigns) {
-    try {
-      db.insert(schema.campaigns).values(campaign).run();
-    } catch {
-      // may already exist
-    }
-  }
-
-  console.log(`Inserted ${sampleCampaigns.length} campaigns.`);
-
-  // Insert sample neighborhoods
+  // Insert sample neighborhoods first (campaigns reference them)
   const sampleNeighborhoods = [
     {
       nameEn: "Bab Mansour",
@@ -271,6 +144,144 @@ async function seed() {
   }
 
   console.log(`Inserted ${sampleNeighborhoods.length} neighborhoods.`);
+
+  // Build a slug -> id map for the inserted neighborhoods
+  const neighborhoodRows = db.select({ id: schema.neighborhoods.id, slug: schema.neighborhoods.slug }).from(schema.neighborhoods).all();
+  const neighborhoodIdBySlug = new Map(neighborhoodRows.map((n) => [n.slug, n.id]));
+
+  // Insert sample campaigns linked to neighborhoods
+  const sampleCampaigns = [
+    {
+      titleEn: "Bab Mansour Cleanup",
+      titleFr: "Nettoyage Bab Mansour",
+      titleAr: "تنظيف باب المنصور",
+      locationEn: "Bab Mansour, Meknes",
+      locationFr: "Bab Mansour, Meknès",
+      locationAr: "باب المنصور، مكناس",
+      descriptionEn:
+        "Join us for a community cleanup around the historic Bab Mansour gate. We'll be removing litter, planting flowers, and painting murals.",
+      descriptionFr:
+        "Rejoignez-nous pour un nettoyage communautaire autour de la porte historique Bab Mansour. Nous enlèverons les déchets, planterons des fleurs et peindrons des fresques.",
+      descriptionAr:
+        "انضم إلينا في حملة تنظيف مجتمعية حول باب المنصور التاريخي. سنقوم بإزالة النفايات وزراعة الزهور ورسم الجداريات.",
+      date: "15 JUL 2025",
+      slug: "bab-mansour-cleanup",
+      galleryImages: JSON.stringify(["/assets/campaign-bab-mansour.jpg", "/assets/campaign-hamria.jpg"]),
+      filterTags: "outdoor,community",
+      neighborhoodId: neighborhoodIdBySlug.get("bab-mansour"),
+      isActive: true,
+    },
+    {
+      titleEn: "Heri es-Souani River Clean",
+      titleFr: "Nettoyage de la rivière Heri es-Souani",
+      titleAr: "تنظيف نهر حري السواني",
+      locationEn: "Heri es-Souani, Meknes",
+      locationFr: "Heri es-Souani, Meknès",
+      locationAr: "حري السواني، مكناس",
+      descriptionEn:
+        "Help us restore the beauty of the Heri es-Souani river area. Bring gloves and reusable bags. Refreshments provided!",
+      descriptionFr:
+        "Aidez-nous à restaurer la beauté de la zone de la rivière Heri es-Souani. Apportez des gants et des sacs réutilisables. Rafraîchissements fournis !",
+      descriptionAr:
+        "ساعدنا في استعادة جمال منطقة نهر حري السواني. أحضر قفازات وأكياس قابلة لإعادة الاستخدام. المشروبات متوفرة!",
+      date: "22 JUL 2025",
+      slug: "heri-essouani-river",
+      galleryImages: JSON.stringify(["/assets/campaign-hamria.jpg", "/assets/campaign-ville-nouvelle.jpg"]),
+      filterTags: "outdoor,water",
+      neighborhoodId: neighborhoodIdBySlug.get("hamria"),
+      isActive: true,
+    },
+    {
+      titleEn: "Medina Plastic-Free Walk",
+      titleFr: "Marche sans plastique de la Médina",
+      titleAr: "مسيرة خالية من البلاستيك في المدينة",
+      locationEn: "Old Medina, Meknes",
+      locationFr: "Vieille Médina, Meknès",
+      locationAr: "المدينة القديمة، مكناس",
+      descriptionEn:
+        "A awareness walk through the old Medina to promote plastic-free living. Distribute reusable bags to local shopkeepers.",
+      descriptionFr:
+        "Une marche de sensibilisation à travers la vieille Médina pour promouvoir une vie sans plastique. Distribuez des sacs réutilisables aux commerçants locaux.",
+      descriptionAr:
+        "مسيرة توعية عبر المدينة القديمة للترويج لحياة خالية من البلاستيك. قم بتوزيع أكياس قابلة لإعادة الاستخدام على أصحاب المحلات التجارية المحليين.",
+      date: "05 AUG 2025",
+      slug: "medina-plastic-free",
+      galleryImages: JSON.stringify(["/assets/campaign-borj-belkari.jpg"]),
+      filterTags: "community,indoor",
+      neighborhoodId: neighborhoodIdBySlug.get("bab-mansour"),
+      isActive: true,
+    },
+    {
+      titleEn: "Bou Inania Garden Revival",
+      titleFr: "Renaissance du jardin Bou Inania",
+      titleAr: "إحياء حديقة بوعنانية",
+      locationEn: "Bou Inania, Meknes",
+      locationFr: "Bou Inania, Meknès",
+      locationAr: "بوعنانية، مكناس",
+      descriptionEn:
+        "Revive the historic Bou Inania garden with new plants, composting workshops, and a community picnic.",
+      descriptionFr:
+        "Faites revivre le jardin historique Bou Inania avec de nouvelles plantes, des ateliers de compostage et un pique-nique communautaire.",
+      descriptionAr:
+        "أحيِ حديقة بوعنانية التاريخية بنباتات جديدة وورش عمل للسماد ونزهة مجتمعية.",
+      date: "12 AUG 2025",
+      slug: "bou-inania-garden",
+      galleryImages: JSON.stringify(["/assets/campaign-ville-nouvelle.jpg"]),
+      filterTags: "outdoor,community",
+      neighborhoodId: neighborhoodIdBySlug.get("ville-nouvelle"),
+      isActive: true,
+    },
+    {
+      titleEn: "School Recycling Workshop",
+      titleFr: "Atelier de recyclage scolaire",
+      titleAr: "ورشة إعادة تدوير مدرسية",
+      locationEn: "Lycée Moulay Ismail, Meknes",
+      locationFr: "Lycée Moulay Ismail, Meknès",
+      locationAr: "ثانوية مولاي إسماعيل، مكناس",
+      descriptionEn:
+        "Teach students about recycling through hands-on activities. Create art from waste materials and set up school recycling bins.",
+      descriptionFr:
+        "Apprenez aux élèves le recyclage par des activités pratiques. Créez de l'art à partir de déchets et installez des poubelles de recyclage scolaires.",
+      descriptionAr:
+        "علّم الطلاب إعادة التدوير من خلال أنشطة عملية. أنشئ فنًا من مواد النفايات وقم بإعداد صناديق إعادة تدوير مدرسية.",
+      date: "20 AUG 2025",
+      slug: "school-recycling",
+      galleryImages: JSON.stringify(["/assets/campaign-bab-mansour.jpg"]),
+      filterTags: "indoor,education",
+      neighborhoodId: neighborhoodIdBySlug.get("ville-nouvelle"),
+      isActive: true,
+    },
+    {
+      titleEn: "Place el-Hedim Evening Clean",
+      titleFr: "Nettoyage du soir Place el-Hedim",
+      titleAr: "تنظيف مساء ساحل الحديم",
+      locationEn: "Place el-Hedim, Meknes",
+      locationFr: "Place el-Hedim, Meknès",
+      locationAr: "ساحة الحديم، مكناس",
+      descriptionEn:
+        "Evening cleanup of the main square. Perfect for those who work during the day. Street lights and music included!",
+      descriptionFr:
+        "Nettoyage du soir de la place principale. Parfait pour ceux qui travaillent pendant la journée. Éclairage de rue et musique inclus !",
+      descriptionAr:
+        "تنظيف مسائي للساحة الرئيسية. مثالي لأولئك الذين يعملون خلال النهار. أضواء الشوارع والموسيقى متضمنة!",
+      date: "28 AUG 2025",
+      slug: "place-elhedim-evening",
+      galleryImages: JSON.stringify(["/assets/campaign-hamria.jpg"]),
+      filterTags: "outdoor,community",
+      neighborhoodId: neighborhoodIdBySlug.get("bab-mansour"),
+      isActive: true,
+    },
+  ];
+
+  for (const campaign of sampleCampaigns) {
+    try {
+      db.insert(schema.campaigns).values(campaign).run();
+    } catch {
+      // may already exist
+    }
+  }
+
+  console.log(`Inserted ${sampleCampaigns.length} campaigns.`);
 
   // Insert default section visibility settings
   const sections = [

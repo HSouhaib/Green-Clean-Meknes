@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm/relations";
 import {
   users,
   campaigns,
+  neighborhoods,
   campaignRegistrations,
   volunteerPoints,
 } from "./schema";
@@ -11,9 +12,17 @@ export const usersRelations = relations(users, ({ many }) => ({
   volunteerPoints: many(volunteerPoints),
 }));
 
-export const campaignsRelations = relations(campaigns, ({ many }) => ({
+export const campaignsRelations = relations(campaigns, ({ one, many }) => ({
+  neighborhood: one(neighborhoods, {
+    fields: [campaigns.neighborhoodId],
+    references: [neighborhoods.id],
+  }),
   campaignRegistrations: many(campaignRegistrations),
   volunteerPoints: many(volunteerPoints),
+}));
+
+export const neighborhoodsRelations = relations(neighborhoods, ({ many }) => ({
+  campaigns: many(campaigns),
 }));
 
 export const campaignRegistrationsRelations = relations(

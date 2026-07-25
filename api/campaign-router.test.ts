@@ -132,6 +132,30 @@ describe("campaign router", () => {
         })
       ).rejects.toThrow("Insufficient permissions");
     });
+
+    it("creates a campaign linked to a neighborhood", async () => {
+      testDb.client.prepare(
+        `INSERT INTO neighborhoods (name_en, slug, description_en, is_active)
+         VALUES (?, ?, ?, ?)`
+      ).run("Hamria", "hamria", "A lively neighborhood", 1);
+      const neighborhood = testDb.client.prepare("SELECT id FROM neighborhoods WHERE slug = ?").get("hamria");
+
+      const admin = createTestUser(testDb.db, { role: "admin" });
+      const caller = campaignRouter.createCaller(createTestContext(admin));
+
+      const result = await caller.create({
+        titleEn: "Hamria Cleanup",
+        locationEn: "Hamria, Meknes",
+        descriptionEn: "Test description",
+        date: "15 JUL 2025",
+        slug: "hamria-cleanup",
+        neighborhoodId: neighborhood.id,
+      });
+
+      expect(result.id).toBeDefined();
+      const campaign = testDb.client.prepare("SELECT neighborhood_id FROM campaigns WHERE id = ?").get(result.id);
+      expect(campaign.neighborhood_id).toBe(neighborhood.id);
+    });
   });
 
   // Admin: update
@@ -154,6 +178,61 @@ describe("campaign router", () => {
 
       const updated = testDb.client.prepare("SELECT title_en FROM campaigns WHERE id = ?").get(campaign.id);
       expect(updated.title_en).toBe("Updated Title");
+    });
+
+    it("updates a campaign's neighborhood link", async () => {
+      testDb.client.prepare(
+        `INSERT INTO neighborhoods (name_en, slug, description_en, is_active)
+         VALUES (?, ?, ?, ?)`
+      ).run("Bab Mansour", "bab-mansour", "Historic gate", 1);
+      testDb.client.prepare(
+        `INSERT INTO neighborhoods (name_en, slug, description_en, is_active)
+         VALUES (?, ?, ?, ?)`
+      ).run("Hamria", "hamria", "A lively neighborhood", 1);
+      const babMansour = testDb.client.prepare("SELECT id FROM neighborhoods WHERE slug = ?").get("bab-mansour");
+      const hamria = testDb.client.prepare("SELECT id FROM neighborhoods WHERE slug = ?").get("hamria");
+
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active, neighborhood_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run("Old Title", "Meknes", "Desc", "15 JUL 2025", "update-neighborhood-campaign", 1, babMansour.id);
+
+      const admin = createTestUser(testDb.db, { role: "admin" });
+      const caller = campaignRouter.createCaller(createTestContext(admin));
+      const campaign = testDb.client.prepare("SELECT id FROM campaigns WHERE slug = ?").get("update-neighborhood-campaign");
+
+      await caller.update({
+        id: campaign.id,
+        neighborhoodId: hamria.id,
+      });
+
+      const updated = testDb.client.prepare("SELECT neighborhood_id FROM campaigns WHERE id = ?").get(campaign.id);
+      expect(updated.neighborhood_id).toBe(hamria.id);
+    });
+
+    it("clears a campaign's neighborhood link when null is provided", async () => {
+      testDb.client.prepare(
+        `INSERT INTO neighborhoods (name_en, slug, description_en, is_active)
+         VALUES (?, ?, ?, ?)`
+      ).run("Bab Mansour", "bab-mansour", "Historic gate", 1);
+      const neighborhood = testDb.client.prepare("SELECT id FROM neighborhoods WHERE slug = ?").get("bab-mansour");
+
+      testDb.client.prepare(
+        `INSERT INTO campaigns (title_en, location_en, description_en, date, slug, is_active, neighborhood_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run("Linked Campaign", "Meknes", "Desc", "15 JUL 2025", "clear-neighborhood-campaign", 1, neighborhood.id);
+
+      const admin = createTestUser(testDb.db, { role: "admin" });
+      const caller = campaignRouter.createCaller(createTestContext(admin));
+      const campaign = testDb.client.prepare("SELECT id FROM campaigns WHERE slug = ?").get("clear-neighborhood-campaign");
+
+      await caller.update({
+        id: campaign.id,
+        neighborhoodId: null,
+      });
+
+      const updated = testDb.client.prepare("SELECT neighborhood_id FROM campaigns WHERE id = ?").get(campaign.id);
+      expect(updated.neighborhood_id).toBeNull();
     });
   });
 
