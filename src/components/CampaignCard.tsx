@@ -2,10 +2,10 @@ import { useLanguage } from '@/hooks/useLanguage';
 import ShareButton from "./ShareButton";
 import { useCampaignRegistration } from "@/hooks/useCampaignRegistration";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GuestRegisterModal from "./GuestRegisterModal";
 import type { Campaign } from "@/types/campaign";
-import { Trash2, Sprout, Users, MapPin, ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trash2, Sprout, Users, MapPin, ImageOff, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { formatCampaignTime } from "@/lib/utils";
 
 function CampaignImage({ src, alt }: { src: string; alt: string }) {
@@ -67,6 +67,39 @@ export default function CampaignCard({
       `description${lang.charAt(0).toUpperCase() + lang.slice(1)}` as keyof Campaign
     ] as string) || campaign.descriptionEn;
   const eventTime = formatCampaignTime(campaign.eventDate, lang);
+
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(() => {
+    if (!campaign.eventDate || campaign.status !== 'upcoming') return null;
+    const target = new Date(campaign.eventDate);
+    const diff = +target - +new Date();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / 1000 / 60) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
+  });
+
+  useEffect(() => {
+    if (!campaign.eventDate || campaign.status !== 'upcoming') return;
+    const target = new Date(campaign.eventDate);
+    const timer = setInterval(() => {
+      const diff = +target - +new Date();
+      if (diff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        clearInterval(timer);
+        return;
+      }
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((diff / 1000 / 60) % 60),
+        seconds: Math.floor((diff / 1000) % 60),
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [campaign.eventDate, campaign.status]);
 
   const handleRegister = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -261,6 +294,23 @@ export default function CampaignCard({
           >
             {t(`campaigns.status.${campaign.status}`)}
           </span>
+
+          {/* Countdown for upcoming campaigns */}
+          {timeLeft && (
+            <span
+              className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded text-[10px] font-medium"
+              style={{
+                background: 'rgba(58,90,42,0.15)',
+                color: 'var(--accent-green-light)',
+              }}
+            >
+              <Clock size={10} />
+              {timeLeft.days > 0 && `${timeLeft.days}d `}
+              {String(timeLeft.hours).padStart(2, '0')}:
+              {String(timeLeft.minutes).padStart(2, '0')}:
+              {String(timeLeft.seconds).padStart(2, '0')}
+            </span>
+          )}
         </div>
 
         {/* Description - line clamped to 3 lines */}

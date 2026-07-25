@@ -174,7 +174,10 @@ export default function NeighborhoodDetailModal({
                   type="button"
                   onClick={() => {
                     onClose();
-                    navigate(`/?neighborhood=${neighborhood.slug}#campaigns`);
+                    navigate({ pathname: '/', search: `?neighborhood=${neighborhood.slug}`, hash: '#campaigns' });
+                    setTimeout(() => {
+                      document.getElementById('campaigns')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 50);
                   }}
                   className="group mt-8 flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02]"
                   style={{
