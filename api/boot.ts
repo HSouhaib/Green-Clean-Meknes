@@ -10,6 +10,9 @@ import { createProviderOAuthCallbackHandler, PKCE_COOKIE_NAME, PKCE_MAX_AGE } fr
 import { getOAuthProviders } from "./oauth/providers";
 import { setCookie } from "hono/cookie";
 import { checkRateLimit } from "./lib/rate-limit";
+import { getDb } from "./queries/connection";
+import { neighborhoods } from "@db/schema";
+import { eq } from "drizzle-orm";
 
 const app = new Hono<{ Bindings: HttpBindings }>();
 
@@ -71,6 +74,66 @@ app.get("/api/oauth/google", (c) => {
 
 // Google OAuth callback
 app.get("/api/oauth/callback/google", createProviderOAuthCallbackHandler("google"));
+
+// Public sitemap and robots.txt
+app.get("/sitemap.xml", async (c) => {
+  const baseUrl = (env.siteUrl || new URL(c.req.url).origin).replace(/\/$/, "");
+  const db = getDb();
+
+  const neighborhoodRows = await db
+    .select({ slug: neighborhoods.slug })
+    .from(neighborhoods)
+    .where(eq(neighborhoods.isActive, true));
+
+  const staticUrls = [
+    { loc: `${baseUrl}/`, priority: "1.0", changefreq: "weekly" },
+    { loc: `${baseUrl}/leaderboard`, priority: "0.8", changefreq: "weekly" },
+  ];
+
+  const dynamicUrls = neighborhoodRows.map((n) => ({
+    loc: `${baseUrl}/neighborhood/${encodeXml(n.slug)}`,
+    priority: "0.7",
+    changefreq: "weekly",
+  }));
+
+  const urls = [...staticUrls, ...dynamicUrls];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls
+  .map(
+    (u) => `  <url>
+    <loc>${encodeXml(u.loc)}</loc>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`
+  )
+  .join("\n")}
+</urlset>`;
+
+  return c.text(xml, 200, { "Content-Type": "application/xml" });
+});
+
+app.get("/robots.txt", (c) => {
+  const baseUrl = (env.siteUrl || new URL(c.req.url).origin).replace(/\/$/, "");
+  const robots = `User-agent: *
+Disallow: /admin
+Disallow: /profile
+Disallow: /api/
+
+Sitemap: ${baseUrl}/sitemap.xml
+`;
+  return c.text(robots, 200, { "Content-Type": "text/plain" });
+});
+
+function encodeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
 
 // tRPC API
 app.use("/api/trpc/*", async (c) => {

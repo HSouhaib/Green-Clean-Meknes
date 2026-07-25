@@ -28,6 +28,9 @@ export const env = {
   // CORS
   corsOrigin: list("CORS_ORIGIN"),
 
+  // Public site URL for sitemaps / canonical links
+  siteUrl: optional("SITE_URL"),
+
   // Google OAuth
   googleClientId: optional("GOOGLE_CLIENT_ID"),
   googleClientSecret: optional("GOOGLE_CLIENT_SECRET"),
