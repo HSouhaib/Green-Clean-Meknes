@@ -228,10 +228,10 @@ export default function CampaignDetailModal({
           </div>
         )}
 
-        {/* Countdown bar */}
+        {/* Countdown */}
         {campaign.eventDate && !isClosed && (
           <div
-            className="flex items-center justify-center py-3 px-4"
+            className="flex items-center justify-center py-4 px-4"
             style={{
               background: "var(--bg-surface)",
               borderBottom: "1px solid var(--bg-surface-light)",
@@ -239,7 +239,7 @@ export default function CampaignDetailModal({
           >
             <CampaignCountdown
               eventDate={campaign.eventDate}
-              compact
+              size="lg"
               labels={{
                 days: t("countdown.days"),
                 hours: t("countdown.hours"),

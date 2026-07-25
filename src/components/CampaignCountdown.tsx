@@ -20,23 +20,38 @@ function calculateTimeLeft(targetDate: Date): TimeLeft {
   };
 }
 
-function CountdownUnit({ value, label }: { value: number; label: string }) {
+type CountdownSize = 'sm' | 'md' | 'lg';
+
+function CountdownUnit({
+  value,
+  label,
+  size,
+}: {
+  value: number;
+  label: string;
+  size: CountdownSize;
+}) {
+  const boxStyles = {
+    sm: { width: '36px', height: '36px', fontSize: '0.85rem', borderRadius: '6px' },
+    md: { width: '48px', height: '48px', fontSize: '1.1rem', borderRadius: '8px' },
+    lg: { width: '64px', height: '64px', fontSize: '1.5rem', borderRadius: '12px' },
+  }[size];
+  const labelSize = size === 'lg' ? 'text-[10px]' : size === 'md' ? 'text-[9px]' : 'text-[8px]';
+
   return (
     <div className="flex flex-col items-center">
       <div
-        className="flex items-center justify-center rounded-md font-mono font-bold"
+        className="flex items-center justify-center font-mono font-bold"
         style={{
-          width: '48px',
-          height: '48px',
+          ...boxStyles,
           background: 'var(--accent-green)',
           color: '#fff',
-          fontSize: '1.1rem',
         }}
       >
         {String(value).padStart(2, '0')}
       </div>
       <span
-        className="text-[9px] uppercase tracking-wider mt-1.5 font-medium"
+        className={`${labelSize} uppercase tracking-wider mt-1.5 font-medium`}
         style={{ color: 'var(--text-tertiary)' }}
       >
         {label}
@@ -55,9 +70,15 @@ interface CampaignCountdownProps {
     started?: string;
   };
   compact?: boolean;
+  size?: CountdownSize;
 }
 
-export default function CampaignCountdown({ eventDate, labels, compact = false }: CampaignCountdownProps) {
+export default function CampaignCountdown({
+  eventDate,
+  labels,
+  compact = false,
+  size = 'md',
+}: CampaignCountdownProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
     eventDate ? calculateTimeLeft(new Date(eventDate)) : { days: 0, hours: 0, minutes: 0, seconds: 0 }
   );
@@ -89,19 +110,19 @@ export default function CampaignCountdown({ eventDate, labels, compact = false }
     );
   }
 
-  const gap = compact ? 'gap-2' : 'gap-3';
-  const colonSize = compact ? 'text-lg' : 'text-xl';
-  const colonOffset = compact ? '-mt-4' : '-mt-5';
+  const gap = compact ? 'gap-2' : size === 'lg' ? 'gap-4' : 'gap-3';
+  const colonSize = compact ? 'text-lg' : size === 'lg' ? 'text-2xl' : 'text-xl';
+  const colonOffset = compact ? '-mt-4' : size === 'lg' ? '-mt-2' : '-mt-5';
 
   return (
     <div className={`flex items-center ${gap}`}>
-      <CountdownUnit value={timeLeft.days} label={labels?.days ?? 'Days'} />
+      <CountdownUnit value={timeLeft.days} label={labels?.days ?? 'Days'} size={size} />
       <span className={`font-bold ${colonSize} ${colonOffset}`} style={{ color: 'var(--text-tertiary)' }}>:</span>
-      <CountdownUnit value={timeLeft.hours} label={labels?.hours ?? 'Hours'} />
+      <CountdownUnit value={timeLeft.hours} label={labels?.hours ?? 'Hours'} size={size} />
       <span className={`font-bold ${colonSize} ${colonOffset}`} style={{ color: 'var(--text-tertiary)' }}>:</span>
-      <CountdownUnit value={timeLeft.minutes} label={labels?.minutes ?? 'Minutes'} />
+      <CountdownUnit value={timeLeft.minutes} label={labels?.minutes ?? 'Minutes'} size={size} />
       <span className={`font-bold ${colonSize} ${colonOffset}`} style={{ color: 'var(--text-tertiary)' }}>:</span>
-      <CountdownUnit value={timeLeft.seconds} label={labels?.seconds ?? 'Seconds'} />
+      <CountdownUnit value={timeLeft.seconds} label={labels?.seconds ?? 'Seconds'} size={size} />
     </div>
   );
 }
