@@ -244,6 +244,13 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.or": "or",
     "login.terms":
       "By signing in, you agree to our Terms of Service and Privacy Policy.",
+    "login.sign_in": "Sign in",
+    "login.sign_up": "Sign up",
+    "login.sign_in_title": "Welcome back",
+    "login.sign_up_title": "Create your account",
+    "login.sign_in_subtitle": "Sign in to continue making Meknes cleaner.",
+    "login.sign_up_subtitle": "Join the movement for a cleaner, greener Meknes.",
+    "login.sign_up_note": "One account works for both volunteers and admins. Signing up is free and takes a second.",
 
     "volunteer.form_title": "Become a Volunteer",
     "volunteer.form_subtitle":
@@ -323,7 +330,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "two_factor.success_verified": "Two-factor authentication verified.",
 
     "login.provider.kimi": "Sign in with Kimi",
-    "login.provider.google": "Sign in with Google",
+    "login.provider.google": "Continue with Google",
+    "login.provider.google_signup": "Sign up with Google",
     "login.provider.facebook": "Sign in with Facebook",
     "login.provider.tiktok": "Sign in with TikTok",
     "login.provider.x": "Sign in with X",
@@ -795,6 +803,13 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.or": "ou",
     "login.terms":
       "En vous connectant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialite.",
+    "login.sign_in": "Se connecter",
+    "login.sign_up": "S'inscrire",
+    "login.sign_in_title": "Bon retour",
+    "login.sign_up_title": "Creez votre compte",
+    "login.sign_in_subtitle": "Connectez-vous pour continuer a rendre Meknes plus propre.",
+    "login.sign_up_subtitle": "Rejoignez le mouvement pour un Meknes plus propre et plus vert.",
+    "login.sign_up_note": "Un seul compte fonctionne pour les benevoles et les admins. L'inscription est gratuite et rapide.",
 
     "volunteer.form_title": "Devenez Benevole",
     "volunteer.form_subtitle":
@@ -877,7 +892,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "two_factor.success_verified": "Authentification a deux facteurs verifiee.",
 
     "login.provider.kimi": "Se connecter avec Kimi",
-    "login.provider.google": "Se connecter avec Google",
+    "login.provider.google": "Continuer avec Google",
+    "login.provider.google_signup": "S'inscrire avec Google",
     "login.provider.facebook": "Se connecter avec Facebook",
     "login.provider.tiktok": "Se connecter avec TikTok",
     "login.provider.x": "Se connecter avec X",
@@ -1340,6 +1356,13 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.or": "أو",
     "login.terms":
       "بتسجيل الدخول، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بنا.",
+    "login.sign_in": "تسجيل الدخول",
+    "login.sign_up": "إنشاء حساب",
+    "login.sign_in_title": "مرحباً بعودتك",
+    "login.sign_up_title": "أنشئ حسابك",
+    "login.sign_in_subtitle": "سجّل الدخول للاستمرار في جعل مكناس أنظف.",
+    "login.sign_up_subtitle": "انضم إلى الحركة من أجل مكناس أنظف وأخضر.",
+    "login.sign_up_note": "حساب واحد يعمل للمتطوعين والمسؤولين. التسجيل مجاني ويستغرق ثانية.",
 
     "volunteer.form_title": "كن متطوعاً",
     "volunteer.form_subtitle": "املأ النموذج أدناه وسيقوم المشرف بمراجعة طلبك.",
@@ -1409,7 +1432,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "two_factor.success_verified": "تم التحقق من المصادقة الثنائية.",
 
     "login.provider.kimi": "تسجيل الدخول عبر Kimi",
-    "login.provider.google": "تسجيل الدخول عبر Google",
+    "login.provider.google": "المتابعة عبر Google",
+    "login.provider.google_signup": "إنشاء حساب عبر Google",
     "login.provider.facebook": "تسجيل الدخول عبر Facebook",
     "login.provider.tiktok": "تسجيل الدخول عبر TikTok",
     "login.provider.x": "تسجيل الدخول عبر X",

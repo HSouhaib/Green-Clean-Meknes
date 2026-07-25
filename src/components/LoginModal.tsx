@@ -8,6 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
+type AuthMode = 'signin' | 'signup';
+
 // Google icon SVG
 function GoogleIcon() {
   return (
@@ -23,6 +25,7 @@ function GoogleIcon() {
 // Shared login panel content (used by both modal and standalone page)
 export function LoginPanel() {
   const { t } = useLanguage();
+  const [mode, setMode] = useState<AuthMode>('signin');
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,91 +68,160 @@ export function LoginPanel() {
     devLoginUserMutation.mutate();
   };
 
-  // Check if we're in development (devLogin is available)
   const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-
-  // Check if Google is configured
   const isGoogleConfigured = providers?.find((p) => p.key === 'google')?.enabled ?? false;
 
+  const isSignIn = mode === 'signin';
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
+      {/* Tab switcher */}
+      <div
+        className="flex rounded-lg p-1 mb-6"
+        style={{ background: 'var(--bg-primary)' }}
+      >
+        <button
+          type="button"
+          onClick={() => setMode('signin')}
+          className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200"
+          style={{
+            background: isSignIn ? 'var(--accent-green)' : 'transparent',
+            color: isSignIn ? 'var(--bg-primary)' : 'var(--text-secondary)',
+          }}
+        >
+          {t('login.sign_in')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('signup')}
+          className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200"
+          style={{
+            background: !isSignIn ? 'var(--accent-green)' : 'transparent',
+            color: !isSignIn ? 'var(--bg-primary)' : 'var(--text-secondary)',
+          }}
+        >
+          {t('login.sign_up')}
+        </button>
+      </div>
+
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h2
+          className="font-display"
+          style={{
+            color: 'var(--text-primary)',
+            fontSize: '1.5rem',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {isSignIn ? t('login.sign_in_title') : t('login.sign_up_title')}
+        </h2>
+        <p
+          className="text-sm font-light mt-1"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          {isSignIn ? t('login.sign_in_subtitle') : t('login.sign_up_subtitle')}
+        </p>
+        {!isSignIn && (
+          <p
+            className="text-xs mt-2"
+            style={{ color: 'var(--text-tertiary)' }}
+          >
+            {t('login.sign_up_note')}
+          </p>
+        )}
+      </div>
+
       {/* Error message */}
       {error && (
-        <div className="text-center text-xs p-2 rounded" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
+        <div
+          className="text-center text-xs p-2.5 rounded-lg mb-4"
+          style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}
+        >
           {error}
         </div>
       )}
 
-      {/* Google OAuth */}
-      <button
-        onClick={handleGoogleLogin}
-        disabled={isLoading !== null || !isGoogleConfigured}
-        className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-        style={{
-          background: 'var(--bg-surface-light)',
-          borderColor: 'var(--bg-surface-light)',
-          color: 'var(--text-primary)',
-        }}
-      >
-        {isLoading === 'google' ? (
-          <span className="animate-spin">⏳</span>
-        ) : (
-          <GoogleIcon />
+      <div className="flex flex-col gap-3">
+        {/* Google OAuth */}
+        <button
+          onClick={handleGoogleLogin}
+          disabled={isLoading !== null || !isGoogleConfigured}
+          className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            background: 'var(--bg-surface-light)',
+            borderColor: 'var(--bg-surface-light)',
+            color: 'var(--text-primary)',
+          }}
+        >
+          {isLoading === 'google' ? (
+            <span className="animate-spin">⏳</span>
+          ) : (
+            <GoogleIcon />
+          )}
+          <span className="text-sm font-medium">
+            {isSignIn ? t('login.provider.google') : t('login.provider.google_signup')}
+          </span>
+        </button>
+
+        {/* Dev login — only on localhost */}
+        {isDev && (
+          <>
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-dashed" style={{ borderColor: 'var(--bg-surface-light)' }} />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span
+                  className="px-2 font-mono"
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
+                >
+                  DEV
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={handleDevLogin}
+              disabled={isLoading !== null}
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: 'var(--accent-terracotta)',
+                borderColor: 'var(--accent-terracotta)',
+                color: 'white',
+              }}
+            >
+              {isLoading === 'dev' ? (
+                <span className="animate-spin">⏳</span>
+              ) : (
+                <span className="text-lg">🛠️</span>
+              )}
+              <span className="text-sm font-medium">Dev Login (Admin)</span>
+            </button>
+            <button
+              onClick={handleDevLoginUser}
+              disabled={isLoading !== null}
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: 'var(--accent-green)',
+                borderColor: 'var(--accent-green)',
+                color: 'white',
+              }}
+            >
+              {isLoading === 'devuser' ? (
+                <span className="animate-spin">⏳</span>
+              ) : (
+                <span className="text-lg">👤</span>
+              )}
+              <span className="text-sm font-medium">Dev Login (Volunteer)</span>
+            </button>
+          </>
         )}
-        <span className="text-sm font-medium">{t('login.provider.google')}</span>
-      </button>
+      </div>
 
-      {/* Dev login — only on localhost */}
-      {isDev && (
-        <>
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-dashed" style={{ borderColor: 'var(--bg-surface-light)' }} />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="px-2 font-mono" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}>
-                DEV
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={handleDevLogin}
-            disabled={isLoading !== null}
-            className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background: 'var(--accent-terracotta)',
-              borderColor: 'var(--accent-terracotta)',
-              color: 'white',
-            }}
-          >
-            {isLoading === 'dev' ? (
-              <span className="animate-spin">⏳</span>
-            ) : (
-              <span className="text-lg">🛠️</span>
-            )}
-            <span className="text-sm font-medium">Dev Login (Admin)</span>
-          </button>
-          <button
-            onClick={handleDevLoginUser}
-            disabled={isLoading !== null}
-            className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background: 'var(--accent-green)',
-              borderColor: 'var(--accent-green)',
-              color: 'white',
-            }}
-          >
-            {isLoading === 'devuser' ? (
-              <span className="animate-spin">⏳</span>
-            ) : (
-              <span className="text-lg">👤</span>
-            )}
-            <span className="text-sm font-medium">Dev Login (Volunteer)</span>
-          </button>
-        </>
-      )}
-
-      <p className="text-center text-xs mt-4" style={{ color: 'var(--text-tertiary)' }}>
+      <p
+        className="text-center text-xs mt-6"
+        style={{ color: 'var(--text-tertiary)' }}
+      >
         {t('login.terms')}
       </p>
     </div>
@@ -162,14 +234,18 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ open, onClose }: LoginModalProps) {
-  const { t } = useLanguage();
-
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md" style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}>
+      <DialogContent
+        className="sm:max-w-md"
+        style={{
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--bg-surface-light)',
+        }}
+      >
         <DialogHeader>
-          <DialogTitle className="text-center font-display" style={{ color: 'var(--text-primary)', fontSize: '1.5rem' }}>
-            {t('login.title')}
+          <DialogTitle className="sr-only">
+            Authentication
           </DialogTitle>
         </DialogHeader>
         <LoginPanel />
