@@ -133,7 +133,7 @@ export default function CampaignDetailModal({
         </button>
 
         {/* Image */}
-        <div className="relative w-full" style={{ height: "200px" }}>
+        <div className="relative w-full" style={{ height: "260px" }}>
           {showImagePlaceholder ? (
             <div
               className="w-full h-full flex flex-col items-center justify-center gap-2"
@@ -198,7 +198,7 @@ export default function CampaignDetailModal({
         {/* Gallery thumbnails */}
         {images.length > 1 && (
           <div
-            className="flex gap-2 px-4 pt-3 overflow-x-auto"
+            className="flex gap-3 px-4 pt-4 pb-3 overflow-x-auto"
             style={{
               background: "var(--bg-surface)",
               borderBottom: "1px solid var(--bg-surface-light)",
@@ -209,13 +209,14 @@ export default function CampaignDetailModal({
                 key={`${url}-${i}`}
                 type="button"
                 onClick={() => setImageIndex(i)}
-                className="relative shrink-0 rounded overflow-hidden"
+                className="relative shrink-0 rounded-lg overflow-hidden transition-all"
                 style={{
-                  width: "64px",
-                  height: "48px",
+                  width: "80px",
+                  height: "60px",
                   outline:
                     i === imageIndex ? "2px solid var(--accent-green)" : "none",
                   outlineOffset: "2px",
+                  opacity: i === imageIndex ? 1 : 0.7,
                 }}
               >
                 <img

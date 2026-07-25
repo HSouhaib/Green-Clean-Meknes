@@ -34,7 +34,7 @@ function CountdownUnit({
   const boxStyles = {
     sm: { width: '36px', height: '36px', fontSize: '0.85rem', borderRadius: '6px' },
     md: { width: '48px', height: '48px', fontSize: '1.1rem', borderRadius: '8px' },
-    lg: { width: '64px', height: '64px', fontSize: '1.5rem', borderRadius: '12px' },
+    lg: { width: '76px', height: '76px', fontSize: '1.75rem', borderRadius: '16px' },
   }[size];
   const labelSize = size === 'lg' ? 'text-[10px]' : size === 'md' ? 'text-[9px]' : 'text-[8px]';
 
@@ -110,18 +110,34 @@ export default function CampaignCountdown({
     );
   }
 
-  const gap = compact ? 'gap-2' : size === 'lg' ? 'gap-4' : 'gap-3';
-  const colonSize = compact ? 'text-lg' : size === 'lg' ? 'text-2xl' : 'text-xl';
-  const colonOffset = compact ? '-mt-4' : size === 'lg' ? '-mt-2' : '-mt-5';
+  const gap = compact ? 'gap-2' : size === 'lg' ? 'gap-5' : 'gap-3';
+  const isLg = size === 'lg';
+
+  const separatorNode = isLg ? (
+    <span
+      className="w-1 h-1 rounded-full"
+      style={{
+        background: 'var(--text-tertiary)',
+        opacity: 0.6,
+      }}
+    />
+  ) : (
+    <span
+      className={`font-bold ${compact ? 'text-lg -mt-4' : 'text-xl -mt-5'}`}
+      style={{ color: 'var(--text-tertiary)' }}
+    >
+      :
+    </span>
+  );
 
   return (
     <div className={`flex items-center ${gap}`}>
       <CountdownUnit value={timeLeft.days} label={labels?.days ?? 'Days'} size={size} />
-      <span className={`font-bold ${colonSize} ${colonOffset}`} style={{ color: 'var(--text-tertiary)' }}>:</span>
+      {separatorNode}
       <CountdownUnit value={timeLeft.hours} label={labels?.hours ?? 'Hours'} size={size} />
-      <span className={`font-bold ${colonSize} ${colonOffset}`} style={{ color: 'var(--text-tertiary)' }}>:</span>
+      {separatorNode}
       <CountdownUnit value={timeLeft.minutes} label={labels?.minutes ?? 'Minutes'} size={size} />
-      <span className={`font-bold ${colonSize} ${colonOffset}`} style={{ color: 'var(--text-tertiary)' }}>:</span>
+      {separatorNode}
       <CountdownUnit value={timeLeft.seconds} label={labels?.seconds ?? 'Seconds'} size={size} />
     </div>
   );
