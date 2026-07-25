@@ -108,6 +108,7 @@ export default function HeroSection() {
           style={{
             color: 'var(--text-primary)',
             fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+            textShadow: '0 2px 8px rgba(0,0,0,0.25)',
           }}
         >
           {t('hero.heading')}
@@ -119,10 +120,11 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2, ease: easing }}
           className="font-light mt-6 leading-[1.6]"
           style={{
-            color: 'var(--text-secondary)',
+            color: 'var(--text-primary)',
             fontSize: 'clamp(1rem, 2vw, 1.25rem)',
             maxWidth: '560px',
             margin: '24px auto 0',
+            textShadow: '0 1px 6px rgba(0,0,0,0.25)',
           }}
         >
           {t('hero.subheading')}
