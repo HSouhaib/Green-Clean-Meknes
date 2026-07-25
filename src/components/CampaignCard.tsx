@@ -305,10 +305,16 @@ export default function CampaignCard({
               }}
             >
               <Clock size={10} />
-              {timeLeft.days > 0 && `${timeLeft.days}d `}
-              {String(timeLeft.hours).padStart(2, '0')}:
-              {String(timeLeft.minutes).padStart(2, '0')}:
-              {String(timeLeft.seconds).padStart(2, '0')}
+              {timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0 ? (
+                t('countdown.started')
+              ) : (
+                <>
+                  {timeLeft.days > 0 && `${timeLeft.days}d `}
+                  {String(timeLeft.hours).padStart(2, '0')}:
+                  {String(timeLeft.minutes).padStart(2, '0')}:
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </>
+              )}
             </span>
           )}
         </div>
