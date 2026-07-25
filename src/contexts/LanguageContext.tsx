@@ -243,7 +243,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.title": "Welcome",
     "login.or": "or",
     "login.terms":
-      "By signing in, you agree to our Terms of Service and Privacy Policy.",
+      "By continuing, you agree to our Terms of Service and Privacy Policy.",
+    "login.oauth_not_configured": "Google sign-in is not configured.",
     "login.sign_in": "Sign in",
     "login.sign_up": "Sign up",
     "login.sign_in_title": "Welcome back",
@@ -802,7 +803,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.title": "Bienvenue",
     "login.or": "ou",
     "login.terms":
-      "En vous connectant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialite.",
+      "En continuant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialite.",
+    "login.oauth_not_configured": "La connexion Google n'est pas configuree.",
     "login.sign_in": "Se connecter",
     "login.sign_up": "S'inscrire",
     "login.sign_in_title": "Bon retour",
@@ -1355,7 +1357,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.title": "مرحباً",
     "login.or": "أو",
     "login.terms":
-      "بتسجيل الدخول، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بنا.",
+      "بالمتابعة، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بنا.",
+    "login.oauth_not_configured": "لم يتم تكوين تسجيل الدخول عبر Google.",
     "login.sign_in": "تسجيل الدخول",
     "login.sign_up": "إنشاء حساب",
     "login.sign_in_title": "مرحباً بعودتك",
