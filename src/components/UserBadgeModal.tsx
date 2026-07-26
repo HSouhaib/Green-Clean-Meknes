@@ -1,9 +1,11 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
-import { X, Printer, BadgeCheck, Calendar, MapPin, ChevronDown } from 'lucide-react';
+import { X, Printer, BadgeCheck, Calendar, MapPin, ChevronDown, FileDown } from 'lucide-react';
 import { useRef, useState, useMemo } from 'react';
 import { formatCampaignDateTime } from '@/lib/utils';
 import type { RouterOutputs } from '@/lib/trpc';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 type User = NonNullable<RouterOutputs['auth']['me']>;
 type Registration = RouterOutputs['campaign']['myRegistrations'][number];
@@ -40,6 +42,7 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
   const badgeRef = useRef<HTMLDivElement>(null);
   const [selectedRegId, setSelectedRegId] = useState<number | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
 
   const { data: registrations, isLoading: regsLoading } = trpc.campaign.myRegistrations.useQuery(
     undefined,
@@ -109,6 +112,47 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
       printWindow.print();
       printWindow.close();
     });
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!badgeRef.current) return;
+    setIsPdfLoading(true);
+    try {
+      const canvas = await html2canvas(badgeRef.current, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: '#f5f5f0',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      const maxWidth = pageWidth - margin * 2;
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(maxWidth / imgWidth, (pageHeight - margin * 2) / imgHeight);
+      const width = imgWidth * ratio;
+      const height = imgHeight * ratio;
+      const x = (pageWidth - width) / 2;
+      const y = (pageHeight - height) / 2;
+
+      pdf.addImage(imgData, 'PNG', x, y, width, height);
+
+      const safeName = (user.name ?? 'volunteer').replace(/[^a-z0-9\u0600-\u06FF\u00C0-\u017F]/gi, '_').toLowerCase();
+      pdf.save(`green-clean-meknes-badge-${safeName}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate badge PDF:', err);
+    } finally {
+      setIsPdfLoading(false);
+    }
   };
 
   if (!open) return null;
@@ -404,17 +448,37 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                 </div>
               </div>
 
-              <button
-                onClick={handlePrint}
-                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[1.02] border-none cursor-pointer"
-                style={{
-                  background: 'var(--accent-green)',
-                  color: '#ffffff',
-                }}
-              >
-                <Printer size={16} />
-                {t('user_badge.print')}
-              </button>
+              <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handlePrint}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[1.02] border-none cursor-pointer"
+                  style={{
+                    background: 'var(--accent-green)',
+                    color: '#ffffff',
+                  }}
+                >
+                  <Printer size={16} />
+                  {t('user_badge.print')}
+                </button>
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={isPdfLoading}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+                  style={{
+                    background: 'var(--bg-surface-light)',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  {isPdfLoading ? (
+                    <span
+                      className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"
+                    />
+                  ) : (
+                    <FileDown size={16} />
+                  )}
+                  {t('user_badge.download_pdf')}
+                </button>
+              </div>
             </>
           )}
         </div>

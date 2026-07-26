@@ -557,6 +557,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "user_badge.select_campaign": "Select a campaign",
     "user_badge.no_campaigns": "Register for a campaign to get your badge.",
     "user_badge.print": "Print Badge",
+    "user_badge.download_pdf": "Download PDF",
 
     "admin.leaderboard.title": "Leaderboard",
     "admin.leaderboard.award_points": "Award points",
@@ -1131,6 +1132,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "user_badge.select_campaign": "Sélectionner une campagne",
     "user_badge.no_campaigns": "Inscrivez-vous à une campagne pour obtenir votre badge.",
     "user_badge.print": "Imprimer le badge",
+    "user_badge.download_pdf": "Télécharger le PDF",
 
     "admin.leaderboard.title": "Classement",
     "admin.leaderboard.award_points": "Attribuer des points",
@@ -1674,6 +1676,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "user_badge.select_campaign": "اختر حملة",
     "user_badge.no_campaigns": "سجل في حملة للحصول على بطاقتك.",
     "user_badge.print": "طباعة البطاقة",
+    "user_badge.download_pdf": "تحميل PDF",
 
     "admin.leaderboard.title": "لوحة المتصدرين",
     "admin.leaderboard.award_points": "منح نقاط",
