@@ -1,7 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import UserAvatar from '@/components/UserAvatar';
-import Logo from '@/components/Logo';
 import { X, Printer, BadgeCheck, Calendar, MapPin, ChevronDown } from 'lucide-react';
 import { useRef, useState, useMemo } from 'react';
 import { formatCampaignDateTime } from '@/lib/utils';
@@ -80,7 +79,8 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
           <title>${user.name} - Green Clean Meknes Badge</title>
           <style>
             @page { margin: 0; size: auto; }
-            body { margin: 0; padding: 40px; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #fff; font-family: Inter, system-ui, sans-serif; }
+            body { margin: 0; padding: 24px; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f5f5f0; font-family: Inter, system-ui, sans-serif; }
+            img { display: block; max-width: 100%; }
           </style>
         </head>
         <body>
@@ -231,28 +231,58 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
             </div>
           ) : (
             <>
-              {/* Badge card */}
+              {/* Badge card - always light/print friendly */}
               <div
                 ref={badgeRef}
                 className="rounded-2xl overflow-hidden"
                 style={{
-                  background: 'var(--bg-primary)',
-                  border: '1px solid var(--bg-surface-light)',
+                  background: '#f5f5f0',
+                  border: '1px solid #e5e5df',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                  maxWidth: '360px',
+                  margin: '0 auto',
                 }}
               >
                 {/* Top stripe */}
                 <div
                   className="h-2"
-                  style={{ background: isAdmin ? 'var(--accent-terracotta)' : 'var(--accent-green)' }}
+                  style={{ background: isAdmin ? '#c47850' : '#6B8E5A' }}
                 />
 
                 <div className="p-6">
                   {/* Header */}
                   <div className="flex items-center justify-between mb-6">
-                    <Logo size="sm" />
+                    <span className="inline-flex items-center gap-2 no-underline">
+                      <svg
+                        width={28}
+                        height={28}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        style={{ color: '#6B8E5A' }}
+                      >
+                        <path
+                          d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <span className="flex flex-col leading-none">
+                        <span
+                          className="font-display tracking-tight text-[15px]"
+                          style={{ color: '#1a1a1a' }}
+                        >
+                          GREEN
+                        </span>
+                        <span
+                          className="uppercase font-medium text-[8px] tracking-[0.16em]"
+                          style={{ color: '#6B8E5A' }}
+                        >
+                          Clean Meknes
+                        </span>
+                      </span>
+                    </span>
                     <span
                       className="text-[10px] font-mono uppercase tracking-widest"
-                      style={{ color: 'var(--text-tertiary)' }}
+                      style={{ color: '#6b6b6b' }}
                     >
                       {getBadgeId(user)}
                     </span>
@@ -263,12 +293,12 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                     {badgeLoading || !badge ? (
                       <div
                         className="w-44 h-44 rounded-xl animate-pulse"
-                        style={{ background: 'var(--bg-surface-light)' }}
+                        style={{ background: '#e5e5df' }}
                       />
                     ) : (
                       <div
                         className="p-3 rounded-xl"
-                        style={{ background: '#ffffff', border: '1px solid var(--bg-surface-light)' }}
+                        style={{ background: '#ffffff', border: '1px solid #e5e5df' }}
                       >
                         <img
                           src={badge.qrDataUrl}
@@ -284,12 +314,12 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                     <div
                       className="w-16 h-16 rounded-full p-0.5 mb-3"
                       style={{
-                        background: isAdmin ? 'var(--accent-terracotta)' : 'var(--accent-green)',
+                        background: isAdmin ? '#c47850' : '#6B8E5A',
                       }}
                     >
                       <div
                         className="w-full h-full rounded-full overflow-hidden flex items-center justify-center"
-                        style={{ background: 'var(--bg-surface)' }}
+                        style={{ background: '#ffffff' }}
                       >
                         <UserAvatar
                           src={user.avatar}
@@ -301,7 +331,7 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
 
                     <h3
                       className="text-lg font-semibold"
-                      style={{ color: 'var(--text-primary)' }}
+                      style={{ color: '#1a1a1a' }}
                     >
                       {user.name}
                     </h3>
@@ -309,10 +339,8 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                     <span
                       className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium"
                       style={{
-                        background: isAdmin
-                          ? 'rgba(196, 120, 80, 0.12)'
-                          : 'rgba(107, 142, 90, 0.12)',
-                        color: isAdmin ? 'var(--accent-terracotta)' : 'var(--accent-green)',
+                        background: isAdmin ? '#f3e5dc' : '#e8efe4',
+                        color: isAdmin ? '#9c5a32' : '#4a6b3a',
                       }}
                     >
                       {isAdmin ? t('login.role_admin') : t('login.role_volunteer')}
@@ -323,27 +351,27 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                   {selectedCampaign && (
                     <div
                       className="rounded-xl p-4"
-                      style={{ background: 'var(--bg-surface)' }}
+                      style={{ background: '#ffffff', border: '1px solid #e5e5df' }}
                     >
                       <p
                         className="text-sm font-medium mb-2"
-                        style={{ color: 'var(--text-primary)' }}
+                        style={{ color: '#1a1a1a' }}
                       >
                         {getCampaignTitle(selectedCampaign, lang)}
                       </p>
                       <div className="flex flex-col gap-1.5">
                         <span
                           className="flex items-center gap-1.5 text-xs"
-                          style={{ color: 'var(--text-secondary)' }}
+                          style={{ color: '#4a4a4a' }}
                         >
-                          <Calendar size={12} style={{ color: 'var(--accent-green)' }} />
+                          <Calendar size={12} style={{ color: '#6B8E5A' }} />
                           {formatCampaignDateTime(selectedCampaign.eventDate, lang, selectedCampaign.date)}
                         </span>
                         <span
                           className="flex items-center gap-1.5 text-xs"
-                          style={{ color: 'var(--text-secondary)' }}
+                          style={{ color: '#4a4a4a' }}
                         >
-                          <MapPin size={12} style={{ color: 'var(--accent-green)' }} />
+                          <MapPin size={12} style={{ color: '#6B8E5A' }} />
                           {getCampaignLocation(selectedCampaign, lang)}
                         </span>
                       </div>
