@@ -21,6 +21,7 @@ import { formatCampaignDateTime, getEffectiveCampaignStatus } from "@/lib/utils"
 
 function CampaignImage({ src, alt }: { src: string; alt: string }) {
   const [error, setError] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   if (error) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center gap-2">
@@ -29,13 +30,22 @@ function CampaignImage({ src, alt }: { src: string; alt: string }) {
     );
   }
   return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-full h-full object-cover"
-      loading="lazy"
-      onError={() => setError(true)}
-    />
+    <>
+      {!loaded && (
+        <div
+          className="absolute inset-0 animate-pulse"
+          style={{ background: "var(--bg-surface-light)" }}
+        />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover"
+        loading="lazy"
+        onError={() => setError(true)}
+        onLoad={() => setLoaded(true)}
+      />
+    </>
   );
 }
 
@@ -316,9 +326,20 @@ export default function CampaignDetailModal({
               style={{ color: "var(--text-tertiary)" }}
             >
               <Users size={14} />
-              <span>
-                {count} {t("campaigns.registered_count")}
-              </span>
+              {isLoading ? (
+                <span
+                  className="inline-block rounded animate-pulse"
+                  style={{
+                    width: "4rem",
+                    height: "0.75rem",
+                    background: "var(--bg-surface-light)",
+                  }}
+                />
+              ) : (
+                <span>
+                  {count} {t("campaigns.registered_count")}
+                </span>
+              )}
             </div>
             {campaign.mapX && campaign.mapY && (
               <div

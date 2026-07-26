@@ -124,12 +124,22 @@ export default function NeighborhoodDetailModal({
           {/* Hero image */}
           <div className="relative h-56 md:h-72 overflow-hidden">
             {neighborhood.image ? (
-              <img
-                src={neighborhood.image}
-                alt={name}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
+              <>
+                <div
+                  className="absolute inset-0 animate-pulse"
+                  style={{ background: 'var(--bg-surface-light)' }}
+                />
+                <img
+                  src={neighborhood.image}
+                  alt={name}
+                  className="w-full h-full object-cover relative z-10"
+                  loading="lazy"
+                  onLoad={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.opacity = '1';
+                  }}
+                  style={{ opacity: 0, transition: 'opacity 0.3s ease' }}
+                />
+              </>
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center"
