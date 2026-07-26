@@ -1,5 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { trpc } from '@/lib/trpc';
 import { Card, CardContent } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
@@ -12,6 +13,10 @@ import {
   Home,
   ShieldCheck,
   ShieldOff,
+  Sun,
+  Moon,
+  Monitor,
+  BadgeCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -19,6 +24,7 @@ import TwoFactorSetupModal from "@/components/TwoFactorSetupModal";
 import TwoFactorDisableModal from "@/components/TwoFactorDisableModal";
 import CampaignBadgeModal from "@/components/CampaignBadgeModal";
 import CampaignDetailModal from "@/components/CampaignDetailModal";
+import UserBadgeModal from "@/components/UserBadgeModal";
 import Logo from "@/components/Logo";
 import type { Campaign } from "@/types/campaign";
 import { formatCampaignDateTime } from "@/lib/utils";
@@ -28,12 +34,14 @@ export default function Profile() {
   const { user, isAuthenticated, isLoading, logout } = useAuth({
     redirectOnUnauthenticated: true,
   });
+  const { isLight, isAuto, cycle } = useTheme();
   const navigate = useNavigate();
   const [setupModalOpen, setSetupModalOpen] = useState(false);
   const [disableModalOpen, setDisableModalOpen] = useState(false);
   const [badgeCampaignId, setBadgeCampaignId] = useState<number | null>(null);
   const [badgeCampaignTitle, setBadgeCampaignTitle] = useState("");
   const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null);
+  const [userBadgeOpen, setUserBadgeOpen] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: myRegistrations } = trpc.campaign.myRegistrations.useQuery(
@@ -109,6 +117,20 @@ export default function Profile() {
             </button>
             <LanguageSwitcher />
             <button
+              onClick={cycle}
+              className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 hover:bg-[var(--bg-surface-light)] bg-transparent border-none cursor-pointer"
+              style={{ color: "var(--text-secondary)" }}
+              title={
+                isAuto
+                  ? "Auto (follows Meknes day/night)"
+                  : isLight
+                    ? "Switch to dark mode"
+                    : "Switch to light mode"
+              }
+            >
+              {isAuto ? <Monitor size={16} /> : isLight ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button
               onClick={logout}
               className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 hover:bg-[var(--bg-surface-light)] bg-transparent border-none cursor-pointer"
               style={{ color: "var(--text-tertiary)" }}
@@ -166,6 +188,14 @@ export default function Profile() {
                       ? t("login.role_admin")
                       : t("login.role_volunteer")}
                   </span>
+                  <button
+                    onClick={() => setUserBadgeOpen(true)}
+                    className="inline-flex items-center gap-1 mt-2 text-xs font-medium transition-colors duration-200 hover:text-[var(--accent-green-light)] bg-transparent border-none cursor-pointer"
+                    style={{ color: "var(--accent-green)" }}
+                  >
+                    <BadgeCheck size={12} />
+                    {t("user_badge.title")}
+                  </button>
                 </div>
               </div>
             </CardContent>
@@ -256,6 +286,12 @@ export default function Profile() {
             campaignTitle={badgeCampaignTitle}
             open={badgeCampaignId !== null}
             onClose={() => setBadgeCampaignId(null)}
+          />
+
+          <UserBadgeModal
+            user={user}
+            open={userBadgeOpen}
+            onClose={() => setUserBadgeOpen(false)}
           />
 
           {detailCampaign && (
