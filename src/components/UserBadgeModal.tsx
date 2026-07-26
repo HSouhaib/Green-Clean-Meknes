@@ -37,12 +37,34 @@ function getBadgeId(user: User): string {
   return `${prefix}-${year}-${id}`;
 }
 
+async function imageToDataUrl(url: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || 128;
+      canvas.height = img.naturalHeight || 128;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(null);
+        return;
+      }
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalProps) {
   const { t, lang } = useLanguage();
   const badgeRef = useRef<HTMLDivElement>(null);
   const [selectedRegId, setSelectedRegId] = useState<number | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const { data: registrations, isLoading: regsLoading } = trpc.campaign.myRegistrations.useQuery(
     undefined,
@@ -117,13 +139,32 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
   const handleDownloadPdf = async () => {
     if (!badgeRef.current) return;
     setIsPdfLoading(true);
+
+    // Convert cross-origin avatar to a data URL so html2canvas can capture it.
+    const avatarImg = badgeRef.current.querySelector('img[alt=""]') as HTMLImageElement | null;
+    const originalAvatarSrc = avatarImg?.src;
+    let restoredAvatar = false;
+
     try {
+      if (avatarImg && originalAvatarSrc && originalAvatarSrc.startsWith('http')) {
+        const dataUrl = await imageToDataUrl(originalAvatarSrc);
+        if (dataUrl) {
+          avatarImg.src = dataUrl;
+        }
+      }
+
       const canvas = await html2canvas(badgeRef.current, {
         scale: 3,
         useCORS: true,
+        allowTaint: false,
         backgroundColor: '#f5f5f0',
         logging: false,
       });
+
+      if (avatarImg && originalAvatarSrc && avatarImg.src !== originalAvatarSrc) {
+        avatarImg.src = originalAvatarSrc;
+        restoredAvatar = true;
+      }
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
@@ -151,6 +192,9 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
     } catch (err) {
       console.error('Failed to generate badge PDF:', err);
     } finally {
+      if (avatarImg && originalAvatarSrc && !restoredAvatar) {
+        avatarImg.src = originalAvatarSrc;
+      }
       setIsPdfLoading(false);
     }
   };
@@ -290,9 +334,10 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
             </div>
           ) : (
             <>
-              {/* Badge card - always light/print friendly */}
+              {/* Badge card - always light/print friendly, forced LTR so layout is identical in all languages */}
               <div
                 ref={badgeRef}
+                dir="ltr"
                 className="rounded-2xl overflow-hidden"
                 style={{
                   background: '#f5f5f0',
@@ -300,6 +345,7 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                   maxWidth: '360px',
                   margin: '0 auto',
+                  direction: 'ltr',
                 }}
               >
                 {/* Top stripe */}
@@ -310,7 +356,7 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
 
                 <div className="p-6">
                   {/* Header */}
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-between mb-6" style={{ flexDirection: 'row' }}>
                     <span className="inline-flex items-center gap-2 no-underline">
                       <svg
                         width={28}
@@ -380,10 +426,12 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                         className="w-full h-full rounded-full overflow-hidden flex items-center justify-center"
                         style={{ background: '#ffffff' }}
                       >
-                        {user.avatar ? (
+                        {user.avatar && !avatarError ? (
                           <img
                             src={user.avatar}
                             alt=""
+                            crossOrigin="anonymous"
+                            onError={() => setAvatarError(true)}
                             className="w-full h-full rounded-full object-cover"
                           />
                         ) : (
