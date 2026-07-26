@@ -5,6 +5,7 @@ import MaintenanceModal from "@/components/MaintenanceModal";
 import LoginModal from "@/components/LoginModal";
 import { useLoginModalTrigger } from "@/hooks/useLoginModal";
 import { useTheme } from "@/hooks/useTheme";
+import { useWeather } from "@/hooks/useWeather";
 import { trpc } from '@/lib/trpc';
 
 const Home = lazy(() => import("@/pages/Home"));
@@ -30,6 +31,8 @@ function MaintenanceGuard() {
 function App() {
   // Initialize theme (dark/light/auto) globally so every route inherits it
   useTheme();
+  // Fetch weather globally so auto theme follows Meknes day/night on every route
+  useWeather();
   const { isOpen, setIsOpen } = useLoginModalTrigger();
 
   return (

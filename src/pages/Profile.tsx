@@ -174,28 +174,33 @@ export default function Profile() {
                   >
                     {user.email}
                   </p>
-                  <span
-                    className="inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-medium"
-                    style={{
-                      background:
-                        user.role === "admin" || user.role === "super_admin"
-                          ? "var(--accent-terracotta)"
-                          : "var(--accent-green)",
-                      color: "white",
-                    }}
-                  >
-                    {user.role === "admin" || user.role === "super_admin"
-                      ? t("login.role_admin")
-                      : t("login.role_volunteer")}
-                  </span>
-                  <button
-                    onClick={() => setUserBadgeOpen(true)}
-                    className="inline-flex items-center gap-1 mt-2 text-xs font-medium transition-colors duration-200 hover:text-[var(--accent-green-light)] bg-transparent border-none cursor-pointer"
-                    style={{ color: "var(--accent-green)" }}
-                  >
-                    <BadgeCheck size={12} />
-                    {t("user_badge.title")}
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span
+                      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+                      style={{
+                        background:
+                          user.role === "admin" || user.role === "super_admin"
+                            ? "var(--accent-terracotta)"
+                            : "var(--accent-green)",
+                        color: "white",
+                      }}
+                    >
+                      {user.role === "admin" || user.role === "super_admin"
+                        ? t("login.role_admin")
+                        : t("login.role_volunteer")}
+                    </span>
+                    <button
+                      onClick={() => setUserBadgeOpen(true)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors duration-200 hover:bg-[var(--bg-surface-light)] bg-transparent border-none cursor-pointer"
+                      style={{
+                        color: "var(--accent-green)",
+                        border: "1px solid var(--bg-surface-light)",
+                      }}
+                    >
+                      <BadgeCheck size={12} />
+                      {t("user_badge.title")}
+                    </button>
+                  </div>
                 </div>
               </div>
             </CardContent>
