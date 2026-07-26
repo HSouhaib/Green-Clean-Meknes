@@ -27,7 +27,6 @@ export default function Profile() {
   const { t, lang } = useLanguage();
   const { user, isAuthenticated, isLoading, logout } = useAuth({
     redirectOnUnauthenticated: true,
-    redirectPath: "/login",
   });
   const navigate = useNavigate();
   const [setupModalOpen, setSetupModalOpen] = useState(false);

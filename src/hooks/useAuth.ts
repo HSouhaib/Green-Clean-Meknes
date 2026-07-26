@@ -1,18 +1,13 @@
 import { trpc } from '@/lib/trpc';
+import { openLoginModal } from '@/hooks/useLoginModal';
 import { useCallback, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router";
-import { LOGIN_PATH } from "@/const";
 
 type UseAuthOptions = {
   redirectOnUnauthenticated?: boolean;
-  redirectPath?: string;
 };
 
 export function useAuth(options?: UseAuthOptions) {
-  const { redirectOnUnauthenticated = false, redirectPath = LOGIN_PATH } =
-    options ?? {};
-
-  const navigate = useNavigate();
+  const { redirectOnUnauthenticated = false } = options ?? {};
 
   const utils = trpc.useUtils();
 
@@ -30,7 +25,7 @@ export function useAuth(options?: UseAuthOptions) {
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: async () => {
       await utils.invalidate();
-      navigate(redirectPath);
+      openLoginModal();
     },
   });
 
@@ -38,12 +33,9 @@ export function useAuth(options?: UseAuthOptions) {
 
   useEffect(() => {
     if (redirectOnUnauthenticated && !isLoading && !user) {
-      const currentPath = window.location.pathname;
-      if (currentPath !== redirectPath) {
-        navigate(redirectPath);
-      }
+      openLoginModal();
     }
-  }, [redirectOnUnauthenticated, isLoading, user, navigate, redirectPath]);
+  }, [redirectOnUnauthenticated, isLoading, user]);
 
   return useMemo(
     () => ({

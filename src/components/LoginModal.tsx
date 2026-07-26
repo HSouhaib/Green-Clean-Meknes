@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
-import { Leaf } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Leaf, X } from 'lucide-react';
 
 type AuthMode = 'signin' | 'signup';
 
@@ -45,13 +39,14 @@ export function LoginPanel() {
       {/* Brand icon */}
       <div className="flex justify-center mb-5">
         <div
-          className="w-12 h-12 rounded-full flex items-center justify-center"
+          className="w-14 h-14 rounded-full flex items-center justify-center"
           style={{
             background: 'var(--accent-green)',
             color: 'var(--bg-primary)',
+            boxShadow: '0 8px 24px rgba(107, 142, 90, 0.35)',
           }}
         >
-          <Leaf size={24} />
+          <Leaf size={28} />
         </div>
       </div>
 
@@ -61,14 +56,14 @@ export function LoginPanel() {
           className="font-display"
           style={{
             color: 'var(--text-primary)',
-            fontSize: '1.5rem',
+            fontSize: '1.6rem',
             letterSpacing: '-0.02em',
           }}
         >
           {isSignIn ? t('login.sign_in_title') : t('login.sign_up_title')}
         </h2>
         <p
-          className="text-sm font-light mt-1"
+          className="text-sm font-light mt-1.5"
           style={{ color: 'var(--text-secondary)' }}
         >
           {isSignIn ? t('login.sign_in_subtitle') : t('login.sign_up_subtitle')}
@@ -77,16 +72,17 @@ export function LoginPanel() {
 
       {/* Tab switcher */}
       <div
-        className="flex rounded-lg p-1 mb-6"
+        className="flex rounded-full p-1 mb-6"
         style={{ background: 'var(--bg-primary)' }}
       >
         <button
           type="button"
           onClick={() => setMode('signin')}
-          className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200"
+          className="flex-1 py-2.5 text-sm font-medium rounded-full transition-all duration-200"
           style={{
             background: isSignIn ? 'var(--accent-green)' : 'transparent',
             color: isSignIn ? '#ffffff' : 'var(--text-secondary)',
+            boxShadow: isSignIn ? '0 4px 12px rgba(107, 142, 90, 0.25)' : 'none',
           }}
         >
           {t('login.sign_in')}
@@ -94,10 +90,11 @@ export function LoginPanel() {
         <button
           type="button"
           onClick={() => setMode('signup')}
-          className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200"
+          className="flex-1 py-2.5 text-sm font-medium rounded-full transition-all duration-200"
           style={{
             background: !isSignIn ? 'var(--accent-green)' : 'transparent',
             color: !isSignIn ? '#ffffff' : 'var(--text-secondary)',
+            boxShadow: !isSignIn ? '0 4px 12px rgba(107, 142, 90, 0.25)' : 'none',
           }}
         >
           {t('login.sign_up')}
@@ -126,7 +123,7 @@ export function LoginPanel() {
       <button
         onClick={handleGoogleLogin}
         disabled={isLoading || !isGoogleConfigured}
-        className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center justify-center gap-3 w-full px-4 py-3.5 rounded-xl border transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           background: 'var(--bg-surface-light)',
           borderColor: 'var(--bg-surface-light)',
@@ -159,22 +156,53 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ open, onClose }: LoginModalProps) {
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent
-        className="sm:max-w-md"
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      style={{
+        background: 'rgba(0,0,0,0.75)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}
+      onClick={onClose}
+    >
+      {/* Ambient glow */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 50% 40%, rgba(107, 142, 90, 0.18), transparent 60%)',
+        }}
+      />
+
+      <div
+        className="relative w-full max-w-md rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         style={{
           background: 'var(--bg-surface)',
           border: '1px solid var(--bg-surface-light)',
+          boxShadow: '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03)',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <DialogHeader>
-          <DialogTitle className="sr-only">
-            Authentication
-          </DialogTitle>
-        </DialogHeader>
-        <LoginPanel />
-      </DialogContent>
-    </Dialog>
+        {/* Top accent bar */}
+        <div className="h-1.5" style={{ background: 'var(--accent-green)' }} />
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-[var(--bg-surface-light)] bg-transparent border-none cursor-pointer"
+          style={{ color: 'var(--text-secondary)' }}
+          aria-label="Close"
+        >
+          <X size={18} />
+        </button>
+
+        {/* Content */}
+        <div className="p-7 pt-6">
+          <LoginPanel />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -3,8 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import MobileMenu from "./MobileMenu";
 import Logo from "@/components/Logo";
 import { useTheme } from "@/hooks/useTheme";
-import LoginModal from "@/components/LoginModal";
-import { useLoginModalTrigger } from "@/hooks/useLoginModal";
+import { openLoginModal } from "@/hooks/useLoginModal";
 import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -17,8 +16,6 @@ export default function Navigation() {
   const isRtl = dir === "rtl";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isOpen: loginModalOpen, setIsOpen: setLoginModalOpen } =
-    useLoginModalTrigger();
   const { isVisible } = useSectionVisibility();
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -127,7 +124,7 @@ export default function Navigation() {
               </>
             ) : (
               <button
-                onClick={() => setLoginModalOpen(true)}
+                onClick={() => openLoginModal()}
                 className="relative text-sm font-normal no-underline transition-colors duration-200 hover:text-[var(--accent-green-light)] bg-transparent border-none cursor-pointer"
                 style={{
                   color: "var(--accent-green-light)",
@@ -258,12 +255,8 @@ export default function Navigation() {
         isAuthenticated={isAuthenticated}
         user={user}
         navLinks={navLinks}
-        onLoginClick={() => setLoginModalOpen(true)}
+        onLoginClick={() => openLoginModal()}
         onLogout={logout}
-      />
-      <LoginModal
-        open={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
       />
     </>
   );
