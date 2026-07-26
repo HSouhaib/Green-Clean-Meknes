@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { useSectionVisibility } from '@/hooks/useSectionVisibility';
-import { Link } from 'react-router';
-import { Trophy, Users, ArrowRight, Crown, Sparkles } from 'lucide-react';
+import { ArrowRight, Crown, Sparkles, Trophy, Users } from 'lucide-react';
+import LeaderboardModal from '@/components/LeaderboardModal';
 import type { RouterOutputs } from '@/lib/trpc';
 
 type Leader = RouterOutputs['leaderboard']['getTop'][number];
@@ -216,6 +217,7 @@ function RunnerRow({ leader }: { leader: Leader }) {
 export default function LeaderboardSection() {
   const { t } = useLanguage();
   const { isVisible } = useSectionVisibility();
+  const [modalOpen, setModalOpen] = useState(false);
   const { data: leaders, isLoading } = trpc.leaderboard.getTop.useQuery(
     { limit: 10 },
     { staleTime: 1000 * 60 * 2, refetchOnWindowFocus: false }
@@ -337,9 +339,9 @@ export default function LeaderboardSection() {
 
             {/* CTA */}
             <div className="flex justify-center">
-              <Link
-                to="/leaderboard"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 hover:gap-2"
+              <button
+                onClick={() => setModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 hover:gap-2 bg-transparent border-none cursor-pointer"
                 style={{
                   background: 'var(--accent-green)',
                   color: 'var(--bg-primary)',
@@ -347,8 +349,13 @@ export default function LeaderboardSection() {
               >
                 {t('leaderboard.view_all')}
                 <ArrowRight size={12} />
-              </Link>
+              </button>
             </div>
+
+            <LeaderboardModal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+            />
           </>
         )}
       </div>

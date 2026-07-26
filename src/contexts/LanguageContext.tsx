@@ -550,6 +550,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.search_placeholder": "Search volunteers...",
     "leaderboard.no_search_results": "No volunteers match your search.",
     "leaderboard.guest": "Guest",
+    "leaderboard.modal_footer": "Keep joining campaigns to climb the ranks",
 
     "admin.leaderboard.title": "Leaderboard",
     "admin.leaderboard.award_points": "Award points",
@@ -1117,6 +1118,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.search_placeholder": "Rechercher des bénévoles...",
     "leaderboard.no_search_results": "Aucun bénévole ne correspond à votre recherche.",
     "leaderboard.guest": "Invité",
+    "leaderboard.modal_footer": "Continuez à participer aux campagnes pour grimper au classement",
 
     "admin.leaderboard.title": "Classement",
     "admin.leaderboard.award_points": "Attribuer des points",
@@ -1653,6 +1655,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.search_placeholder": "البحث عن متطوعين...",
     "leaderboard.no_search_results": "لا يوجد متطوعون مطابقون لبحثك.",
     "leaderboard.guest": "ضيف",
+    "leaderboard.modal_footer": "واصل المشاركة في الحملات للصعود في الترتيب",
 
     "admin.leaderboard.title": "لوحة المتصدرين",
     "admin.leaderboard.award_points": "منح نقاط",
