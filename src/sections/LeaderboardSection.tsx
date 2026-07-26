@@ -9,12 +9,14 @@ import type { RouterOutputs } from '@/lib/trpc';
 type Leader = RouterOutputs['leaderboard']['getTop'][number];
 
 function Avatar({ src, name, className }: { src: string | null; name: string; className?: string }) {
+  const [error, setError] = useState(false);
   const initial = name.charAt(0).toUpperCase() || '?';
-  if (src) {
+  if (src && !error) {
     return (
       <img
         src={src}
         alt={name}
+        onError={() => setError(true)}
         className={`w-full h-full object-cover ${className ?? ''}`}
       />
     );

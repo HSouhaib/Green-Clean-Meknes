@@ -152,28 +152,28 @@ export default function NeighborhoodsSection() {
                       {description}
                     </p>
 
-                    {/* Stats */}
-                    <div className="flex flex-wrap gap-3 mt-4">
+                    {/* Stats - forced LTR so icons and units stay consistent in all languages */}
+                    <div className="flex flex-wrap gap-3 mt-4" dir="ltr">
                       {stats.wasteKg !== undefined && (
-                        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        <div className="flex items-center gap-1 text-xs" dir="ltr" style={{ color: 'var(--text-tertiary)' }}>
                           <Trash2 size={12} style={{ color: 'var(--accent-green)' }} />
                           {stats.wasteKg} kg
                         </div>
                       )}
                       {stats.trees !== undefined && (
-                        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        <div className="flex items-center gap-1 text-xs" dir="ltr" style={{ color: 'var(--text-tertiary)' }}>
                           <TreePine size={12} style={{ color: 'var(--accent-green)' }} />
                           {stats.trees}
                         </div>
                       )}
                       {stats.volunteers !== undefined && (
-                        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        <div className="flex items-center gap-1 text-xs" dir="ltr" style={{ color: 'var(--text-tertiary)' }}>
                           <Users size={12} style={{ color: 'var(--accent-green)' }} />
                           {stats.volunteers}
                         </div>
                       )}
                       {stats.campaigns !== undefined && (
-                        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        <div className="flex items-center gap-1 text-xs" dir="ltr" style={{ color: 'var(--text-tertiary)' }}>
                           <Calendar size={12} style={{ color: 'var(--accent-green)' }} />
                           {stats.campaigns}
                         </div>
