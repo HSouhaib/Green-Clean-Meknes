@@ -75,8 +75,8 @@ function PodiumCard({
         ? 'order-1 md:order-2'
         : 'order-3';
 
-  const heightClass = isCenter ? 'h-36 md:h-44' : 'h-32 md:h-40';
-  const avatarSize = isCenter ? 'w-14 h-14 md:w-16 md:h-16' : 'w-10 h-10 md:w-12 md:h-12';
+  const heightClass = 'h-36 md:h-44';
+  const avatarSize = isCenter ? 'w-14 h-14 md:w-16 md:h-16' : 'w-12 h-12 md:w-14 md:h-14';
 
   return (
     <div className={`${orderClass} w-full md:w-36 ${heightClass} flex flex-col`}>

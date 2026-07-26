@@ -108,11 +108,12 @@ export default function NeighborhoodsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="h-full"
               >
                 <button
                   type="button"
                   onClick={() => setSelectedNeighborhood(neighborhood)}
-                  className="block w-full text-left rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] group"
+                  className="block w-full h-full text-left rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] group"
                   style={{
                     background: 'var(--bg-primary)',
                     border: '1px solid var(--bg-surface-light)',
@@ -147,8 +148,8 @@ export default function NeighborhoodsSection() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-4">
-                    <p className="text-sm font-light line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <p className="text-sm font-light line-clamp-2 min-h-[2.5em]" style={{ color: 'var(--text-secondary)' }}>
                       {description}
                     </p>
 
@@ -180,36 +181,38 @@ export default function NeighborhoodsSection() {
                       )}
                     </div>
 
-                    {/* Linked campaigns */}
-                    {neighborhood.campaigns && neighborhood.campaigns.length > 0 && (
-                      <div className="mt-4">
-                        <p
-                          className="text-[10px] font-mono uppercase tracking-wider mb-2"
-                          style={{ color: 'var(--text-tertiary)' }}
-                        >
-                          {t('neighborhoods.campaigns_label')}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {neighborhood.campaigns.slice(0, 3).map((campaign) => (
-                            <span
-                              key={campaign.id}
-                              className="text-xs px-2 py-1 rounded truncate max-w-[140px]"
-                              style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
-                            >
-                              {getCampaignTitle(campaign, lang)}
-                            </span>
-                          ))}
-                          {neighborhood.campaigns.length > 3 && (
-                            <span
-                              className="text-xs px-2 py-1 rounded"
-                              style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
-                            >
-                              +{neighborhood.campaigns.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                    {/* Linked campaigns - always reserve space for consistent card height */}
+                    <div className="mt-auto pt-4 min-h-[4.5rem]">
+                      {neighborhood.campaigns && neighborhood.campaigns.length > 0 && (
+                        <>
+                          <p
+                            className="text-[10px] font-mono uppercase tracking-wider mb-2"
+                            style={{ color: 'var(--text-tertiary)' }}
+                          >
+                            {t('neighborhoods.campaigns_label')}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {neighborhood.campaigns.slice(0, 3).map((campaign) => (
+                              <span
+                                key={campaign.id}
+                                className="text-xs px-2 py-1 rounded truncate max-w-[140px]"
+                                style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
+                              >
+                                {getCampaignTitle(campaign, lang)}
+                              </span>
+                            ))}
+                            {neighborhood.campaigns.length > 3 && (
+                              <span
+                                className="text-xs px-2 py-1 rounded"
+                                style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
+                              >
+                                +{neighborhood.campaigns.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </button>
               </motion.div>

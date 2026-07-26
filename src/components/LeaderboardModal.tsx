@@ -92,8 +92,8 @@ function PodiumCard({
         ? 'order-1 md:order-2'
         : 'order-3';
 
-  const heightClass = isCenter ? 'h-40 md:h-52' : 'h-36 md:h-44';
-  const avatarSize = isCenter ? 'w-16 h-16 md:w-20 md:h-20' : 'w-12 h-12 md:w-14 md:h-14';
+  const heightClass = 'h-40 md:h-52';
+  const avatarSize = isCenter ? 'w-16 h-16 md:w-20 md:h-20' : 'w-14 h-14 md:w-16 md:h-16';
   const fontSize = isCenter ? 'text-sm' : 'text-xs';
 
   return (
