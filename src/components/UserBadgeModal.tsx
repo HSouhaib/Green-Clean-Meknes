@@ -1,6 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
-import UserAvatar from '@/components/UserAvatar';
 import { X, Printer, BadgeCheck, Calendar, MapPin, ChevronDown } from 'lucide-react';
 import { useRef, useState, useMemo } from 'react';
 import { formatCampaignDateTime } from '@/lib/utils';
@@ -79,7 +78,8 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
           <title>${user.name} - Green Clean Meknes Badge</title>
           <style>
             @page { margin: 0; size: auto; }
-            body { margin: 0; padding: 24px; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f5f5f0; font-family: Inter, system-ui, sans-serif; }
+            * { box-sizing: border-box; }
+            body { margin: 0; padding: 24px; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f5f5f0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
             img { display: block; max-width: 100%; }
           </style>
         </head>
@@ -90,10 +90,25 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
     `);
     printWindow.document.close();
     printWindow.focus();
-    setTimeout(() => {
+
+    // Wait for images (QR, avatar) to load before printing so output matches the screen
+    const images = Array.from(printWindow.document.images);
+    const pending = images.map(
+      (img) =>
+        new Promise<void>((resolve) => {
+          if (img.complete && img.naturalHeight !== 0) {
+            resolve();
+          } else {
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+          }
+        })
+    );
+
+    Promise.all(pending).then(() => {
       printWindow.print();
       printWindow.close();
-    }, 250);
+    });
   };
 
   if (!open) return null;
@@ -321,11 +336,20 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                         className="w-full h-full rounded-full overflow-hidden flex items-center justify-center"
                         style={{ background: '#ffffff' }}
                       >
-                        <UserAvatar
-                          src={user.avatar}
-                          name={user.name}
-                          className="w-full h-full"
-                        />
+                        {user.avatar ? (
+                          <img
+                            src={user.avatar}
+                            alt=""
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <span
+                            className="text-lg font-medium"
+                            style={{ color: '#6b6b6b' }}
+                          >
+                            {(user.name?.trim()?.[0] ?? '').toUpperCase()}
+                          </span>
+                        )}
                       </div>
                     </div>
 
