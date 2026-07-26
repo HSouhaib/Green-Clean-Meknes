@@ -553,8 +553,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.modal_footer": "Keep joining campaigns to climb the ranks",
 
     "user_badge.title": "Digital Badge",
-    "user_badge.subtitle": "Your Green Clean Meknes identity card",
-    "user_badge.member_since": "Member since",
+    "user_badge.subtitle": "Scan to check in at your campaign",
+    "user_badge.select_campaign": "Select a campaign",
+    "user_badge.no_campaigns": "Register for a campaign to get your badge.",
     "user_badge.print": "Print Badge",
 
     "admin.leaderboard.title": "Leaderboard",
@@ -1126,8 +1127,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.modal_footer": "Continuez à participer aux campagnes pour grimper au classement",
 
     "user_badge.title": "Badge numérique",
-    "user_badge.subtitle": "Votre carte d'identité Green Clean Meknes",
-    "user_badge.member_since": "Membre depuis",
+    "user_badge.subtitle": "Scannez pour pointer à votre campagne",
+    "user_badge.select_campaign": "Sélectionner une campagne",
+    "user_badge.no_campaigns": "Inscrivez-vous à une campagne pour obtenir votre badge.",
     "user_badge.print": "Imprimer le badge",
 
     "admin.leaderboard.title": "Classement",
@@ -1668,8 +1670,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.modal_footer": "واصل المشاركة في الحملات للصعود في الترتيب",
 
     "user_badge.title": "البطاقة الرقمية",
-    "user_badge.subtitle": "بطاقة هويتك في Green Clean Meknes",
-    "user_badge.member_since": "عضو منذ",
+    "user_badge.subtitle": "امسح للتسجيل في حملتك",
+    "user_badge.select_campaign": "اختر حملة",
+    "user_badge.no_campaigns": "سجل في حملة للحصول على بطاقتك.",
     "user_badge.print": "طباعة البطاقة",
 
     "admin.leaderboard.title": "لوحة المتصدرين",
