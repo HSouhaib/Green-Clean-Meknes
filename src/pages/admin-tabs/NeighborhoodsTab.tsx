@@ -105,7 +105,10 @@ export function NeighborhoodsTab() {
       descriptionFr: formData.descriptionFr || undefined,
       descriptionAr: formData.descriptionAr || undefined,
       image: formData.image || undefined,
-      statsJson: Object.keys(stats).length > 0 ? JSON.stringify(stats) : undefined,
+      statsWasteKg: stats.wasteKg,
+      statsTrees: stats.trees,
+      statsVolunteers: stats.volunteers,
+      statsCampaigns: stats.campaigns,
       mapX: formData.mapX ? parseFloat(formData.mapX) : undefined,
       mapY: formData.mapY ? parseFloat(formData.mapY) : undefined,
     };
