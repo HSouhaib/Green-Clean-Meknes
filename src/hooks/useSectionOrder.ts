@@ -68,7 +68,7 @@ export function useSectionOrder() {
           result.push('community');
           communityAdded = true;
         }
-      } else {
+      } else if (item.isVisible) {
         result.push(item.key);
       }
     }
