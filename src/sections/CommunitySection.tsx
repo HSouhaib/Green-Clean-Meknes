@@ -531,10 +531,20 @@ function FaqTab({ t, lang }: { t: (k: string) => string; lang: string }) {
   );
 }
 
+const TAB_KEY_MAP: Record<TabKey, string> = {
+  gallery: 'gallery',
+  partners: 'sponsors',
+  social: 'socialFeed',
+  testimonials: 'testimonials',
+  poll: 'poll',
+  faq: 'faq',
+};
+
 /* ─── Main Community Section ─── */
 export default function CommunitySection() {
   const { t, lang } = useLanguage();
   const { isVisible } = useSectionVisibility();
+  const { data: orderData } = trpc.section.getOrder.useQuery();
   const [activeTab, setActiveTab] = useState<TabKey>('gallery');
 
   const galleryVisible = isVisible('gallery');
@@ -552,7 +562,14 @@ export default function CommunitySection() {
     { key: 'poll' as TabKey, label: t('poll.label'), icon: <Vote size={14} />, enabled: pollVisible },
     { key: 'faq' as TabKey, label: t('faq.label'), icon: <HelpCircle size={14} />, enabled: faqVisible },
   ];
-  const tabs = allTabs.filter(t => t.enabled);
+
+  const tabs = allTabs
+    .filter((t) => t.enabled)
+    .sort((a, b) => {
+      const orderA = orderData?.find((o) => o.sectionKey === TAB_KEY_MAP[a.key])?.sortOrder ?? 0;
+      const orderB = orderData?.find((o) => o.sectionKey === TAB_KEY_MAP[b.key])?.sortOrder ?? 0;
+      return orderA - orderB;
+    });
   const currentTab = tabs.find(t => t.key === activeTab) ? activeTab : tabs[0]?.key || 'gallery';
 
   if (tabs.length === 0) return null;
