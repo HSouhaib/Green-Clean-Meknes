@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
+import { useLanguage } from '@/hooks/useLanguage';
 import type { Plan } from '@db/schema';
 import {
   Plus,
@@ -55,11 +56,11 @@ const PRIORITY_BG: Record<string, string> = {
 };
 
 const COLUMNS = [
-  { key: 'backlog', label: 'Backlog', icon: ClipboardList },
-  { key: 'planned', label: 'Planned', icon: Clock },
-  { key: 'in_progress', label: 'In Progress', icon: PlayCircle },
-  { key: 'completed', label: 'Completed', icon: CheckCircle2 },
-];
+  { key: 'backlog', labelKey: 'planning.backlog', emptyKey: 'planning.no_backlog_plans', icon: ClipboardList },
+  { key: 'planned', labelKey: 'planning.planned', emptyKey: 'planning.no_planned_plans', icon: Clock },
+  { key: 'in_progress', labelKey: 'planning.in_progress', emptyKey: 'planning.no_in_progress_plans', icon: PlayCircle },
+  { key: 'completed', labelKey: 'planning.completed', emptyKey: 'planning.no_completed_plans', icon: CheckCircle2 },
+] as const;
 
 const STATUSES = ['backlog', 'planned', 'in_progress', 'completed', 'cancelled'] as const;
 const PRIORITIES = ['low', 'medium', 'high', 'urgent'] as const;
@@ -77,6 +78,7 @@ type PlanSummary = {
 };
 
 function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number) => void }) {
+  const { t } = useLanguage();
   const isOverdue =
     plan.targetDate &&
     new Date(plan.targetDate) < new Date(new Date().setHours(0, 0, 0, 0)) &&
@@ -119,7 +121,7 @@ function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number
               color: PRIORITY_COLORS[plan.priority],
             }}
           >
-            {plan.priority}
+            {t(`planning.priority_${plan.priority}` as const)}
           </span>
           {plan.category && (
             <span
@@ -127,7 +129,7 @@ function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number
               style={{ background: 'var(--bg-surface-light)', color: 'var(--text-tertiary)' }}
             >
               <Tag size={9} />
-              {plan.category}
+              {t(`planning.category_${plan.category}` as const)}
             </span>
           )}
         </div>
@@ -147,7 +149,7 @@ function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number
             ) : (
               <div className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
                 <User size={10} />
-                Unassigned
+                {t('planning.unassigned')}
               </div>
             )}
           </div>
@@ -168,6 +170,7 @@ function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number
 }
 
 export function PlansTab() {
+  const { t } = useLanguage();
   const [isCreating, setIsCreating] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [filterPriority, setFilterPriority] = useState('');
@@ -190,7 +193,7 @@ export function PlansTab() {
     onSuccess: () => {
       utils.plan.list.invalidate();
       setIsCreating(false);
-      toast.success('Plan created');
+      toast.success(t('toast.plan_created'));
     },
     onError: (err) => showError(err.message),
   });
@@ -199,7 +202,7 @@ export function PlansTab() {
     onSuccess: () => {
       utils.plan.list.invalidate();
       utils.plan.getById.invalidate();
-      toast.success('Plan updated');
+      toast.success(t('toast.plan_updated'));
     },
     onError: (err) => showError(err.message),
   });
@@ -208,7 +211,7 @@ export function PlansTab() {
     onSuccess: () => {
       utils.plan.list.invalidate();
       setSelectedPlanId(null);
-      toast.success('Plan deleted');
+      toast.success(t('toast.plan_deleted'));
     },
     onError: (err) => showError(err.message),
   });
@@ -218,7 +221,7 @@ export function PlansTab() {
       utils.plan.getById.invalidate();
       setNewComment('');
     },
-    onError: () => showError('Failed to add comment'),
+    onError: () => showError(t('toast.comment_failed')),
   });
 
   const filteredPlans = useMemo(() => {
@@ -264,13 +267,17 @@ export function PlansTab() {
   const backlogCount = filteredPlans.filter((p) => p.status === 'backlog').length;
 
   const summaryItems = [
-    { label: 'Total', value: totalPlans, color: 'var(--text-primary)' },
-    { label: 'Backlog', value: backlogCount, color: STATUS_COLORS.backlog },
-    { label: 'In Progress', value: inProgressCount, color: STATUS_COLORS.in_progress },
-    { label: 'Completed', value: completedCount, color: STATUS_COLORS.completed },
+    { labelKey: 'planning.total', value: totalPlans, color: 'var(--text-primary)' },
+    { labelKey: 'planning.backlog', value: backlogCount, color: STATUS_COLORS.backlog },
+    { labelKey: 'planning.in_progress', value: inProgressCount, color: STATUS_COLORS.in_progress },
+    { labelKey: 'planning.completed', value: completedCount, color: STATUS_COLORS.completed },
   ];
 
   const hasAnyPlans = filteredPlans.length > 0;
+
+  const statusLabel = (status: (typeof STATUSES)[number]) => t(`planning.status_${status}` as const);
+  const priorityLabel = (priority: (typeof PRIORITIES)[number]) => t(`planning.priority_${priority}` as const);
+  const categoryLabel = (category: string) => t(`planning.category_${category}` as const);
 
   return (
     <div className="space-y-4">
@@ -278,10 +285,10 @@ export function PlansTab() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
-            Planning & Ideas
+            {t('planning.title')}
           </h2>
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-            Track tasks and team progress.
+            {t('planning.subtitle')}
           </p>
         </div>
         <button
@@ -290,7 +297,7 @@ export function PlansTab() {
           style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
         >
           <Plus size={16} />
-          New Plan
+          {t('planning.new_plan')}
         </button>
       </div>
 
@@ -302,14 +309,14 @@ export function PlansTab() {
         <div className="flex items-center gap-2 flex-wrap">
           {summaryItems.map((item) => (
             <div
-              key={item.label}
+              key={item.labelKey}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs"
               style={{ background: 'var(--bg-primary)', border: '1px solid var(--bg-surface-light)' }}
             >
               <span className="font-medium" style={{ color: item.color }}>
                 {item.value}
               </span>
-              <span style={{ color: 'var(--text-tertiary)' }}>{item.label}</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>{t(item.labelKey)}</span>
             </div>
           ))}
         </div>
@@ -328,7 +335,7 @@ export function PlansTab() {
               }}
             >
               <LayoutGrid size={14} />
-              <span className="hidden sm:inline">Board</span>
+              <span className="hidden sm:inline">{t('planning.board')}</span>
             </button>
             <button
               onClick={() => setViewMode('list')}
@@ -339,7 +346,7 @@ export function PlansTab() {
               }}
             >
               <List size={14} />
-              <span className="hidden sm:inline">List</span>
+              <span className="hidden sm:inline">{t('planning.list')}</span>
             </button>
           </div>
 
@@ -353,7 +360,7 @@ export function PlansTab() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search plans..."
+              placeholder={t('planning.search_placeholder')}
               className="admin-input pl-9 text-xs w-full sm:w-48"
             />
           </div>
@@ -363,10 +370,10 @@ export function PlansTab() {
             onChange={(e) => setFilterPriority(e.target.value)}
             className="admin-input w-auto min-w-[120px] text-xs"
           >
-            <option value="">All Priorities</option>
+            <option value="">{t('planning.all_priorities')}</option>
             {PRIORITIES.map((p) => (
               <option key={p} value={p}>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
+                {priorityLabel(p)}
               </option>
             ))}
           </select>
@@ -388,10 +395,10 @@ export function PlansTab() {
                 <ClipboardList size={22} style={{ color: 'var(--accent-green)' }} />
               </div>
               <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                No plans yet
+                {t('planning.no_plans_title')}
               </h3>
               <p className="text-xs mt-1 max-w-xs" style={{ color: 'var(--text-secondary)' }}>
-                Create your first plan to start tracking tasks and team progress.
+                {t('planning.no_plans_body')}
               </p>
               <button
                 onClick={() => setIsCreating(true)}
@@ -399,7 +406,7 @@ export function PlansTab() {
                 style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
               >
                 <Plus size={14} />
-                Create a plan
+                {t('planning.create_plan')}
               </button>
             </div>
           )}
@@ -425,7 +432,7 @@ export function PlansTab() {
                       <div className="flex items-center gap-2">
                         <ColumnIcon size={14} style={{ color: STATUS_COLORS[column.key] }} />
                         <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                          {column.label}
+                          {t(column.labelKey)}
                         </h3>
                       </div>
                       <span
@@ -439,7 +446,7 @@ export function PlansTab() {
                       {column.items.length === 0 ? (
                         <div className="flex items-center justify-center py-5 text-center">
                           <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
-                            No {column.label.toLowerCase()} plans
+                            {t(column.emptyKey)}
                           </p>
                         </div>
                       ) : (
@@ -466,22 +473,22 @@ export function PlansTab() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--bg-surface-light)' }}>
                 <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                  Plan
+                  {t('planning.plan')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                  Status
+                  {t('planning.status')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                  Priority
+                  {t('planning.priority')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                  Category
+                  {t('planning.category')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                  Assigned
+                  {t('planning.assigned')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                  Target
+                  {t('planning.target')}
                 </th>
               </tr>
             </thead>
@@ -510,7 +517,7 @@ export function PlansTab() {
                       className="text-xs px-2 py-0.5 rounded-full font-medium"
                       style={{ background: STATUS_BG[plan.status], color: STATUS_COLORS[plan.status] }}
                     >
-                      {plan.status.replace('_', ' ')}
+                      {statusLabel(plan.status)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -518,21 +525,21 @@ export function PlansTab() {
                       className="text-xs px-2 py-0.5 rounded-full font-medium"
                       style={{ background: PRIORITY_BG[plan.priority], color: PRIORITY_COLORS[plan.priority] }}
                     >
-                      {plan.priority}
+                      {priorityLabel(plan.priority)}
                     </span>
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
                     {plan.category ? (
                       <span className="flex items-center gap-1">
                         <Tag size={10} />
-                        {plan.category}
+                        {categoryLabel(plan.category)}
                       </span>
                     ) : (
                       '—'
                     )}
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
-                    {plan.assignedToName || 'Unassigned'}
+                    {plan.assignedToName || t('planning.unassigned')}
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text-tertiary)' }}>
                     {plan.targetDate ? new Date(plan.targetDate).toLocaleDateString() : '—'}
@@ -545,7 +552,7 @@ export function PlansTab() {
                     <div className="flex flex-col items-center justify-center">
                       <Search size={28} style={{ color: 'var(--text-tertiary)' }} className="mb-2 opacity-50" />
                       <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        No plans match your filters.
+                        {t('planning.no_match')}
                       </p>
                       <button
                         onClick={() => {
@@ -555,7 +562,7 @@ export function PlansTab() {
                         className="text-xs mt-2 underline"
                         style={{ color: 'var(--accent-green)' }}
                       >
-                        Clear filters
+                        {t('planning.clear_filters')}
                       </button>
                     </div>
                   </td>
@@ -590,7 +597,7 @@ export function PlansTab() {
                   <Plus size={16} style={{ color: 'var(--accent-green)' }} />
                 </div>
                 <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-                  New Plan
+                  {t('planning.new_plan')}
                 </h3>
               </div>
               <button
@@ -607,18 +614,28 @@ export function PlansTab() {
                   className="text-xs font-mono uppercase tracking-wider block mb-2"
                   style={{ color: 'var(--text-tertiary)' }}
                 >
-                  Title *
+                  {t('planning.title_label')}
                 </label>
-                <input name="title" required className="admin-input" placeholder="e.g. Add volunteer leaderboard" />
+                <input
+                  name="title"
+                  required
+                  className="admin-input"
+                  placeholder={t('planning.title_placeholder')}
+                />
               </div>
               <div>
                 <label
                   className="text-xs font-mono uppercase tracking-wider block mb-2"
                   style={{ color: 'var(--text-tertiary)' }}
                 >
-                  Description
+                  {t('planning.description')}
                 </label>
-                <textarea name="description" rows={3} className="admin-input" placeholder="Describe the plan..." />
+                <textarea
+                  name="description"
+                  rows={3}
+                  className="admin-input"
+                  placeholder={t('planning.description_placeholder')}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -626,12 +643,12 @@ export function PlansTab() {
                     className="text-xs font-mono uppercase tracking-wider block mb-2"
                     style={{ color: 'var(--text-tertiary)' }}
                   >
-                    Status
+                    {t('planning.status_label')}
                   </label>
                   <select name="status" className="admin-input">
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
-                        {s.replace('_', ' ')}
+                        {statusLabel(s)}
                       </option>
                     ))}
                   </select>
@@ -641,12 +658,12 @@ export function PlansTab() {
                     className="text-xs font-mono uppercase tracking-wider block mb-2"
                     style={{ color: 'var(--text-tertiary)' }}
                   >
-                    Priority
+                    {t('planning.priority_label')}
                   </label>
                   <select name="priority" className="admin-input">
                     {PRIORITIES.map((p) => (
                       <option key={p} value={p}>
-                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                        {priorityLabel(p)}
                       </option>
                     ))}
                   </select>
@@ -658,13 +675,13 @@ export function PlansTab() {
                     className="text-xs font-mono uppercase tracking-wider block mb-2"
                     style={{ color: 'var(--text-tertiary)' }}
                   >
-                    Category
+                    {t('planning.category_label')}
                   </label>
                   <select name="category" className="admin-input">
                     <option value="">—</option>
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>
-                        {c.charAt(0).toUpperCase() + c.slice(1)}
+                        {categoryLabel(c)}
                       </option>
                     ))}
                   </select>
@@ -674,10 +691,10 @@ export function PlansTab() {
                     className="text-xs font-mono uppercase tracking-wider block mb-2"
                     style={{ color: 'var(--text-tertiary)' }}
                   >
-                    Assigned To
+                    {t('planning.assigned_to')}
                   </label>
                   <select name="assignedTo" className="admin-input">
-                    <option value="">Unassigned</option>
+                    <option value="">{t('planning.unassigned')}</option>
                     {allUsers?.users.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.name || u.email || `User #${u.id}`}
@@ -691,7 +708,7 @@ export function PlansTab() {
                   className="text-xs font-mono uppercase tracking-wider block mb-2"
                   style={{ color: 'var(--text-tertiary)' }}
                 >
-                  Target Date
+                  {t('planning.target_date')}
                 </label>
                 <input name="targetDate" type="date" className="admin-input" />
               </div>
@@ -702,7 +719,7 @@ export function PlansTab() {
                   className="px-4 py-2 rounded-lg text-sm transition-colors hover:bg-[var(--bg-surface-light)]"
                   style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
                 >
-                  Cancel
+                  {t('planning.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -710,7 +727,7 @@ export function PlansTab() {
                   className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
                   style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
                 >
-                  {createMutation.isPending ? 'Creating...' : 'Create Plan'}
+                  {createMutation.isPending ? t('planning.creating') : t('planning.create_plan_button')}
                 </button>
               </div>
             </form>
@@ -742,7 +759,7 @@ export function PlansTab() {
                     color: PRIORITY_COLORS[selectedPlan.priority],
                   }}
                 >
-                  {selectedPlan.priority}
+                  {priorityLabel(selectedPlan.priority)}
                 </span>
                 <span
                   className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full"
@@ -751,7 +768,7 @@ export function PlansTab() {
                     color: STATUS_COLORS[selectedPlan.status],
                   }}
                 >
-                  {selectedPlan.status.replace('_', ' ')}
+                  {statusLabel(selectedPlan.status)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -761,7 +778,7 @@ export function PlansTab() {
                     className="text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-90"
                     style={{ background: 'var(--accent-green)', color: 'white' }}
                   >
-                    Complete
+                    {t('planning.complete')}
                   </button>
                 )}
                 {selectedPlan.status !== 'in_progress' && (
@@ -770,12 +787,12 @@ export function PlansTab() {
                     className="text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-90"
                     style={{ background: 'var(--accent-amber)', color: 'var(--bg-primary)' }}
                   >
-                    Start
+                    {t('planning.start')}
                   </button>
                 )}
                 <button
                   onClick={() => {
-                    if (confirm('Delete this plan?')) deleteMutation.mutate({ id: selectedPlan.id });
+                    if (confirm(t('planning.delete_confirm'))) deleteMutation.mutate({ id: selectedPlan.id });
                   }}
                   className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-surface-light)]"
                   style={{ color: 'var(--accent-terracotta)' }}
@@ -811,14 +828,20 @@ export function PlansTab() {
                 <div className="flex items-center gap-2">
                   <User size={14} style={{ color: 'var(--text-tertiary)' }} />
                   <span style={{ color: 'var(--text-secondary)' }}>
-                    Created by <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedPlan.createdByName}</span>
+                    {t('planning.created_by')}{' '}
+                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {selectedPlan.createdByName}
+                    </span>
                   </span>
                 </div>
                 {selectedPlan.assignedToName && (
                   <div className="flex items-center gap-2">
                     <User size={14} style={{ color: 'var(--text-tertiary)' }} />
                     <span style={{ color: 'var(--text-secondary)' }}>
-                      Assigned to <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedPlan.assignedToName}</span>
+                      {t('planning.assigned_to_label')}{' '}
+                      <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                        {selectedPlan.assignedToName}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -826,7 +849,7 @@ export function PlansTab() {
                   <div className="flex items-center gap-2">
                     <Calendar size={14} style={{ color: 'var(--text-tertiary)' }} />
                     <span style={{ color: 'var(--text-secondary)' }}>
-                      Target:{' '}
+                      {t('planning.target_label')}{' '}
                       <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                         {new Date(selectedPlan.targetDate).toLocaleDateString()}
                       </span>
@@ -837,7 +860,10 @@ export function PlansTab() {
                   <div className="flex items-center gap-2">
                     <Filter size={14} style={{ color: 'var(--text-tertiary)' }} />
                     <span style={{ color: 'var(--text-secondary)' }}>
-                      Category: <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedPlan.category}</span>
+                      {t('planning.category_label_colon')}{' '}
+                      <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                        {categoryLabel(selectedPlan.category)}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -849,13 +875,12 @@ export function PlansTab() {
                   className="text-xs font-mono uppercase tracking-wider mb-3"
                   style={{ color: 'var(--text-tertiary)' }}
                 >
-                  Status
+                  {t('planning.status')}
                 </h4>
                 <div className="flex items-center gap-1 flex-wrap">
                   {STATUSES.map((status, idx) => {
                     const isActive = selectedPlan.status === status;
-                    const isPast =
-                      STATUSES.indexOf(selectedPlan.status) > idx;
+                    const isPast = STATUSES.indexOf(selectedPlan.status) > idx;
                     return (
                       <div key={status} className="flex items-center">
                         <button
@@ -872,12 +897,10 @@ export function PlansTab() {
                               : isPast
                                 ? 'var(--accent-green)'
                                 : 'var(--text-tertiary)',
-                            borderColor: isActive
-                              ? STATUS_COLORS[status]
-                              : 'var(--bg-surface-light)',
+                            borderColor: isActive ? STATUS_COLORS[status] : 'var(--bg-surface-light)',
                           }}
                         >
-                          {status.replace('_', ' ')}
+                          {statusLabel(status)}
                         </button>
                         {idx < STATUSES.length - 1 && (
                           <ArrowRight size={12} className="mx-1" style={{ color: 'var(--text-tertiary)' }} />
@@ -894,7 +917,7 @@ export function PlansTab() {
                   className="text-xs font-mono uppercase tracking-wider mb-3"
                   style={{ color: 'var(--text-tertiary)' }}
                 >
-                  Comments
+                  {t('planning.comments')}
                 </h4>
                 <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
                   {selectedPlan.comments && selectedPlan.comments.length > 0 ? (
@@ -927,7 +950,7 @@ export function PlansTab() {
                     ))
                   ) : (
                     <p className="text-sm text-center py-4" style={{ color: 'var(--text-tertiary)' }}>
-                      No comments yet
+                      {t('planning.no_comments')}
                     </p>
                   )}
                 </div>
@@ -935,7 +958,7 @@ export function PlansTab() {
                   <input
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add a comment..."
+                    placeholder={t('planning.comment_placeholder')}
                     className="admin-input flex-1"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && newComment.trim()) {
