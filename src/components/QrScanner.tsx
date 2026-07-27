@@ -19,7 +19,6 @@ export default function QrScanner({
   const [status, setStatus] = useState<"loading" | "scanning" | "error">(
     "loading"
   );
-  const [message, setMessage] = useState("");
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const startedRef = useRef(false);
 
@@ -33,7 +32,6 @@ export default function QrScanner({
         if (!active) return;
         if (cameras.length === 0) {
           setStatus("error");
-          setMessage(noCameraMessage);
           onError?.(noCameraMessage);
           return;
         }
@@ -66,7 +64,6 @@ export default function QrScanner({
             if (!active) return;
             setStatus("error");
             const msg = err instanceof Error ? err.message : "Camera error";
-            setMessage(msg);
             onError?.(msg);
           });
       })
@@ -75,7 +72,6 @@ export default function QrScanner({
         setStatus("error");
         const msg =
           err instanceof Error ? err.message : "Camera permission denied";
-        setMessage(msg);
         onError?.(msg);
       });
 
@@ -105,11 +101,6 @@ export default function QrScanner({
       {status === "loading" && (
         <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
           {loadingMessage}
-        </p>
-      )}
-      {status === "error" && (
-        <p className="text-sm text-center" style={{ color: "#ef4444" }}>
-          {message}
         </p>
       )}
     </div>
