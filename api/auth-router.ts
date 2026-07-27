@@ -3,7 +3,7 @@ import { Session } from "@contracts/constants";
 import { getSessionCookieOptions } from "./lib/cookies";
 import { z } from "zod";
 import { createRouter, publicQuery, authedQuery } from "./middleware";
-import { signSessionToken, verifyTwoFactorPendingToken } from "./kimi/session";
+import { signSessionToken, verifySessionToken, verifyTwoFactorPendingToken } from "./kimi/session";
 import { env } from "./lib/env";
 import { findUserByUnionId, upsertUser } from "./queries/users";
 import {
@@ -224,6 +224,31 @@ export const authRouter = createRouter({
           updatedAt: new Date(),
         })
         .where(eq(users.id, user.id));
+
+      // Refresh the session token so the current session is 2FA-verified
+      // and admin queries stop returning 403 immediately after enabling 2FA.
+      // Reuse the existing clientId so the refreshed token stays consistent.
+      const cookies = cookie.parse(ctx.req.headers.get("cookie") || "");
+      const existingToken = cookies[Session.cookieName];
+      const existingClaim = existingToken
+        ? await verifySessionToken(existingToken)
+        : null;
+      const token = await signSessionToken({
+        unionId: user.unionId,
+        clientId: existingClaim?.clientId ?? "greenmeknes_app",
+        twoFactorVerified: true,
+      });
+      const opts = getSessionCookieOptions(ctx.req.headers);
+      ctx.resHeaders.append(
+        "set-cookie",
+        cookie.serialize(Session.cookieName, token, {
+          httpOnly: opts.httpOnly,
+          path: opts.path,
+          sameSite: opts.sameSite?.toLowerCase() as "lax" | "none",
+          secure: opts.secure,
+          maxAge: Session.maxAgeMs / 1000,
+        })
+      );
 
       return { success: true, backupCodes: plain };
     }),
