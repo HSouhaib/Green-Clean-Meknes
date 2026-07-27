@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import CommunitySection from '@/sections/CommunitySection';
 import Footer from '@/sections/Footer';
 import HomeSkeleton from '@/components/HomeSkeleton';
@@ -13,42 +14,48 @@ import ImpactSection from '@/sections/ImpactSection';
 import AirQualitySection from '@/sections/AirQualitySection';
 import LeaderboardSection from '@/sections/LeaderboardSection';
 import NeighborhoodsSection from '@/sections/NeighborhoodsSection';
-import { useSectionVisibility } from '@/hooks/useSectionVisibility';
+import { useSectionOrder } from '@/hooks/useSectionOrder';
 
-interface HomeContentProps {
-  isVisible: (key: string) => boolean;
-}
+const SECTION_COMPONENTS: Record<string, React.ComponentType> = {
+  hero: HeroSection,
+  impact: ImpactSection,
+  about: AboutSection,
+  leaderboard: LeaderboardSection,
+  neighborhoods: NeighborhoodsSection,
+  community: CommunitySection,
+  airQuality: AirQualitySection,
+  howToJoin: HowToJoinSection,
+  campaigns: CampaignsSection,
+  contact: ContactSection,
+  donation: DonationSection,
+};
 
-function HomeContent({ isVisible }: HomeContentProps) {
+function HomeContent() {
   useScrollAnimation(0.2);
+  const { orderedSections } = useSectionOrder();
+
+  const sections = useMemo(() => {
+    return orderedSections.map((key) => {
+      const Component = SECTION_COMPONENTS[key];
+      return Component ? <Component key={key} /> : null;
+    });
+  }, [orderedSections]);
 
   return (
     <>
       <Navigation />
-      <main>
-        {isVisible('hero') && <HeroSection />}
-        {isVisible('impact') && <ImpactSection />}
-        {isVisible('about') && <AboutSection />}
-        {isVisible('leaderboard') && <LeaderboardSection />}
-        {isVisible('neighborhoods') && <NeighborhoodsSection />}
-        <CommunitySection />
-        {isVisible('airQuality') && <AirQualitySection />}
-        {isVisible('howToJoin') && <HowToJoinSection />}
-        {isVisible('campaigns') && <CampaignsSection />}
-        {isVisible('contact') && <ContactSection />}
-        {isVisible('donation') && <DonationSection />}
-      </main>
+      <main>{sections}</main>
       <Footer />
     </>
   );
 }
 
 export default function Home() {
-  const { isVisible, isLoading } = useSectionVisibility();
+  const { isLoading } = useSectionOrder();
 
   if (isLoading) {
     return <HomeSkeleton />;
   }
 
-  return <HomeContent isVisible={isVisible} />;
+  return <HomeContent />;
 }
