@@ -16,7 +16,6 @@ import {
   Search,
   Clock,
   CheckCircle2,
-  CircleDashed,
   PlayCircle,
   ClipboardList,
   AlertCircle,
@@ -76,30 +75,6 @@ type PlanSummary = {
   assignedToName: string | null;
   targetDate: Date | null;
 };
-
-function StatCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div
-      className="flex-1 min-w-[120px] rounded-xl p-4"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
-    >
-      <p className="text-xs font-mono uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>
-        {label}
-      </p>
-      <p className="text-2xl font-semibold" style={{ color }}>
-        {value}
-      </p>
-    </div>
-  );
-}
 
 function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number) => void }) {
   const isOverdue =
@@ -288,18 +263,57 @@ export function PlansTab() {
   const completedCount = filteredPlans.filter((p) => p.status === 'completed').length;
   const backlogCount = filteredPlans.filter((p) => p.status === 'backlog').length;
 
+  const summaryItems = [
+    { label: 'Total', value: totalPlans, color: 'var(--text-primary)' },
+    { label: 'Backlog', value: backlogCount, color: STATUS_COLORS.backlog },
+    { label: 'In Progress', value: inProgressCount, color: STATUS_COLORS.in_progress },
+    { label: 'Completed', value: completedCount, color: STATUS_COLORS.completed },
+  ];
+
+  const hasAnyPlans = filteredPlans.length > 0;
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
             Planning & Ideas
           </h2>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Organize tasks, track progress, and collaborate with your team.
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+            Track tasks and team progress.
           </p>
         </div>
+        <button
+          onClick={() => setIsCreating(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium min-h-[40px] transition-opacity hover:opacity-90 shrink-0"
+          style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
+        >
+          <Plus size={16} />
+          New Plan
+        </button>
+      </div>
+
+      {/* Toolbar */}
+      <div
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl"
+        style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
+      >
+        <div className="flex items-center gap-2 flex-wrap">
+          {summaryItems.map((item) => (
+            <div
+              key={item.label}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs"
+              style={{ background: 'var(--bg-primary)', border: '1px solid var(--bg-surface-light)' }}
+            >
+              <span className="font-medium" style={{ color: item.color }}>
+                {item.value}
+              </span>
+              <span style={{ color: 'var(--text-tertiary)' }}>{item.label}</span>
+            </div>
+          ))}
+        </div>
+
         <div className="flex items-center gap-2 flex-wrap">
           <div
             className="flex rounded-lg overflow-hidden"
@@ -307,24 +321,24 @@ export function PlansTab() {
           >
             <button
               onClick={() => setViewMode('kanban')}
-              className="px-3 py-2 text-sm transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5"
+              className="px-3 py-2 text-xs transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center gap-1.5"
               style={{
-                background: viewMode === 'kanban' ? 'var(--bg-surface)' : 'transparent',
+                background: viewMode === 'kanban' ? 'var(--bg-surface-light)' : 'transparent',
                 color: viewMode === 'kanban' ? 'var(--text-primary)' : 'var(--text-tertiary)',
               }}
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={14} />
               <span className="hidden sm:inline">Board</span>
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className="px-3 py-2 text-sm transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5"
+              className="px-3 py-2 text-xs transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center gap-1.5"
               style={{
-                background: viewMode === 'list' ? 'var(--bg-surface)' : 'transparent',
+                background: viewMode === 'list' ? 'var(--bg-surface-light)' : 'transparent',
                 color: viewMode === 'list' ? 'var(--text-primary)' : 'var(--text-tertiary)',
               }}
             >
-              <List size={16} />
+              <List size={14} />
               <span className="hidden sm:inline">List</span>
             </button>
           </div>
@@ -340,14 +354,14 @@ export function PlansTab() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search plans..."
-              className="admin-input pl-9 w-full sm:w-56"
+              className="admin-input pl-9 text-xs w-full sm:w-48"
             />
           </div>
 
           <select
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
-            className="admin-input w-auto min-w-[130px]"
+            className="admin-input w-auto min-w-[120px] text-xs"
           >
             <option value="">All Priorities</option>
             {PRIORITIES.map((p) => (
@@ -356,76 +370,90 @@ export function PlansTab() {
               </option>
             ))}
           </select>
-
-          <button
-            onClick={() => setIsCreating(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[44px] transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
-          >
-            <Plus size={16} />
-            <span className="hidden sm:inline">New Plan</span>
-          </button>
         </div>
-      </div>
-
-      {/* Stats */}
-      <div className="flex flex-wrap gap-3">
-        <StatCard label="Total Plans" value={totalPlans} color="var(--text-primary)" />
-        <StatCard label="Backlog" value={backlogCount} color={STATUS_COLORS.backlog} />
-        <StatCard label="In Progress" value={inProgressCount} color={STATUS_COLORS.in_progress} />
-        <StatCard label="Completed" value={completedCount} color={STATUS_COLORS.completed} />
       </div>
 
       {/* Kanban View */}
       {viewMode === 'kanban' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
-          {plansByStatus.map((column) => {
-            const ColumnIcon = column.icon;
-            return (
+        <>
+          {!hasAnyPlans && (
+            <div
+              className="flex flex-col items-center justify-center text-center rounded-xl p-8"
+              style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
+            >
               <div
-                key={column.key}
-                className="rounded-xl flex flex-col"
-                style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--bg-surface-light)',
-                  borderTop: `3px solid ${STATUS_COLORS[column.key]}`,
-                }}
+                className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
+                style={{ background: 'rgba(107,142,90,0.12)' }}
               >
-                <div
-                  className="flex items-center justify-between p-3 sticky top-0"
-                  style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
-                >
-                  <div className="flex items-center gap-2">
-                    <ColumnIcon size={14} style={{ color: STATUS_COLORS[column.key] }} />
-                    <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {column.label}
-                    </h3>
-                  </div>
-                  <span
-                    className="text-xs px-2 py-0.5 rounded-full font-medium"
-                    style={{ background: STATUS_BG[column.key], color: STATUS_COLORS[column.key] }}
-                  >
-                    {column.items.length}
-                  </span>
-                </div>
-                <div className="p-3 space-y-3 min-h-[120px]">
-                  {column.items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <CircleDashed size={24} style={{ color: 'var(--text-tertiary)' }} className="mb-2 opacity-50" />
-                      <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                        No {column.label.toLowerCase()} plans
-                      </p>
-                    </div>
-                  ) : (
-                    column.items.map((plan) => (
-                      <PlanCard key={plan.id} plan={plan} onSelect={setSelectedPlanId} />
-                    ))
-                  )}
-                </div>
+                <ClipboardList size={22} style={{ color: 'var(--accent-green)' }} />
               </div>
-            );
-          })}
-        </div>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                No plans yet
+              </h3>
+              <p className="text-xs mt-1 max-w-xs" style={{ color: 'var(--text-secondary)' }}>
+                Create your first plan to start tracking tasks and team progress.
+              </p>
+              <button
+                onClick={() => setIsCreating(true)}
+                className="mt-4 flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-90"
+                style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
+              >
+                <Plus size={14} />
+                Create a plan
+              </button>
+            </div>
+          )}
+
+          {hasAnyPlans && (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
+              {plansByStatus.map((column) => {
+                const ColumnIcon = column.icon;
+                return (
+                  <div
+                    key={column.key}
+                    className="rounded-xl flex flex-col"
+                    style={{
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--bg-surface-light)',
+                      borderTop: `3px solid ${STATUS_COLORS[column.key]}`,
+                    }}
+                  >
+                    <div
+                      className="flex items-center justify-between p-3"
+                      style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <ColumnIcon size={14} style={{ color: STATUS_COLORS[column.key] }} />
+                        <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                          {column.label}
+                        </h3>
+                      </div>
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        style={{ background: STATUS_BG[column.key], color: STATUS_COLORS[column.key] }}
+                      >
+                        {column.items.length}
+                      </span>
+                    </div>
+                    <div className="p-2.5 space-y-2.5 min-h-[80px]">
+                      {column.items.length === 0 ? (
+                        <div className="flex items-center justify-center py-5 text-center">
+                          <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+                            No {column.label.toLowerCase()} plans
+                          </p>
+                        </div>
+                      ) : (
+                        column.items.map((plan) => (
+                          <PlanCard key={plan.id} plan={plan} onSelect={setSelectedPlanId} />
+                        ))
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
 
       {/* List View */}
