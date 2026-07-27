@@ -1,4 +1,5 @@
 import { trpc } from '@/lib/trpc';
+import { useLanguage } from '@/hooks/useLanguage';
 import { StatCard } from './shared/StatCard';
 import { ActivityFeed } from './shared/ActivityFeed';
 import {
@@ -29,6 +30,7 @@ interface DashboardTabProps {
 }
 
 export function DashboardTab({ onNavigate }: DashboardTabProps) {
+  const { t } = useLanguage();
   const { data: stats } = trpc.campaign.stats.useQuery();
   const { data: unreadContacts } = trpc.contact.unreadCount.useQuery();
   const { data: allUsers } = trpc.user.list.useQuery({ page: 1, limit: 1000 });
@@ -41,24 +43,24 @@ export function DashboardTab({ onNavigate }: DashboardTabProps) {
   const unreadCount = unreadContacts ?? 0;
 
   const quickActions = [
-    { label: 'Landing Page', icon: <PanelTop size={16} />, tab: 'landing', color: 'var(--accent-blue)' },
-    { label: 'New Campaign', icon: <Plus size={16} />, tab: 'campaigns', color: 'var(--accent-green)' },
-    { label: 'Presence', icon: <ScanLine size={16} />, tab: 'presence', color: 'var(--accent-terracotta)' },
-    { label: 'Photos', icon: <Camera size={16} />, tab: 'photos', color: 'var(--accent-blue)' },
-    { label: 'Sponsors', icon: <Handshake size={16} />, tab: 'sponsors', color: 'var(--accent-amber)' },
-    { label: 'Social Feed', icon: <Rss size={16} />, tab: 'socialFeed', color: 'var(--accent-green)' },
-    { label: 'Users', icon: <Users size={16} />, tab: 'users', color: 'var(--accent-blue)' },
-    { label: 'Volunteers', icon: <UserPlus size={16} />, tab: 'volunteers', color: 'var(--accent-terracotta)' },
-    { label: 'Roles', icon: <Shield size={16} />, tab: 'roles', color: 'var(--accent-amber)' },
-    { label: 'View Contacts', icon: <Mail size={16} />, tab: 'contacts', color: 'var(--accent-blue)' },
-    { label: 'Planning', icon: <Lightbulb size={16} />, tab: 'plans', color: 'var(--accent-green)' },
-    { label: 'Sections', icon: <Layers size={16} />, tab: 'sections', color: 'var(--accent-terracotta)' },
-    { label: 'Settings', icon: <Settings size={16} />, tab: 'settings', color: 'var(--text-tertiary)' },
-    { label: 'Neighborhoods', icon: <MapPin size={16} />, tab: 'neighborhoods', color: 'var(--accent-green)' },
-    { label: 'Add FAQ', icon: <HelpCircle size={16} />, tab: 'faqs', color: 'var(--accent-terracotta)' },
-    { label: 'Testimonials', icon: <MessageSquare size={16} />, tab: 'testimonials', color: 'var(--accent-blue)' },
-    { label: 'Polls', icon: <BarChart3 size={16} />, tab: 'polls', color: 'var(--accent-green)' },
-    { label: 'Leaderboard', icon: <Trophy size={16} />, tab: 'leaderboard', color: 'var(--accent-amber)' },
+    { labelKey: 'admin.tab.landing_page', icon: <PanelTop size={16} />, tab: 'landing', color: 'var(--accent-blue)' },
+    { labelKey: 'admin.tab.new_campaign', icon: <Plus size={16} />, tab: 'campaigns', color: 'var(--accent-green)' },
+    { labelKey: 'admin.tab.presence', icon: <ScanLine size={16} />, tab: 'presence', color: 'var(--accent-terracotta)' },
+    { labelKey: 'admin.tab.photos', icon: <Camera size={16} />, tab: 'photos', color: 'var(--accent-blue)' },
+    { labelKey: 'admin.tab.sponsors', icon: <Handshake size={16} />, tab: 'sponsors', color: 'var(--accent-amber)' },
+    { labelKey: 'admin.tab.social_feed', icon: <Rss size={16} />, tab: 'socialFeed', color: 'var(--accent-green)' },
+    { labelKey: 'admin.tab.users', icon: <Users size={16} />, tab: 'users', color: 'var(--accent-blue)' },
+    { labelKey: 'admin.tab.volunteers', icon: <UserPlus size={16} />, tab: 'volunteers', color: 'var(--accent-terracotta)' },
+    { labelKey: 'admin.tab.roles', icon: <Shield size={16} />, tab: 'roles', color: 'var(--accent-amber)' },
+    { labelKey: 'admin.tab.view_contacts', icon: <Mail size={16} />, tab: 'contacts', color: 'var(--accent-blue)' },
+    { labelKey: 'admin.tab.planning', icon: <Lightbulb size={16} />, tab: 'plans', color: 'var(--accent-green)' },
+    { labelKey: 'admin.tab.sections', icon: <Layers size={16} />, tab: 'sections', color: 'var(--accent-terracotta)' },
+    { labelKey: 'admin.tab.settings', icon: <Settings size={16} />, tab: 'settings', color: 'var(--text-tertiary)' },
+    { labelKey: 'admin.tab.neighborhoods', icon: <MapPin size={16} />, tab: 'neighborhoods', color: 'var(--accent-green)' },
+    { labelKey: 'admin.tab.add_faq', icon: <HelpCircle size={16} />, tab: 'faqs', color: 'var(--accent-terracotta)' },
+    { labelKey: 'admin.tab.testimonials', icon: <MessageSquare size={16} />, tab: 'testimonials', color: 'var(--accent-blue)' },
+    { labelKey: 'admin.tab.polls', icon: <BarChart3 size={16} />, tab: 'polls', color: 'var(--accent-green)' },
+    { labelKey: 'admin.tab.leaderboard', icon: <Trophy size={16} />, tab: 'leaderboard', color: 'var(--accent-amber)' },
   ];
 
   return (
@@ -66,28 +68,28 @@ export function DashboardTab({ onNavigate }: DashboardTabProps) {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Users"
+          title={t('admin.dashboard.total_users')}
           value={totalUsers}
           icon={<Users size={20} />}
           color="var(--accent-blue)"
           onClick={() => onNavigate('users')}
         />
         <StatCard
-          title="Active Campaigns"
+          title={t('admin.dashboard.active_campaigns')}
           value={activeCampaigns}
           icon={<Calendar size={20} />}
           color="var(--accent-green)"
           onClick={() => onNavigate('campaigns')}
         />
         <StatCard
-          title="Total Volunteers"
+          title={t('admin.dashboard.total_volunteers')}
           value={totalRegistrations}
           icon={<UserCheck size={20} />}
           color="var(--accent-terracotta)"
           onClick={() => onNavigate('campaigns')}
         />
         <StatCard
-          title="Unread Contacts"
+          title={t('admin.dashboard.unread_contacts')}
           value={unreadCount}
           icon={<Mail size={20} />}
           color="var(--accent-amber)"
@@ -98,12 +100,12 @@ export function DashboardTab({ onNavigate }: DashboardTabProps) {
       {/* Quick Actions */}
       <div>
         <h3 className="text-sm font-mono uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
-          Quick Actions
+          {t('admin.dashboard.quick_actions')}
         </h3>
         <div className="flex flex-wrap gap-3">
           {quickActions.map((action) => (
             <button
-              key={action.label}
+              key={action.labelKey}
               onClick={() => onNavigate(action.tab)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90 cursor-pointer"
               style={{
@@ -113,7 +115,7 @@ export function DashboardTab({ onNavigate }: DashboardTabProps) {
               }}
             >
               <span style={{ color: action.color }}>{action.icon}</span>
-              {action.label}
+              {t(action.labelKey)}
             </button>
           ))}
         </div>
@@ -122,7 +124,7 @@ export function DashboardTab({ onNavigate }: DashboardTabProps) {
       {/* Activity Feed */}
       <div>
         <h3 className="text-sm font-mono uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
-          Recent Activity
+          {t('admin.dashboard.recent_activity')}
         </h3>
         <div
           className="rounded-lg overflow-hidden"
