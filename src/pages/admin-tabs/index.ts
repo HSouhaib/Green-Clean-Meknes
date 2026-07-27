@@ -1,6 +1,5 @@
 export { CampaignsTab } from "./CampaignsTab";
 export { ContactsTab } from "./ContactsTab";
-export { SectionsTab } from "./SectionsTab";
 export { SiteSettingsTab } from "./SiteSettingsTab";
 export { NeighborhoodsTab } from "./NeighborhoodsTab";
 export { FaqsTab } from "./FaqsTab";

@@ -16,7 +16,6 @@ import {
   Shield,
   Mail,
   Lightbulb,
-  Layers,
   Settings,
   MapPin,
   HelpCircle,
@@ -36,7 +35,6 @@ import {
   VolunteersTab,
   CampaignsTab,
   ContactsTab,
-  SectionsTab,
   SiteSettingsTab,
   NeighborhoodsTab,
   FaqsTab,
@@ -67,7 +65,6 @@ type TabKey =
   | "roles"
   | "contacts"
   | "plans"
-  | "sections"
   | "settings"
   | "neighborhoods"
   | "faqs"
@@ -95,7 +92,6 @@ const tabs: TabConfig[] = [
   { key: "roles", label: "Roles", icon: <Shield size={16} /> },
   { key: "contacts", label: "Contacts", icon: <Mail size={16} /> },
   { key: "plans", label: "Planning", icon: <Lightbulb size={16} /> },
-  { key: "sections", label: "Sections", icon: <Layers size={16} /> },
   { key: "settings", label: "Settings", icon: <Settings size={16} /> },
   { key: "neighborhoods", label: "Neighborhoods", icon: <MapPin size={16} /> },
   { key: "faqs", label: "FAQs", icon: <HelpCircle size={16} /> },
@@ -438,7 +434,6 @@ export default function Admin() {
         {activeTab === "roles" && <RolesTab />}
         {activeTab === "contacts" && <ContactsTab />}
         {activeTab === "plans" && <PlansTab />}
-        {activeTab === "sections" && <SectionsTab />}
         {activeTab === "settings" && <SiteSettingsTab />}
         {activeTab === "neighborhoods" && <NeighborhoodsTab />}
         {activeTab === "faqs" && <FaqsTab />}

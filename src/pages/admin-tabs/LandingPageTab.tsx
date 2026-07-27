@@ -20,15 +20,21 @@ import {
   HelpCircle,
   Calendar,
   Camera,
+  Trophy,
+  Handshake,
+  Rss,
 } from 'lucide-react';
 
 const SECTION_CONFIG: Record<string, { label: string; icon: React.ReactNode }> = {
   hero: { label: 'Hero Banner', icon: <Home size={16} /> },
   impact: { label: 'Impact Stats', icon: <BarChart3 size={16} /> },
   about: { label: 'About Us', icon: <Info size={16} /> },
+  leaderboard: { label: 'Leaderboard', icon: <Trophy size={16} /> },
   neighborhoods: { label: 'Neighborhoods', icon: <MapPin size={16} /> },
   testimonials: { label: 'Testimonials', icon: <MessageSquare size={16} /> },
   gallery: { label: 'Photo Gallery', icon: <Camera size={16} /> },
+  sponsors: { label: 'Sponsors', icon: <Handshake size={16} /> },
+  socialFeed: { label: 'Social Feed', icon: <Rss size={16} /> },
   howToJoin: { label: 'How to Join', icon: <Users size={16} /> },
   faq: { label: 'FAQ', icon: <HelpCircle size={16} /> },
   campaigns: { label: 'Campaigns', icon: <Calendar size={16} /> },
