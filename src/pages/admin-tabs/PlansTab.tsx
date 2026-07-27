@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
@@ -10,10 +10,19 @@ import {
   User,
   MessageSquare,
   Trash2,
-  
   Filter,
   LayoutGrid,
   List,
+  Search,
+  Clock,
+  CheckCircle2,
+  CircleDashed,
+  PlayCircle,
+  ClipboardList,
+  AlertCircle,
+  MoreHorizontal,
+  ArrowRight,
+  Tag,
 } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -24,6 +33,14 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: 'var(--accent-terracotta)',
 };
 
+const STATUS_BG: Record<string, string> = {
+  backlog: 'rgba(255,255,255,0.06)',
+  planned: 'rgba(59,130,246,0.12)',
+  in_progress: 'rgba(245,158,11,0.12)',
+  completed: 'rgba(107,142,90,0.15)',
+  cancelled: 'rgba(239,68,68,0.1)',
+};
+
 const PRIORITY_COLORS: Record<string, string> = {
   low: 'var(--text-tertiary)',
   medium: 'var(--accent-blue)',
@@ -31,17 +48,155 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: 'var(--accent-terracotta)',
 };
 
+const PRIORITY_BG: Record<string, string> = {
+  low: 'rgba(255,255,255,0.06)',
+  medium: 'rgba(59,130,246,0.12)',
+  high: 'rgba(245,158,11,0.12)',
+  urgent: 'rgba(239,68,68,0.12)',
+};
+
 const COLUMNS = [
-  { key: 'backlog', label: 'Backlog' },
-  { key: 'planned', label: 'Planned' },
-  { key: 'in_progress', label: 'In Progress' },
-  { key: 'completed', label: 'Completed' },
+  { key: 'backlog', label: 'Backlog', icon: ClipboardList },
+  { key: 'planned', label: 'Planned', icon: Clock },
+  { key: 'in_progress', label: 'In Progress', icon: PlayCircle },
+  { key: 'completed', label: 'Completed', icon: CheckCircle2 },
 ];
+
+const STATUSES = ['backlog', 'planned', 'in_progress', 'completed', 'cancelled'] as const;
+const PRIORITIES = ['low', 'medium', 'high', 'urgent'] as const;
+const CATEGORIES = ['feature', 'bugfix', 'improvement', 'design'] as const;
+
+type PlanSummary = {
+  id: number;
+  title: string;
+  description: string | null;
+  status: Plan['status'];
+  priority: Plan['priority'];
+  category: string | null;
+  assignedToName: string | null;
+  targetDate: Date | null;
+};
+
+function StatCard({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) {
+  return (
+    <div
+      className="flex-1 min-w-[120px] rounded-xl p-4"
+      style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
+    >
+      <p className="text-xs font-mono uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>
+        {label}
+      </p>
+      <p className="text-2xl font-semibold" style={{ color }}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function PlanCard({ plan, onSelect }: { plan: PlanSummary; onSelect: (id: number) => void }) {
+  const isOverdue =
+    plan.targetDate &&
+    new Date(plan.targetDate) < new Date(new Date().setHours(0, 0, 0, 0)) &&
+    plan.status !== 'completed' &&
+    plan.status !== 'cancelled';
+
+  return (
+    <div
+      onClick={() => onSelect(plan.id)}
+      className="group relative rounded-lg cursor-pointer transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
+      style={{
+        background: 'var(--bg-primary)',
+        border: '1px solid var(--bg-surface-light)',
+        borderLeft: `3px solid ${PRIORITY_COLORS[plan.priority]}`,
+      }}
+    >
+      <div className="p-3.5 space-y-2.5">
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm font-medium leading-snug flex-1" style={{ color: 'var(--text-primary)' }}>
+            {plan.title}
+          </p>
+          <MoreHorizontal
+            size={14}
+            className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5"
+            style={{ color: 'var(--text-tertiary)' }}
+          />
+        </div>
+
+        {plan.description && (
+          <p className="text-xs line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
+            {plan.description}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span
+            className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded"
+            style={{
+              background: PRIORITY_BG[plan.priority],
+              color: PRIORITY_COLORS[plan.priority],
+            }}
+          >
+            {plan.priority}
+          </span>
+          {plan.category && (
+            <span
+              className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded flex items-center gap-1"
+              style={{ background: 'var(--bg-surface-light)', color: 'var(--text-tertiary)' }}
+            >
+              <Tag size={9} />
+              {plan.category}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-2 pt-0.5">
+          <div className="flex items-center gap-2 min-w-0">
+            {plan.assignedToName ? (
+              <div className="flex items-center gap-1 text-[10px] truncate" style={{ color: 'var(--text-tertiary)' }}>
+                <div
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-medium"
+                  style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}
+                >
+                  {plan.assignedToName.charAt(0).toUpperCase()}
+                </div>
+                <span className="truncate max-w-[80px]">{plan.assignedToName}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                <User size={10} />
+                Unassigned
+              </div>
+            )}
+          </div>
+          {plan.targetDate && (
+            <div
+              className="flex items-center gap-1 text-[10px] shrink-0"
+              style={{ color: isOverdue ? '#ef4444' : 'var(--text-tertiary)' }}
+            >
+              <Calendar size={10} />
+              {new Date(plan.targetDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              {isOverdue && <AlertCircle size={10} />}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function PlansTab() {
   const [isCreating, setIsCreating] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [filterPriority, setFilterPriority] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
   const [newComment, setNewComment] = useState('');
 
@@ -91,6 +246,19 @@ export function PlansTab() {
     onError: () => showError('Failed to add comment'),
   });
 
+  const filteredPlans = useMemo(() => {
+    if (!plans) return [];
+    if (!searchQuery.trim()) return plans;
+    const term = searchQuery.toLowerCase();
+    return plans.filter(
+      (p) =>
+        p.title.toLowerCase().includes(term) ||
+        (p.description ?? '').toLowerCase().includes(term) ||
+        (p.category ?? '').toLowerCase().includes(term) ||
+        (p.assignedToName ?? '').toLowerCase().includes(term)
+    );
+  }, [plans, searchQuery]);
+
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -112,56 +280,86 @@ export function PlansTab() {
 
   const plansByStatus = COLUMNS.map((col) => ({
     ...col,
-    items: plans?.filter((p) => p.status === col.key) ?? [],
+    items: filteredPlans.filter((p) => p.status === col.key),
   }));
 
+  const totalPlans = filteredPlans.length;
+  const inProgressCount = filteredPlans.filter((p) => p.status === 'in_progress').length;
+  const completedCount = filteredPlans.filter((p) => p.status === 'completed').length;
+  const backlogCount = filteredPlans.filter((p) => p.status === 'backlog').length;
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
-          Planning & Ideas
-        </h2>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
+            Planning & Ideas
+          </h2>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+            Organize tasks, track progress, and collaborate with your team.
+          </p>
+        </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--bg-surface-light)' }}>
+          <div
+            className="flex rounded-lg overflow-hidden"
+            style={{ border: '1px solid var(--bg-surface-light)' }}
+          >
             <button
               onClick={() => setViewMode('kanban')}
-              className="px-3 py-2 text-sm transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="px-3 py-2 text-sm transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5"
               style={{
                 background: viewMode === 'kanban' ? 'var(--bg-surface)' : 'transparent',
                 color: viewMode === 'kanban' ? 'var(--text-primary)' : 'var(--text-tertiary)',
               }}
             >
-              <LayoutGrid size={16} className="sm:mr-1" />
+              <LayoutGrid size={16} />
               <span className="hidden sm:inline">Board</span>
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className="px-3 py-2 text-sm transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="px-3 py-2 text-sm transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center gap-1.5"
               style={{
                 background: viewMode === 'list' ? 'var(--bg-surface)' : 'transparent',
                 color: viewMode === 'list' ? 'var(--text-primary)' : 'var(--text-tertiary)',
               }}
             >
-              <List size={16} className="sm:mr-1" />
+              <List size={16} />
               <span className="hidden sm:inline">List</span>
             </button>
+          </div>
+
+          <div className="relative">
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2"
+              style={{ color: 'var(--text-tertiary)' }}
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search plans..."
+              className="admin-input pl-9 w-full sm:w-56"
+            />
           </div>
 
           <select
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
-            className="admin-input w-auto min-w-[120px]"
+            className="admin-input w-auto min-w-[130px]"
           >
             <option value="">All Priorities</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="urgent">Urgent</option>
+            {PRIORITIES.map((p) => (
+              <option key={p} value={p}>
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </option>
+            ))}
           </select>
 
           <button
             onClick={() => setIsCreating(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[44px]"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[44px] transition-opacity hover:opacity-90"
             style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
           >
             <Plus size={16} />
@@ -170,117 +368,168 @@ export function PlansTab() {
         </div>
       </div>
 
+      {/* Stats */}
+      <div className="flex flex-wrap gap-3">
+        <StatCard label="Total Plans" value={totalPlans} color="var(--text-primary)" />
+        <StatCard label="Backlog" value={backlogCount} color={STATUS_COLORS.backlog} />
+        <StatCard label="In Progress" value={inProgressCount} color={STATUS_COLORS.in_progress} />
+        <StatCard label="Completed" value={completedCount} color={STATUS_COLORS.completed} />
+      </div>
+
       {/* Kanban View */}
       {viewMode === 'kanban' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {plansByStatus.map((column) => (
-            <div key={column.key}>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                  {column.label}
-                </h3>
-                <span
-                  className="text-xs px-2 py-0.5 rounded-full"
-                  style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
+          {plansByStatus.map((column) => {
+            const ColumnIcon = column.icon;
+            return (
+              <div
+                key={column.key}
+                className="rounded-xl flex flex-col"
+                style={{
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--bg-surface-light)',
+                  borderTop: `3px solid ${STATUS_COLORS[column.key]}`,
+                }}
+              >
+                <div
+                  className="flex items-center justify-between p-3 sticky top-0"
+                  style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
                 >
-                  {column.items.length}
-                </span>
-              </div>
-              <div className="space-y-3">
-                {column.items.map((plan) => (
-                  <div
-                    key={plan.id}
-                    onClick={() => setSelectedPlanId(plan.id)}
-                    className="p-4 rounded-lg cursor-pointer transition-all hover:opacity-90"
-                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded"
-                        style={{
-                          background: `${PRIORITY_COLORS[plan.priority]}20`,
-                          color: PRIORITY_COLORS[plan.priority],
-                        }}
-                      >
-                        {plan.priority}
-                      </span>
-                      {plan.category && (
-                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-tertiary)' }}>
-                          {plan.category}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-                      {plan.title}
-                    </p>
-                    {plan.assignedToName && (
-                      <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                        <User size={10} />
-                        {plan.assignedToName}
-                      </div>
-                    )}
-                    {plan.targetDate && (
-                      <div className="flex items-center gap-1 text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                        <Calendar size={10} />
-                        {new Date(plan.targetDate).toLocaleDateString()}
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <ColumnIcon size={14} style={{ color: STATUS_COLORS[column.key] }} />
+                    <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {column.label}
+                    </h3>
                   </div>
-                ))}
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full font-medium"
+                    style={{ background: STATUS_BG[column.key], color: STATUS_COLORS[column.key] }}
+                  >
+                    {column.items.length}
+                  </span>
+                </div>
+                <div className="p-3 space-y-3 min-h-[120px]">
+                  {column.items.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <CircleDashed size={24} style={{ color: 'var(--text-tertiary)' }} className="mb-2 opacity-50" />
+                      <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        No {column.label.toLowerCase()} plans
+                      </p>
+                    </div>
+                  ) : (
+                    column.items.map((plan) => (
+                      <PlanCard key={plan.id} plan={plan} onSelect={setSelectedPlanId} />
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* List View */}
       {viewMode === 'list' && (
-        <div className="overflow-x-auto rounded-lg" style={{ border: '1px solid var(--bg-surface-light)' }}>
-          <table className="w-full text-sm min-w-[600px]">
+        <div
+          className="overflow-x-auto rounded-xl"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}
+        >
+          <table className="w-full text-sm min-w-[700px]">
             <thead>
-              <tr style={{ background: 'var(--bg-surface)' }}>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>Title</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>Status</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>Priority</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>Assigned</th>
-                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>Target</th>
+              <tr style={{ borderBottom: '1px solid var(--bg-surface-light)' }}>
+                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                  Plan
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                  Status
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                  Priority
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                  Category
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                  Assigned
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-mono uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                  Target
+                </th>
               </tr>
             </thead>
             <tbody>
-              {plans?.map((plan) => (
+              {filteredPlans.map((plan) => (
                 <tr
                   key={plan.id}
                   onClick={() => setSelectedPlanId(plan.id)}
                   className="cursor-pointer transition-colors hover:bg-[var(--bg-surface-light)]"
-                  style={{ borderTop: '1px solid var(--bg-surface-light)' }}
+                  style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
                 >
-                  <td className="px-4 py-3 font-medium" style={{ color: 'var(--text-primary)' }}>{plan.title}</td>
+                  <td className="px-4 py-3">
+                    <div>
+                      <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
+                        {plan.title}
+                      </p>
+                      {plan.description && (
+                        <p className="text-xs line-clamp-1 mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                          {plan.description}
+                        </p>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ background: `${STATUS_COLORS[plan.status]}20`, color: STATUS_COLORS[plan.status] }}
+                      className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: STATUS_BG[plan.status], color: STATUS_COLORS[plan.status] }}
                     >
                       {plan.status.replace('_', ' ')}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ background: `${PRIORITY_COLORS[plan.priority]}20`, color: PRIORITY_COLORS[plan.priority] }}
+                      className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: PRIORITY_BG[plan.priority], color: PRIORITY_COLORS[plan.priority] }}
                     >
                       {plan.priority}
                     </span>
                   </td>
-                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{plan.assignedToName || '—'}</td>
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
+                    {plan.category ? (
+                      <span className="flex items-center gap-1">
+                        <Tag size={10} />
+                        {plan.category}
+                      </span>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
+                    {plan.assignedToName || 'Unassigned'}
+                  </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text-tertiary)' }}>
                     {plan.targetDate ? new Date(plan.targetDate).toLocaleDateString() : '—'}
                   </td>
                 </tr>
               ))}
-              {(!plans || plans.length === 0) && (
+              {filteredPlans.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                    No plans yet. Create your first plan!
+                  <td colSpan={6} className="px-4 py-10 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <Search size={28} style={{ color: 'var(--text-tertiary)' }} className="mb-2 opacity-50" />
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        No plans match your filters.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setFilterPriority('');
+                        }}
+                        className="text-xs mt-2 underline"
+                        style={{ color: 'var(--accent-green)' }}
+                      >
+                        Clear filters
+                      </button>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -301,72 +550,138 @@ export function PlansTab() {
             style={{ background: 'var(--bg-primary)', border: '1px solid var(--bg-surface-light)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-wrap items-center justify-between gap-2 p-4" style={{ borderBottom: '1px solid var(--bg-surface-light)' }}>
-              <h3 className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>New Plan</h3>
-              <button onClick={() => setIsCreating(false)} style={{ color: 'var(--text-tertiary)' }}>
-                <X size={18} />
+            <div
+              className="flex flex-wrap items-center justify-between gap-2 p-4"
+              style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
+            >
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: 'rgba(107,142,90,0.15)' }}
+                >
+                  <Plus size={16} style={{ color: 'var(--accent-green)' }} />
+                </div>
+                <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  New Plan
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsCreating(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-[var(--bg-surface-light)]"
+                style={{ color: 'var(--text-tertiary)' }}
+              >
+                <X size={16} />
               </button>
             </div>
             <form onSubmit={handleCreate} className="p-4 space-y-4">
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Title *</label>
+                <label
+                  className="text-xs font-mono uppercase tracking-wider block mb-2"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  Title *
+                </label>
                 <input name="title" required className="admin-input" placeholder="e.g. Add volunteer leaderboard" />
               </div>
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Description</label>
+                <label
+                  className="text-xs font-mono uppercase tracking-wider block mb-2"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  Description
+                </label>
                 <textarea name="description" rows={3} className="admin-input" placeholder="Describe the plan..." />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Status</label>
+                  <label
+                    className="text-xs font-mono uppercase tracking-wider block mb-2"
+                    style={{ color: 'var(--text-tertiary)' }}
+                  >
+                    Status
+                  </label>
                   <select name="status" className="admin-input">
-                    <option value="backlog">Backlog</option>
-                    <option value="planned">Planned</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
+                    {STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {s.replace('_', ' ')}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Priority</label>
+                  <label
+                    className="text-xs font-mono uppercase tracking-wider block mb-2"
+                    style={{ color: 'var(--text-tertiary)' }}
+                  >
+                    Priority
+                  </label>
                   <select name="priority" className="admin-input">
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
+                    {PRIORITIES.map((p) => (
+                      <option key={p} value={p}>
+                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Category</label>
+                  <label
+                    className="text-xs font-mono uppercase tracking-wider block mb-2"
+                    style={{ color: 'var(--text-tertiary)' }}
+                  >
+                    Category
+                  </label>
                   <select name="category" className="admin-input">
                     <option value="">—</option>
-                    <option value="feature">Feature</option>
-                    <option value="bugfix">Bugfix</option>
-                    <option value="improvement">Improvement</option>
-                    <option value="design">Design</option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c.charAt(0).toUpperCase() + c.slice(1)}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Assigned To</label>
+                  <label
+                    className="text-xs font-mono uppercase tracking-wider block mb-2"
+                    style={{ color: 'var(--text-tertiary)' }}
+                  >
+                    Assigned To
+                  </label>
                   <select name="assignedTo" className="admin-input">
                     <option value="">Unassigned</option>
                     {allUsers?.users.map((u) => (
-                      <option key={u.id} value={u.id}>{u.name || u.email || `User #${u.id}`}</option>
+                      <option key={u.id} value={u.id}>
+                        {u.name || u.email || `User #${u.id}`}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Target Date</label>
+                <label
+                  className="text-xs font-mono uppercase tracking-wider block mb-2"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  Target Date
+                </label>
                 <input name="targetDate" type="date" className="admin-input" />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setIsCreating(false)} className="px-4 py-2 rounded-lg text-sm" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsCreating(false)}
+                  className="px-4 py-2 rounded-lg text-sm transition-colors hover:bg-[var(--bg-surface-light)]"
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
+                >
                   Cancel
                 </button>
-                <button type="submit" disabled={createMutation.isPending} className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+                  style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
+                >
                   {createMutation.isPending ? 'Creating...' : 'Create Plan'}
                 </button>
               </div>
@@ -383,31 +698,39 @@ export function PlansTab() {
           onClick={() => setSelectedPlanId(null)}
         >
           <div
-            className="w-full max-w-lg mx-4 rounded-xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-2xl mx-4 rounded-xl overflow-hidden max-h-[90vh] overflow-y-auto"
             style={{ background: 'var(--bg-primary)', border: '1px solid var(--bg-surface-light)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--bg-surface-light)' }}>
-              <div className="flex items-center gap-2">
+            <div
+              className="flex items-center justify-between p-4"
+              style={{ borderBottom: '1px solid var(--bg-surface-light)' }}
+            >
+              <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded"
-                  style={{ background: `${PRIORITY_COLORS[selectedPlan.priority]}20`, color: PRIORITY_COLORS[selectedPlan.priority] }}
+                  className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  style={{
+                    background: PRIORITY_BG[selectedPlan.priority],
+                    color: PRIORITY_COLORS[selectedPlan.priority],
+                  }}
                 >
                   {selectedPlan.priority}
                 </span>
                 <span
-                  className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded"
-                  style={{ background: `${STATUS_COLORS[selectedPlan.status]}20`, color: STATUS_COLORS[selectedPlan.status] }}
+                  className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  style={{
+                    background: STATUS_BG[selectedPlan.status],
+                    color: STATUS_COLORS[selectedPlan.status],
+                  }}
                 >
                   {selectedPlan.status.replace('_', ' ')}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                {/* Status change buttons */}
                 {selectedPlan.status !== 'completed' && (
                   <button
                     onClick={() => handleMove(selectedPlan.id, 'completed')}
-                    className="text-xs px-2 py-1 rounded"
+                    className="text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-90"
                     style={{ background: 'var(--accent-green)', color: 'white' }}
                   >
                     Complete
@@ -416,7 +739,7 @@ export function PlansTab() {
                 {selectedPlan.status !== 'in_progress' && (
                   <button
                     onClick={() => handleMove(selectedPlan.id, 'in_progress')}
-                    className="text-xs px-2 py-1 rounded"
+                    className="text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-90"
                     style={{ background: 'var(--accent-amber)', color: 'var(--bg-primary)' }}
                   >
                     Start
@@ -426,72 +749,150 @@ export function PlansTab() {
                   onClick={() => {
                     if (confirm('Delete this plan?')) deleteMutation.mutate({ id: selectedPlan.id });
                   }}
-                  className="p-1 rounded hover:bg-[var(--bg-surface-light)]"
+                  className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-surface-light)]"
                   style={{ color: 'var(--accent-terracotta)' }}
                 >
                   <Trash2 size={16} />
                 </button>
-                <button onClick={() => setSelectedPlanId(null)} style={{ color: 'var(--text-tertiary)' }}>
-                  <X size={18} />
+                <button
+                  onClick={() => setSelectedPlanId(null)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-[var(--bg-surface-light)]"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  <X size={16} />
                 </button>
               </div>
             </div>
 
-            <div className="p-4 space-y-6">
+            <div className="p-5 space-y-6">
               <div>
-                <h3 className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
+                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
                   {selectedPlan.title}
                 </h3>
                 {selectedPlan.description && (
-                  <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                     {selectedPlan.description}
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-sm">
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-xl text-sm"
+                style={{ background: 'var(--bg-surface)' }}
+              >
                 <div className="flex items-center gap-2">
                   <User size={14} style={{ color: 'var(--text-tertiary)' }} />
-                  <span style={{ color: 'var(--text-secondary)' }}>Created by {selectedPlan.createdByName}</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>
+                    Created by <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedPlan.createdByName}</span>
+                  </span>
                 </div>
                 {selectedPlan.assignedToName && (
                   <div className="flex items-center gap-2">
                     <User size={14} style={{ color: 'var(--text-tertiary)' }} />
-                    <span style={{ color: 'var(--text-secondary)' }}>Assigned to {selectedPlan.assignedToName}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Assigned to <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedPlan.assignedToName}</span>
+                    </span>
                   </div>
                 )}
                 {selectedPlan.targetDate && (
                   <div className="flex items-center gap-2">
                     <Calendar size={14} style={{ color: 'var(--text-tertiary)' }} />
-                    <span style={{ color: 'var(--text-secondary)' }}>Target: {new Date(selectedPlan.targetDate).toLocaleDateString()}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Target:{' '}
+                      <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                        {new Date(selectedPlan.targetDate).toLocaleDateString()}
+                      </span>
+                    </span>
                   </div>
                 )}
                 {selectedPlan.category && (
                   <div className="flex items-center gap-2">
                     <Filter size={14} style={{ color: 'var(--text-tertiary)' }} />
-                    <span style={{ color: 'var(--text-secondary)' }}>{selectedPlan.category}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Category: <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{selectedPlan.category}</span>
+                    </span>
                   </div>
                 )}
               </div>
 
+              {/* Status flow */}
+              <div>
+                <h4
+                  className="text-xs font-mono uppercase tracking-wider mb-3"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  Status
+                </h4>
+                <div className="flex items-center gap-1 flex-wrap">
+                  {STATUSES.map((status, idx) => {
+                    const isActive = selectedPlan.status === status;
+                    const isPast =
+                      STATUSES.indexOf(selectedPlan.status) > idx;
+                    return (
+                      <div key={status} className="flex items-center">
+                        <button
+                          onClick={() => handleMove(selectedPlan.id, status)}
+                          className="text-[10px] px-2.5 py-1 rounded-full font-medium transition-all border"
+                          style={{
+                            background: isActive
+                              ? STATUS_BG[status]
+                              : isPast
+                                ? 'rgba(107,142,90,0.1)'
+                                : 'var(--bg-surface)',
+                            color: isActive
+                              ? STATUS_COLORS[status]
+                              : isPast
+                                ? 'var(--accent-green)'
+                                : 'var(--text-tertiary)',
+                            borderColor: isActive
+                              ? STATUS_COLORS[status]
+                              : 'var(--bg-surface-light)',
+                          }}
+                        >
+                          {status.replace('_', ' ')}
+                        </button>
+                        {idx < STATUSES.length - 1 && (
+                          <ArrowRight size={12} className="mx-1" style={{ color: 'var(--text-tertiary)' }} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Comments */}
               <div>
-                <h4 className="text-sm font-mono uppercase tracking-wider mb-3" style={{ color: 'var(--text-tertiary)' }}>
+                <h4
+                  className="text-xs font-mono uppercase tracking-wider mb-3"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
                   Comments
                 </h4>
                 <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
                   {selectedPlan.comments && selectedPlan.comments.length > 0 ? (
                     selectedPlan.comments.map((comment) => (
-                      <div key={comment.id} className="p-3 rounded-lg" style={{ background: 'var(--bg-surface)' }}>
+                      <div
+                        key={comment.id}
+                        className="p-3 rounded-xl"
+                        style={{ background: 'var(--bg-surface)' }}
+                      >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>
-                            {comment.userName}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-medium"
+                              style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}
+                            >
+                              {(comment.userName ?? 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>
+                              {comment.userName}
+                            </span>
+                          </div>
                           <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
                             {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ''}
                           </span>
                         </div>
-                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        <p className="text-sm pl-7" style={{ color: 'var(--text-secondary)' }}>
                           {comment.content}
                         </p>
                       </div>
@@ -521,7 +922,7 @@ export function PlansTab() {
                       }
                     }}
                     disabled={addCommentMutation.isPending || !newComment.trim()}
-                    className="px-3 py-2 rounded-lg text-sm"
+                    className="px-3 py-2 rounded-lg text-sm transition-opacity hover:opacity-90 disabled:opacity-50"
                     style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
                   >
                     <MessageSquare size={16} />
