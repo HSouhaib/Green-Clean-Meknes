@@ -6,6 +6,7 @@ import { eq, desc, and, count, inArray, gte, isNotNull, sum } from "drizzle-orm"
 import { TRPCError } from "@trpc/server";
 
 import { sanitizeString } from "./lib/sanitize";
+import { logActivity } from "./lib/activity";
 import { safeUrl } from "./lib/zod-helpers";
 import { checkRateLimit } from "./lib/rate-limit";
 import {
@@ -511,28 +512,48 @@ export const campaignRouter = createRouter({
   // Admin: create campaign
   create: adminQuery
     .input(createCampaignSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       const result = db.insert(campaigns).values(input).run();
+      await logActivity({
+        userId: ctx.user?.id,
+        action: "campaign.created",
+        entityType: "campaign",
+        entityId: Number(result.lastInsertRowid),
+        details: { title: input.titleEn },
+      });
       return { id: result.lastInsertRowid };
     }),
 
   // Admin: update campaign
   update: adminQuery
     .input(updateCampaignSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
       const db = getDb();
       await db.update(campaigns).set(data).where(eq(campaigns.id, id));
+      await logActivity({
+        userId: ctx.user?.id,
+        action: "campaign.updated",
+        entityType: "campaign",
+        entityId: id,
+        details: { title: data.titleEn },
+      });
       return { success: true };
     }),
 
   // Admin: delete campaign
   delete: adminQuery
     .input(campaignIdSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       await db.delete(campaigns).where(eq(campaigns.id, input.id));
+      await logActivity({
+        userId: ctx.user?.id,
+        action: "campaign.deleted",
+        entityType: "campaign",
+        entityId: input.id,
+      });
       return { success: true };
     }),
 
