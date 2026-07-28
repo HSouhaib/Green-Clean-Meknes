@@ -5,6 +5,72 @@ import BadgeVerifyModal from "@/components/BadgeVerifyModal";
 import { Search, ScanLine, Users, CheckCircle2, XCircle, Save } from "lucide-react";
 import { toast } from "sonner";
 
+interface WasteInputProps {
+  registrationId: number;
+  initialWasteKg: number | null;
+  isPending: boolean;
+  saveTitle: string;
+  onSave: (registrationId: number, wasteKg: number) => void;
+}
+
+function WasteInput({
+  registrationId,
+  initialWasteKg,
+  isPending,
+  saveTitle,
+  onSave,
+}: WasteInputProps) {
+  const [value, setValue] = useState(String(initialWasteKg ?? 0));
+  const hasChanges = value !== String(initialWasteKg ?? 0);
+
+  const handleSave = () => {
+    const parsed = parseInt(value, 10);
+    const normalized = isNaN(parsed) || parsed < 0 ? 0 : parsed;
+    if (normalized !== (initialWasteKg ?? 0)) {
+      onSave(registrationId, normalized);
+    }
+    setValue(String(normalized));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 justify-end">
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        disabled={isPending}
+        className="w-20 rounded-lg px-2 py-1 text-right text-sm disabled:opacity-50"
+        style={{
+          background: "var(--bg-primary)",
+          border: "1px solid var(--bg-surface-light)",
+          color: "var(--text-primary)",
+        }}
+      />
+      <button
+        onClick={handleSave}
+        disabled={!hasChanges || isPending}
+        className="p-1.5 rounded-md transition-colors disabled:opacity-30 border-none cursor-pointer"
+        style={{
+          background: hasChanges ? "rgba(107,142,90,0.15)" : "transparent",
+          color: "var(--accent-green)",
+        }}
+        title={saveTitle}
+      >
+        <Save size={14} />
+      </button>
+    </div>
+  );
+}
+
 export function PresenceTab() {
   const { t } = useLanguage();
   const utils = trpc.useUtils();
@@ -65,64 +131,6 @@ export function PresenceTab() {
   });
 
   const selectedCampaign = campaigns?.find(c => c.id === selectedCampaignId);
-
-  function WasteInput({
-    registrationId,
-    initialWasteKg,
-  }: {
-    registrationId: number;
-    initialWasteKg: number | null;
-  }) {
-    const [value, setValue] = useState(String(initialWasteKg ?? 0));
-    const hasChanges = value !== String(initialWasteKg ?? 0);
-
-    const handleSave = () => {
-      const parsed = parseInt(value, 10);
-      const normalized = isNaN(parsed) || parsed < 0 ? 0 : parsed;
-      if (normalized !== (initialWasteKg ?? 0)) {
-        updateWaste.mutate({ registrationId, wasteKg: normalized });
-      }
-      setValue(String(normalized));
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleSave();
-      }
-    };
-
-    return (
-      <div className="flex items-center gap-2 justify-end">
-        <input
-          type="number"
-          min={0}
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={updateWaste.isPending}
-          className="w-20 rounded-lg px-2 py-1 text-right text-sm disabled:opacity-50"
-          style={{
-            background: "var(--bg-primary)",
-            border: "1px solid var(--bg-surface-light)",
-            color: "var(--text-primary)",
-          }}
-        />
-        <button
-          onClick={handleSave}
-          disabled={!hasChanges || updateWaste.isPending}
-          className="p-1.5 rounded-md transition-colors disabled:opacity-30 border-none cursor-pointer"
-          style={{
-            background: hasChanges ? "rgba(107,142,90,0.15)" : "transparent",
-            color: "var(--accent-green)",
-          }}
-          title={t("badge.save_waste")}
-        >
-          <Save size={14} />
-        </button>
-      </div>
-    );
-  }
 
   const filtered = (registrations || [])
     .filter(reg => {
@@ -345,6 +353,11 @@ export function PresenceTab() {
                         <WasteInput
                           registrationId={reg.id}
                           initialWasteKg={reg.wasteKg ?? 0}
+                          isPending={updateWaste.isPending}
+                          saveTitle={t("badge.save_waste")}
+                          onSave={(id, wasteKg) =>
+                            updateWaste.mutate({ registrationId: id, wasteKg })
+                          }
                         />
                       </td>
                       <td className="py-3 px-4 text-right">

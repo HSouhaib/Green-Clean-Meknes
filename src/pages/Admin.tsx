@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import { useNavigate } from "react-router";
 import Logo from "@/components/Logo";
 import { trpc } from '@/lib/trpc';
@@ -74,37 +75,90 @@ type TabKey =
 
 interface TabConfig {
   key: TabKey;
-  label: string;
+  labelKey: string;
   icon: React.ReactNode;
   badge?: number;
 }
 
 const tabs: TabConfig[] = [
-  { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
-  { key: "landing", label: "Landing Page", icon: <PanelTop size={16} /> },
-  { key: "campaigns", label: "Campaigns", icon: <Calendar size={16} /> },
-  { key: "presence", label: "Presence", icon: <ScanLine size={16} /> },
-  { key: "photos", label: "Photos", icon: <Camera size={16} /> },
-  { key: "sponsors", label: "Sponsors", icon: <Handshake size={16} /> },
-  { key: "socialFeed", label: "Social Feed", icon: <Rss size={16} /> },
-  { key: "users", label: "Users", icon: <Users size={16} /> },
-  { key: "volunteers", label: "Volunteers", icon: <UserPlus size={16} /> },
-  { key: "roles", label: "Roles", icon: <Shield size={16} /> },
-  { key: "contacts", label: "Contacts", icon: <Mail size={16} /> },
-  { key: "plans", label: "Planning", icon: <Lightbulb size={16} /> },
-  { key: "settings", label: "Settings", icon: <Settings size={16} /> },
-  { key: "neighborhoods", label: "Neighborhoods", icon: <MapPin size={16} /> },
-  { key: "faqs", label: "FAQs", icon: <HelpCircle size={16} /> },
+  {
+    key: "dashboard",
+    labelKey: "admin.tabs.dashboard",
+    icon: <LayoutDashboard size={16} />,
+  },
+  {
+    key: "landing",
+    labelKey: "admin.tabs.landing",
+    icon: <PanelTop size={16} />,
+  },
+  {
+    key: "campaigns",
+    labelKey: "admin.tabs.campaigns",
+    icon: <Calendar size={16} />,
+  },
+  {
+    key: "presence",
+    labelKey: "admin.tabs.presence",
+    icon: <ScanLine size={16} />,
+  },
+  { key: "photos", labelKey: "admin.tabs.photos", icon: <Camera size={16} /> },
+  {
+    key: "sponsors",
+    labelKey: "admin.tabs.sponsors",
+    icon: <Handshake size={16} />,
+  },
+  {
+    key: "socialFeed",
+    labelKey: "admin.tabs.social_feed",
+    icon: <Rss size={16} />,
+  },
+  { key: "users", labelKey: "admin.tabs.users", icon: <Users size={16} /> },
+  {
+    key: "volunteers",
+    labelKey: "admin.tabs.volunteers",
+    icon: <UserPlus size={16} />,
+  },
+  { key: "roles", labelKey: "admin.tabs.roles", icon: <Shield size={16} /> },
+  {
+    key: "contacts",
+    labelKey: "admin.tabs.contacts",
+    icon: <Mail size={16} />,
+  },
+  {
+    key: "plans",
+    labelKey: "admin.tabs.plans",
+    icon: <Lightbulb size={16} />,
+  },
+  {
+    key: "settings",
+    labelKey: "admin.tabs.settings",
+    icon: <Settings size={16} />,
+  },
+  {
+    key: "neighborhoods",
+    labelKey: "admin.tabs.neighborhoods",
+    icon: <MapPin size={16} />,
+  },
+  { key: "faqs", labelKey: "admin.tabs.faqs", icon: <HelpCircle size={16} /> },
   {
     key: "testimonials",
-    label: "Testimonials",
+    labelKey: "admin.tabs.testimonials",
     icon: <MessageSquare size={16} />,
   },
-  { key: "polls", label: "Polls", icon: <BarChart3 size={16} /> },
-  { key: "leaderboard", label: "Leaderboard", icon: <Trophy size={16} /> },
+  {
+    key: "polls",
+    labelKey: "admin.tabs.polls",
+    icon: <BarChart3 size={16} />,
+  },
+  {
+    key: "leaderboard",
+    labelKey: "admin.tabs.leaderboard",
+    icon: <Trophy size={16} />,
+  },
 ];
 
 export default function Admin() {
+  const { t } = useLanguage();
   const { user, isAuthenticated, isLoading, logout } = useAuth({
     redirectOnUnauthenticated: true,
   });
@@ -176,13 +230,56 @@ export default function Admin() {
   const toggleTheme = () =>
     setTheme(prev => (prev === "dark" ? "light" : "dark"));
 
+  const renderTabButton = (tab: TabConfig, mobile: boolean) => (
+    <button
+      key={tab.key}
+      onClick={() => {
+        setActiveTab(tab.key);
+        if (mobile) setMobileMenuOpen(false);
+      }}
+      title={mobile ? undefined : t(tab.labelKey)}
+      className={
+        mobile
+          ? "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]"
+          : "px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]"
+      }
+      style={{
+        color:
+          activeTab === tab.key
+            ? "var(--text-primary)"
+            : "var(--text-tertiary)",
+        background: activeTab === tab.key ? "var(--bg-surface)" : "transparent",
+      }}
+    >
+      {tab.icon}
+      {mobile ? (
+        t(tab.labelKey)
+      ) : (
+        <span className="hidden xl:inline">{t(tab.labelKey)}</span>
+      )}
+      {badgeMap[tab.key] ? (
+        <span
+          className={`${mobile ? "ml-auto" : "ml-1"} px-1.5 py-0 rounded-full text-[10px] font-bold min-w-[18px] text-center`}
+          style={{
+            background: "var(--accent-terracotta)",
+            color: "white",
+          }}
+        >
+          {badgeMap[tab.key]}
+        </span>
+      ) : null}
+    </button>
+  );
+
   if (isLoading) {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
         style={{ background: "var(--bg-primary)" }}
       >
-        <div style={{ color: "var(--text-secondary)" }}>Loading...</div>
+        <div style={{ color: "var(--text-secondary)" }}>
+          {t("admin.header.loading")}
+        </div>
       </div>
     );
   }
@@ -215,43 +312,14 @@ export default function Admin() {
                 className="font-display text-base tracking-tight font-light hidden sm:inline"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Admin
+                {t("nav.admin")}
               </span>
             </a>
           </div>
 
           {/* Desktop Tab Navigation */}
           <nav className="hidden lg:flex gap-1 overflow-x-auto flex-1 mx-4">
-            {tabs.map(tab => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                title={tab.label}
-                className="px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]"
-                style={{
-                  color:
-                    activeTab === tab.key
-                      ? "var(--text-primary)"
-                      : "var(--text-tertiary)",
-                  background:
-                    activeTab === tab.key ? "var(--bg-surface)" : "transparent",
-                }}
-              >
-                {tab.icon}
-                <span className="hidden xl:inline">{tab.label}</span>
-                {badgeMap[tab.key] ? (
-                  <span
-                    className="ml-1 px-1.5 py-0 rounded-full text-[10px] font-bold min-w-[18px] text-center"
-                    style={{
-                      background: "var(--accent-terracotta)",
-                      color: "white",
-                    }}
-                  >
-                    {badgeMap[tab.key]}
-                  </span>
-                ) : null}
-              </button>
-            ))}
+            {tabs.map(tab => renderTabButton(tab, false))}
           </nav>
 
           {/* Right: Actions */}
@@ -264,7 +332,7 @@ export default function Admin() {
                 background: "var(--bg-surface)",
                 color: "var(--text-secondary)",
               }}
-              aria-label="Menu"
+              aria-label={t("admin.header.menu")}
             >
               {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -278,7 +346,7 @@ export default function Admin() {
                   background: "var(--bg-surface)",
                   color: "var(--text-secondary)",
                 }}
-                title={user?.name ?? user?.email ?? "Profile"}
+                title={user?.name ?? user?.email ?? t("admin.header.profile")}
               >
                 <User size={18} />
               </button>
@@ -302,7 +370,7 @@ export default function Admin() {
                       className="font-medium text-sm"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      {user?.name ?? "User"}
+                      {user?.name ?? t("admin.header.default_user")}
                     </div>
                     <div
                       className="text-xs mt-0.5"
@@ -317,7 +385,9 @@ export default function Admin() {
                         color: "white",
                       }}
                     >
-                      {user?.role === "super_admin" ? "Super Admin" : "Admin"}
+                      {user?.role === "super_admin"
+                        ? t("admin.roles.super_admin")
+                        : t("admin.roles.admin")}
                     </span>
                   </div>
                   <div className="p-2">
@@ -331,7 +401,7 @@ export default function Admin() {
                       style={{ color: "var(--text-secondary)" }}
                     >
                       <Home size={14} />
-                      Back to Site
+                      {t("admin.header.back_to_site")}
                     </a>
                   </div>
                 </div>
@@ -349,8 +419,8 @@ export default function Admin() {
               }}
               title={
                 theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
+                  ? t("admin.header.switch_to_light")
+                  : t("admin.header.switch_to_dark")
               }
             >
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
@@ -359,7 +429,7 @@ export default function Admin() {
               onClick={logout}
               className="flex items-center justify-center w-10 h-10 rounded-full transition-colors bg-transparent border-none cursor-pointer"
               style={{ color: "var(--text-tertiary)" }}
-              title="Logout"
+              title={t("admin.header.logout")}
             >
               <LogOut size={18} />
             </button>
@@ -376,40 +446,7 @@ export default function Admin() {
               className="mx-auto px-4 py-3 space-y-1"
               style={{ maxWidth: "1400px" }}
             >
-              {tabs.map(tab => (
-                <button
-                  key={tab.key}
-                  onClick={() => {
-                    setActiveTab(tab.key);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]"
-                  style={{
-                    color:
-                      activeTab === tab.key
-                        ? "var(--text-primary)"
-                        : "var(--text-tertiary)",
-                    background:
-                      activeTab === tab.key
-                        ? "var(--bg-surface)"
-                        : "transparent",
-                  }}
-                >
-                  {tab.icon}
-                  {tab.label}
-                  {badgeMap[tab.key] ? (
-                    <span
-                      className="ml-auto px-1.5 py-0 rounded-full text-[10px] font-bold min-w-[18px] text-center"
-                      style={{
-                        background: "var(--accent-terracotta)",
-                        color: "white",
-                      }}
-                    >
-                      {badgeMap[tab.key]}
-                    </span>
-                  ) : null}
-                </button>
-              ))}
+              {tabs.map(tab => renderTabButton(tab, true))}
             </div>
           </div>
         )}

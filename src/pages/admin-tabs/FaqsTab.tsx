@@ -109,46 +109,46 @@ export function FaqsTab() {
     }
   };
 
-  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>Loading FAQs...</div>;
+  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>{t('admin.faqs.loading')}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>FAQs</h2>
+        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>{t('admin.faqs.title')}</h2>
         <button
           onClick={() => { setShowForm(!showForm); setEditingId(null); resetForm(); }}
           className="px-4 py-2 rounded-md text-sm font-medium transition-colors"
           style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
         >
-          {showForm ? 'Cancel' : 'Add FAQ'}
+          {showForm ? t('admin.shared.cancel') : t('admin.faqs.add')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="space-y-4 mb-8 p-6 rounded-lg" style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}>
           <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-            {editingId ? 'Edit FAQ' : 'New FAQ'}
+            {editingId ? t('admin.faqs.edit_title') : t('admin.faqs.new_title')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input placeholder="Question (EN) *" value={formData.questionEn} onChange={e => setFormData({ ...formData, questionEn: e.target.value })} required className="admin-input" />
-            <input placeholder="Question (FR)" value={formData.questionFr} onChange={e => setFormData({ ...formData, questionFr: e.target.value })} className="admin-input" />
-            <input placeholder="Question (AR)" value={formData.questionAr} onChange={e => setFormData({ ...formData, questionAr: e.target.value })} className="admin-input" dir="rtl" />
+            <input placeholder={t('admin.faqs.question_en')} value={formData.questionEn} onChange={e => setFormData({ ...formData, questionEn: e.target.value })} required className="admin-input" />
+            <input placeholder={t('admin.faqs.question_fr')} value={formData.questionFr} onChange={e => setFormData({ ...formData, questionFr: e.target.value })} className="admin-input" />
+            <input placeholder={t('admin.faqs.question_ar')} value={formData.questionAr} onChange={e => setFormData({ ...formData, questionAr: e.target.value })} className="admin-input" dir="rtl" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <textarea placeholder="Answer (EN) *" value={formData.answerEn} onChange={e => setFormData({ ...formData, answerEn: e.target.value })} required rows={3} className="admin-input" />
-            <textarea placeholder="Answer (FR)" value={formData.answerFr} onChange={e => setFormData({ ...formData, answerFr: e.target.value })} rows={3} className="admin-input" />
-            <textarea placeholder="Answer (AR)" value={formData.answerAr} onChange={e => setFormData({ ...formData, answerAr: e.target.value })} rows={3} className="admin-input" dir="rtl" />
+            <textarea placeholder={t('admin.faqs.answer_en')} value={formData.answerEn} onChange={e => setFormData({ ...formData, answerEn: e.target.value })} required rows={3} className="admin-input" />
+            <textarea placeholder={t('admin.faqs.answer_fr')} value={formData.answerFr} onChange={e => setFormData({ ...formData, answerFr: e.target.value })} rows={3} className="admin-input" />
+            <textarea placeholder={t('admin.faqs.answer_ar')} value={formData.answerAr} onChange={e => setFormData({ ...formData, answerAr: e.target.value })} rows={3} className="admin-input" dir="rtl" />
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Sort Order</label>
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.sort_order')}</label>
             <input type="number" className="admin-input" placeholder="0" value={formData.sortOrder} onChange={e => setFormData({ ...formData, sortOrder: Number(e.target.value) })} />
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }} disabled={createMutation.isPending || updateMutation.isPending}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => { setShowForm(false); setEditingId(null); resetForm(); }} className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -178,24 +178,24 @@ export function FaqsTab() {
                   background: faq.isActive ? 'rgba(58,90,42,0.3)' : 'rgba(85,85,85,0.3)',
                   color: faq.isActive ? 'var(--accent-green-light)' : 'var(--text-tertiary)',
                 }}
-                title="Toggle visibility"
+                title={t('admin.shared.toggle_visibility')}
               >
-                {faq.isActive ? 'Active' : 'Hidden'}
+                {faq.isActive ? t('admin.shared.active') : t('admin.shared.hidden')}
               </button>
-              <button onClick={() => handleEdit(faq)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>Edit</button>
+              <button onClick={() => handleEdit(faq)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.edit')}</button>
               <button
                 onClick={() => setDeleteModal({ open: true, id: faq.id, name: faq.questionEn })}
                 className="text-xs transition-colors hover:text-red-400"
                 style={{ color: 'var(--text-tertiary)' }}
               >
-                Delete
+                {t('admin.shared.delete')}
               </button>
             </div>
           </div>
         ))}
         {(!faqs || faqs.length === 0) && (
           <div className="text-center py-16 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            No FAQs yet. Click "Add FAQ" to create one.
+            {t('admin.faqs.empty')}
           </div>
         )}
       </div>
@@ -207,8 +207,8 @@ export function FaqsTab() {
           if (deleteModal.id) deleteMutation.mutate({ id: deleteModal.id });
           setDeleteModal({ open: false, id: null, name: '' });
         }}
-        title="Delete FAQ"
-        description={`Are you sure you want to delete the FAQ "${deleteModal.name}"? This action cannot be undone.`}
+        title={t('admin.faqs.delete_title')}
+        description={t('admin.faqs.delete_description').replace('{name}', deleteModal.name)}
         isPending={deleteMutation.isPending}
       />
     </div>

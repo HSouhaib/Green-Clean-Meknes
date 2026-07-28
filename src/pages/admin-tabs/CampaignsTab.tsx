@@ -145,9 +145,9 @@ export function CampaignsTab() {
       utils.campaign.calendar.invalidate();
       utils.campaign.stats.invalidate();
       setDeleteRegModal({ open: false, id: null, name: "" });
-      toast.success("Registration removed");
+      toast.success(t("toast.registration_deleted"));
     },
-    onError: () => showError("Failed to remove registration"),
+    onError: () => showError(t("toast.registration_delete_failed")),
   });
 
   const createMutation = trpc.campaign.create.useMutation({
@@ -999,7 +999,11 @@ export function CampaignsTab() {
                                   : "var(--text-tertiary)",
                             }}
                           >
-                            {reg.status}
+                            {["registered", "attended", "cancelled"].includes(
+                              reg.status
+                            )
+                              ? t(`admin.shared.registration_status.${reg.status}`)
+                              : reg.status}
                           </span>
                         </td>
                         <td
@@ -1015,7 +1019,9 @@ export function CampaignsTab() {
                                 open: true,
                                 id: reg.id,
                                 name:
-                                  reg.user?.name ?? reg.guestName ?? "Unknown",
+                                  reg.user?.name ??
+                                  reg.guestName ??
+                                  t("admin.shared.unknown"),
                               })
                             }
                             disabled={deleteRegMutation.isPending}
@@ -1034,7 +1040,7 @@ export function CampaignsTab() {
                                 "var(--text-tertiary)";
                               e.currentTarget.style.background = "transparent";
                             }}
-                            title="Remove registration"
+                            title={t("admin.campaigns.remove_registration")}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -1055,8 +1061,12 @@ export function CampaignsTab() {
                 className="text-xs"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                {registrations?.length ?? 0} volunteer
-                {registrations && registrations.length !== 1 ? "s" : ""}
+                {registrations?.length ?? 0}{" "}
+                {t(
+                  (registrations?.length ?? 0) === 1
+                    ? "admin.campaigns.volunteer_one"
+                    : "admin.campaigns.volunteer_other"
+                )}
               </span>
               <button
                 onClick={() =>
@@ -1072,7 +1082,7 @@ export function CampaignsTab() {
                   color: "var(--text-secondary)",
                 }}
               >
-                Close
+                {t("admin.shared.close")}
               </button>
             </div>
           </div>
@@ -1088,8 +1098,8 @@ export function CampaignsTab() {
             deleteRegMutation.mutate({ id: deleteRegModal.id });
           }
         }}
-        title="Remove Registration"
-        description={`Are you sure you want to remove ${deleteRegModal.name}'s registration? This action cannot be undone.`}
+        title={t("admin.campaigns.remove_registration_title")}
+        description={t("admin.campaigns.remove_registration_description").replace("{name}", deleteRegModal.name)}
         isPending={deleteRegMutation.isPending}
       />
     </div>

@@ -3,6 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { CheckCircle, XCircle, Trash2, Search, UserCheck, UserX, Clock } from 'lucide-react';
+import { DeleteModal } from './shared';
 import { useErrorModal } from '@/hooks/useErrorModal';
 
 export function VolunteersTab() {
@@ -12,6 +13,11 @@ export function VolunteersTab() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [page, setPage] = useState(1);
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: number | null; name: string }>({
+    open: false,
+    id: null,
+    name: '',
+  });
   const limit = 10;
 
   const { data, isLoading } = trpc.volunteer.list.useQuery({
@@ -50,7 +56,7 @@ export function VolunteersTab() {
     };
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium" style={styles[status] ?? styles.pending}>
-        {icons[status]} {status.charAt(0).toUpperCase() + status.slice(1)}
+        {icons[status]} {t(`admin.volunteers.status.${status}`)}
       </span>
     );
   };
@@ -58,7 +64,7 @@ export function VolunteersTab() {
   return (
     <div>
       <h2 className="text-xl font-medium mb-6" style={{ color: 'var(--text-primary)' }}>
-        Volunteer Registrations
+        {t('admin.volunteers.title')}
       </h2>
 
       {/* Filters */}
@@ -67,7 +73,7 @@ export function VolunteersTab() {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-tertiary)' }} />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t('admin.volunteers.search_placeholder')}
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="admin-input pl-10"
@@ -78,10 +84,10 @@ export function VolunteersTab() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="admin-input w-full sm:w-40"
         >
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
+          <option value="">{t('admin.volunteers.all_status')}</option>
+          <option value="pending">{t('admin.volunteers.status.pending')}</option>
+          <option value="approved">{t('admin.volunteers.status.approved')}</option>
+          <option value="rejected">{t('admin.volunteers.status.rejected')}</option>
         </select>
       </div>
 
@@ -94,12 +100,12 @@ export function VolunteersTab() {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ background: 'var(--bg-primary)' }}>
-                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>Name</th>
-                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>Email</th>
-                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>Phone</th>
-                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>Status</th>
-                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>Date</th>
-                  <th className="text-right px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>Actions</th>
+                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t('admin.volunteers.header.name')}</th>
+                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t('admin.volunteers.header.email')}</th>
+                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t('admin.volunteers.header.phone')}</th>
+                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t('admin.volunteers.header.status')}</th>
+                  <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t('admin.volunteers.header.date')}</th>
+                  <th className="text-right px-4 py-3 font-medium" style={{ color: 'var(--text-secondary)' }}>{t('admin.volunteers.header.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,7 +127,7 @@ export function VolunteersTab() {
                               disabled={updateStatusMutation.isPending}
                               className="p-1.5 rounded transition-colors cursor-pointer border-none"
                               style={{ background: 'rgba(58, 90, 42, 0.2)', color: 'var(--accent-green-light)' }}
-                              title="Approve"
+                              title={t('admin.volunteers.approve')}
                             >
                               <CheckCircle size={16} />
                             </button>
@@ -130,22 +136,20 @@ export function VolunteersTab() {
                               disabled={updateStatusMutation.isPending}
                               className="p-1.5 rounded transition-colors cursor-pointer border-none"
                               style={{ background: 'rgba(184, 112, 74, 0.2)', color: 'var(--accent-terracotta)' }}
-                              title="Reject"
+                              title={t('admin.volunteers.reject')}
                             >
                               <XCircle size={16} />
                             </button>
                           </>
                         )}
                         <button
-                          onClick={() => {
-                            if (confirm(`Delete registration for ${volunteer.name}?`)) {
-                              deleteMutation.mutate({ id: volunteer.id });
-                            }
-                          }}
+                          onClick={() =>
+                            setDeleteModal({ open: true, id: volunteer.id, name: volunteer.name })
+                          }
                           disabled={deleteMutation.isPending}
                           className="p-1.5 rounded transition-colors cursor-pointer border-none"
                           style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}
-                          title="Delete"
+                          title={t('admin.shared.delete')}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -156,7 +160,7 @@ export function VolunteersTab() {
                 {data?.volunteers.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                      No volunteer registrations found.
+                      {t('admin.volunteers.empty')}
                     </td>
                   </tr>
                 )}
@@ -168,7 +172,10 @@ export function VolunteersTab() {
           {data && data.totalPages > 1 && (
             <div className="flex items-center justify-between mt-4">
               <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                Page {data.page} of {data.totalPages} ({data.total} total)
+                {t('admin.volunteers.page_info')
+                  .replace('{page}', String(data.page))
+                  .replace('{totalPages}', String(data.totalPages))
+                  .replace('{total}', String(data.total))}
               </span>
               <div className="flex gap-2">
                 <button
@@ -177,7 +184,7 @@ export function VolunteersTab() {
                   className="px-3 py-1.5 rounded text-xs font-medium transition-colors cursor-pointer border-none"
                   style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}
                 >
-                  Previous
+                  {t('admin.shared.previous')}
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
@@ -185,13 +192,27 @@ export function VolunteersTab() {
                   className="px-3 py-1.5 rounded text-xs font-medium transition-colors cursor-pointer border-none"
                   style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}
                 >
-                  Next
+                  {t('admin.shared.next')}
                 </button>
               </div>
             </div>
           )}
         </>
       )}
+
+      <DeleteModal
+        open={deleteModal.open}
+        onClose={() => setDeleteModal({ open: false, id: null, name: '' })}
+        onConfirm={() => {
+          if (deleteModal.id) {
+            deleteMutation.mutate({ id: deleteModal.id });
+            setDeleteModal({ open: false, id: null, name: '' });
+          }
+        }}
+        title={t('admin.shared.delete')}
+        description={t('admin.volunteers.delete_confirm').replace('{name}', deleteModal.name)}
+        isPending={deleteMutation.isPending}
+      />
     </div>
   );
 }

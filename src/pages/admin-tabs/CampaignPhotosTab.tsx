@@ -118,22 +118,22 @@ export function CampaignPhotosTab() {
     if (existing) {
       existing.photos?.push(photo);
     } else {
-      groupedPhotos.set(photo.campaignId, { campaignTitle: photo.campaignTitle || 'Unknown Campaign', photos: [photo] });
+      groupedPhotos.set(photo.campaignId, { campaignTitle: photo.campaignTitle || t('admin.photos.unknown_campaign'), photos: [photo] });
     }
   });
 
-  if (isLoading) return <div className="p-8 text-sm" style={{ color: 'var(--text-secondary)' }}>Loading photos...</div>;
+  if (isLoading) return <div className="p-8 text-sm" style={{ color: 'var(--text-secondary)' }}>{t('admin.photos.loading')}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-display text-xl" style={{ color: 'var(--text-primary)' }}>Campaign Photos</h2>
+        <h2 className="font-display text-xl" style={{ color: 'var(--text-primary)' }}>{t('admin.photos.title')}</h2>
         <button
           onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
           className="px-4 py-2 rounded-lg text-sm font-medium border-none cursor-pointer transition-colors"
           style={{ background: 'var(--accent-green)', color: '#fff' }}
         >
-          + Add Photo
+          {t('admin.photos.add')}
         </button>
       </div>
 
@@ -141,36 +141,36 @@ export function CampaignPhotosTab() {
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-8 p-4 rounded-xl space-y-4" style={{ background: 'var(--bg-surface)' }}>
           <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-            {editingId ? 'Edit Photo' : 'New Photo'}
+            {editingId ? t('admin.photos.edit_title') : t('admin.photos.new_title')}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Campaign *</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.photos.campaign_label')}</label>
               <select className="admin-input" value={formData.campaignId} onChange={(e) => setFormData({ ...formData, campaignId: e.target.value })} required>
-                <option value="">Select campaign</option>
+                <option value="">{t('admin.photos.select_campaign')}</option>
                 {campaigns?.map((c) => <option key={c.id} value={c.id}>{c.titleEn}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Photo Type *</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.photos.type_label')}</label>
               <select className="admin-input" value={formData.photoType} onChange={(e) => setFormData({ ...formData, photoType: e.target.value as 'before' | 'after' })} required>
-                <option value="before">Before</option>
-                <option value="after">After</option>
+                <option value="before">{t('admin.photos.type_before')}</option>
+                <option value="after">{t('admin.photos.type_after')}</option>
               </select>
             </div>
           </div>
           <ImageUpload value={formData.imageUrl} onChange={(url) => setFormData({ ...formData, imageUrl: url })} />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <input className="admin-input" placeholder="Caption (EN)" value={formData.captionEn} onChange={(e) => setFormData({ ...formData, captionEn: e.target.value })} />
-            <input className="admin-input" placeholder="Caption (FR)" value={formData.captionFr} onChange={(e) => setFormData({ ...formData, captionFr: e.target.value })} />
-            <input className="admin-input" placeholder="Caption (AR)" value={formData.captionAr} onChange={(e) => setFormData({ ...formData, captionAr: e.target.value })} dir="rtl" />
+            <input className="admin-input" placeholder={t('admin.photos.caption_en')} value={formData.captionEn} onChange={(e) => setFormData({ ...formData, captionEn: e.target.value })} />
+            <input className="admin-input" placeholder={t('admin.photos.caption_fr')} value={formData.captionFr} onChange={(e) => setFormData({ ...formData, captionFr: e.target.value })} />
+            <input className="admin-input" placeholder={t('admin.photos.caption_ar')} value={formData.captionAr} onChange={(e) => setFormData({ ...formData, captionAr: e.target.value })} dir="rtl" />
           </div>
           <div className="flex gap-2">
             <button type="submit" className="px-4 py-2 rounded-lg text-sm font-medium border-none cursor-pointer" style={{ background: 'var(--accent-green)', color: '#fff' }}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 rounded-lg text-sm border-none cursor-pointer" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -193,16 +193,16 @@ export function CampaignPhotosTab() {
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{group.campaignTitle}</span>
                   <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--accent-green-muted)', color: 'var(--accent-green)' }}>
-                    {group.photos?.length || 0} photos
+                    {group.photos?.length || 0} {t('admin.photos.badge_photos')}
                   </span>
                   {beforeCount > 0 && (
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.3)', color: 'var(--text-tertiary)' }}>
-                      {beforeCount} before
+                      {beforeCount} {t('admin.photos.badge_before')}
                     </span>
                   )}
                   {afterCount > 0 && (
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--accent-green-muted)', color: 'var(--accent-green)' }}>
-                      {afterCount} after
+                      {afterCount} {t('admin.photos.badge_after')}
                     </span>
                   )}
                 </div>
@@ -228,7 +228,7 @@ export function CampaignPhotosTab() {
                             color: 'white',
                           }}
                         >
-                          {photo.photoType}
+                          {t(photo.photoType === 'before' ? 'admin.photos.type_before' : 'admin.photos.type_after')}
                         </div>
                         {/* Hover Actions */}
                         <div className="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(0,0,0,0.6)' }}>
@@ -236,7 +236,7 @@ export function CampaignPhotosTab() {
                             onClick={(e) => { e.stopPropagation(); toggleMutation.mutate({ id: photo.id }); }}
                             className="w-6 h-6 rounded flex items-center justify-center text-xs border-none cursor-pointer"
                             style={{ background: photo.isActive ? 'rgba(58,90,42,0.8)' : 'rgba(85,85,85,0.8)', color: '#fff' }}
-                            title={photo.isActive ? 'Hide' : 'Show'}
+                            title={photo.isActive ? t('admin.shared.hide') : t('admin.shared.show')}
                           >
                             {photo.isActive ? '✓' : '○'}
                           </button>
@@ -244,7 +244,7 @@ export function CampaignPhotosTab() {
                             onClick={(e) => { e.stopPropagation(); setDeleteModal({ open: true, id: photo.id }); }}
                             className="w-6 h-6 rounded flex items-center justify-center border-none cursor-pointer"
                             style={{ background: 'rgba(239,68,68,0.8)', color: '#fff' }}
-                            title="Delete"
+                            title={t('admin.shared.delete')}
                           >
                             <Trash2 size={12} />
                           </button>
@@ -261,7 +261,7 @@ export function CampaignPhotosTab() {
         {groupedPhotos.size === 0 && (
           <div className="text-center py-12">
             <Camera size={32} className="mx-auto mb-3" style={{ color: 'var(--text-tertiary)' }} />
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No photos yet. Add your first before/after photo!</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('admin.photos.empty')}</p>
           </div>
         )}
       </div>
@@ -275,8 +275,8 @@ export function CampaignPhotosTab() {
             setDeleteModal({ open: false, id: null });
           }
         }}
-        title="Delete Photo"
-        description="Are you sure you want to delete this photo? This action cannot be undone."
+        title={t('admin.photos.delete_title')}
+        description={t('admin.photos.delete_description')}
         isPending={deleteMutation.isPending}
       />
     </div>

@@ -118,19 +118,19 @@ export function SocialFeedTab() {
   };
 
   if (isLoading) {
-    return <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading social feed...</div>;
+    return <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.loading')}</div>;
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-display text-xl" style={{ color: 'var(--text-primary)' }}>Social Media Feed</h2>
+        <h2 className="font-display text-xl" style={{ color: 'var(--text-primary)' }}>{t('admin.socialfeed.title')}</h2>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
           className="px-4 py-2 rounded-lg text-sm font-medium border-none cursor-pointer transition-colors"
           style={{ background: 'var(--accent-green)', color: '#fff' }}
         >
-          {showForm ? 'Cancel' : 'Add Post'}
+          {showForm ? t('admin.shared.cancel') : t('admin.socialfeed.add')}
         </button>
       </div>
 
@@ -139,55 +139,54 @@ export function SocialFeedTab() {
         <form onSubmit={handleSubmit} className="mb-8 p-4 rounded-xl space-y-4" style={{ background: 'var(--bg-surface)' }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Platform *</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.platform_label')}</label>
               <select className="admin-input" value={formData.platform} onChange={e => setFormData(p => ({ ...p, platform: e.target.value as typeof PLATFORMS[number] }))}>
-                {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+                {PLATFORMS.map(p => <option key={p} value={p}>{t(`admin.socialfeed.platform_${p}`)}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Post URL *</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.post_url')}</label>
               <input className="admin-input" type="url" value={formData.postUrl} onChange={e => setFormData(p => ({ ...p, postUrl: e.target.value }))} placeholder="https://instagram.com/p/..." required />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Author Name</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.author_name')}</label>
               <input className="admin-input" value={formData.authorName} onChange={e => setFormData(p => ({ ...p, authorName: e.target.value }))} placeholder="@greenmeknes" />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Sort Order</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.shared.sort_order')}</label>
               <input className="admin-input" type="number" value={formData.sortOrder} onChange={e => setFormData(p => ({ ...p, sortOrder: e.target.value }))} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Thumbnail Image</label>
             <ImageUpload
               value={formData.imageUrl}
               onChange={(url: string) => setFormData(p => ({ ...p, imageUrl: url }))}
-              label="Thumbnail Image"
+              label={t('admin.socialfeed.thumbnail_label')}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Caption (EN)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.caption_en')}</label>
               <textarea className="admin-input" rows={2} value={formData.captionEn} onChange={e => setFormData(p => ({ ...p, captionEn: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Caption (FR)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.caption_fr')}</label>
               <textarea className="admin-input" rows={2} value={formData.captionFr} onChange={e => setFormData(p => ({ ...p, captionFr: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Caption (AR)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.socialfeed.caption_ar')}</label>
               <textarea className="admin-input" rows={2} dir="rtl" value={formData.captionAr} onChange={e => setFormData(p => ({ ...p, captionAr: e.target.value }))} />
             </div>
           </div>
 
           <div className="flex gap-2">
             <button type="submit" className="px-4 py-2 rounded-lg text-sm font-medium border-none cursor-pointer" style={{ background: 'var(--accent-green)', color: '#fff' }}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="px-4 py-2 rounded-lg text-sm border-none cursor-pointer" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -211,7 +210,7 @@ export function SocialFeedTab() {
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--accent-green-muted)', color: 'var(--accent-green)' }}>
                     {PLATFORM_ICONS[post.platform] || <Rss size={12} />}
-                    {post.platform}
+                    {t(`admin.socialfeed.platform_${post.platform}`)}
                   </span>
                 </div>
                 <p className="text-xs mt-1 truncate" style={{ color: 'var(--text-primary)' }}>{post.postUrl}</p>
@@ -225,14 +224,14 @@ export function SocialFeedTab() {
             </div>
             <div className="flex items-center gap-2 mt-auto pt-2" style={{ borderTop: '1px solid var(--bg-surface-light)' }}>
               <button onClick={() => handleEdit(post)} className="px-3 py-1.5 rounded-md text-xs font-medium border-none cursor-pointer transition-colors" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-                Edit
+                {t('admin.shared.edit')}
               </button>
               <button onClick={() => setDeleteModal({ open: true, id: post.id })} className="px-3 py-1.5 rounded-md text-xs font-medium border-none cursor-pointer transition-colors" style={{ background: 'var(--bg-surface-light)', color: '#ef4444' }}>
-                Delete
+                {t('admin.shared.delete')}
               </button>
               <button onClick={() => toggleMutation.mutate({ id: post.id })} className="px-3 py-1.5 rounded-md text-xs font-medium border-none cursor-pointer transition-colors flex items-center gap-1 ml-auto" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
                 {post.isActive ? <EyeOff size={12} /> : <Eye size={12} />}
-                {post.isActive ? 'Hide' : 'Show'}
+                {post.isActive ? t('admin.shared.hide') : t('admin.shared.show')}
               </button>
             </div>
           </div>
@@ -241,7 +240,7 @@ export function SocialFeedTab() {
 
       {posts?.length === 0 && (
         <div className="text-center py-12 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-          No social posts yet. Add your first post above.
+          {t('admin.socialfeed.empty')}
         </div>
       )}
 
@@ -249,8 +248,8 @@ export function SocialFeedTab() {
         open={deleteModal.open}
         onClose={() => setDeleteModal({ open: false, id: null })}
         onConfirm={() => deleteModal.id && deleteMutation.mutate({ id: deleteModal.id })}
-        title="Delete Social Post"
-        description="Are you sure you want to delete this social media post? This action cannot be undone."
+        title={t('admin.socialfeed.delete_title')}
+        description={t('admin.socialfeed.delete_description')}
         isPending={deleteMutation.isPending}
       />
     </div>

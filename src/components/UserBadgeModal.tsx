@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { roleLabelByName } from '@/lib/roleLabels';
 import { trpc } from '@/lib/trpc';
 import { X, Printer, BadgeCheck, Calendar, MapPin, ChevronDown, FileDown } from 'lucide-react';
 import { useRef, useState, useMemo } from 'react';
@@ -459,7 +460,7 @@ export default function UserBadgeModal({ user, open, onClose }: UserBadgeModalPr
                         color: isAdmin ? '#9c5a32' : '#4a6b3a',
                       }}
                     >
-                      {isAdmin ? t('login.role_admin') : t('login.role_volunteer')}
+                      {roleLabelByName(user.role, undefined, lang, t)}
                     </span>
                   </div>
 

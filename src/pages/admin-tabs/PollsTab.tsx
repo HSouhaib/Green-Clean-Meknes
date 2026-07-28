@@ -109,42 +109,42 @@ export function PollsTab() {
     }
   };
 
-  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>Loading polls...</div>;
+  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>{t('admin.polls.loading')}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>Polls</h2>
+        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>{t('admin.polls.title')}</h2>
         <button
           onClick={() => { setShowForm(!showForm); setEditingId(null); resetForm(); }}
           className="px-4 py-2 rounded-md text-sm font-medium transition-colors"
           style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
         >
-          {showForm ? 'Cancel' : 'Add Poll'}
+          {showForm ? t('admin.shared.cancel') : t('admin.polls.add')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="space-y-4 mb-8 p-6 rounded-lg" style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Question (EN)</label>
-            <input className="admin-input" placeholder="Question (EN) *" value={formData.question} onChange={e => setFormData({ ...formData, question: e.target.value })} required />
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.polls.question_en')}</label>
+            <input className="admin-input" placeholder={t('admin.polls.question_en')} value={formData.question} onChange={e => setFormData({ ...formData, question: e.target.value })} required />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Question (FR)</label>
-              <input className="admin-input" placeholder="Question (FR)" value={formData.questionFr} onChange={e => setFormData({ ...formData, questionFr: e.target.value })} />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.polls.question_fr')}</label>
+              <input className="admin-input" placeholder={t('admin.polls.question_fr')} value={formData.questionFr} onChange={e => setFormData({ ...formData, questionFr: e.target.value })} />
             </div>
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Question (AR)</label>
-              <input className="admin-input" placeholder="Question (AR)" value={formData.questionAr} onChange={e => setFormData({ ...formData, questionAr: e.target.value })} dir="rtl" />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.polls.question_ar')}</label>
+              <input className="admin-input" placeholder={t('admin.polls.question_ar')} value={formData.questionAr} onChange={e => setFormData({ ...formData, questionAr: e.target.value })} dir="rtl" />
             </div>
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Options (EN)</label>
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.polls.options_en')}</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {formData.options.map((opt, i) => (
-                <input key={i} className="admin-input" placeholder={`Option ${i + 1}${i < 2 ? ' *' : ''}`} value={opt} onChange={e => {
+                <input key={i} className="admin-input" placeholder={t('admin.polls.option_en_placeholder').replace('{index}', String(i + 1)) + (i < 2 ? ' *' : '')} value={opt} onChange={e => {
                   const newOpts = [...formData.options];
                   newOpts[i] = e.target.value;
                   setFormData({ ...formData, options: newOpts });
@@ -153,10 +153,10 @@ export function PollsTab() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Options (FR)</label>
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.polls.options_fr')}</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {formData.optionsFr.map((opt, i) => (
-                <input key={i} className="admin-input" placeholder={`Option FR ${i + 1}`} value={opt} onChange={e => {
+                <input key={i} className="admin-input" placeholder={t('admin.polls.option_fr_placeholder').replace('{index}', String(i + 1))} value={opt} onChange={e => {
                   const newOpts = [...formData.optionsFr];
                   newOpts[i] = e.target.value;
                   setFormData({ ...formData, optionsFr: newOpts });
@@ -165,10 +165,10 @@ export function PollsTab() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Options (AR)</label>
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.polls.options_ar')}</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {formData.optionsAr.map((opt, i) => (
-                <input key={i} className="admin-input" placeholder={`Option AR ${i + 1}`} value={opt} onChange={e => {
+                <input key={i} className="admin-input" placeholder={t('admin.polls.option_ar_placeholder').replace('{index}', String(i + 1))} value={opt} onChange={e => {
                   const newOpts = [...formData.optionsAr];
                   newOpts[i] = e.target.value;
                   setFormData({ ...formData, optionsAr: newOpts });
@@ -178,10 +178,10 @@ export function PollsTab() {
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }} disabled={createMutation.isPending || updateMutation.isPending}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => { setShowForm(false); setEditingId(null); resetForm(); }} className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -198,11 +198,11 @@ export function PollsTab() {
               <div className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
                 {poll.question}
                 {poll.isActive && (
-                  <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(58,90,42,0.3)', color: 'var(--accent-green-light)' }}>Active</span>
+                  <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(58,90,42,0.3)', color: 'var(--accent-green-light)' }}>{t('admin.shared.active')}</span>
                 )}
               </div>
               <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-                {poll.options.join(', ')} · {poll.voteCount} votes
+                {poll.options.join(', ')} · {poll.voteCount} {t('admin.polls.votes')}
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
@@ -213,24 +213,24 @@ export function PollsTab() {
                   background: poll.isActive ? 'rgba(58,90,42,0.3)' : 'rgba(85,85,85,0.3)',
                   color: poll.isActive ? 'var(--accent-green-light)' : 'var(--text-tertiary)',
                 }}
-                title="Toggle active"
+                title={t('admin.polls.toggle_active')}
               >
-                {poll.isActive ? 'Active' : 'Inactive'}
+                {poll.isActive ? t('admin.shared.active') : t('admin.shared.inactive')}
               </button>
-              <button onClick={() => handleEdit(poll)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>Edit</button>
+              <button onClick={() => handleEdit(poll)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.edit')}</button>
               <button
                 onClick={() => setDeleteModal({ open: true, id: poll.id, name: poll.question })}
                 className="text-xs transition-colors hover:text-red-400"
                 style={{ color: 'var(--text-tertiary)' }}
               >
-                Delete
+                {t('admin.shared.delete')}
               </button>
             </div>
           </div>
         ))}
         {(!polls || polls.length === 0) && (
           <div className="text-center py-16 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            No polls yet. Click "Add Poll" to create one.
+            {t('admin.polls.empty')}
           </div>
         )}
       </div>
@@ -242,8 +242,8 @@ export function PollsTab() {
           if (deleteModal.id) deleteMutation.mutate({ id: deleteModal.id });
           setDeleteModal({ open: false, id: null, name: '' });
         }}
-        title="Delete Poll"
-        description={`Are you sure you want to delete the poll "${deleteModal.name}"? This action cannot be undone.`}
+        title={t('admin.polls.delete_title')}
+        description={t('admin.polls.delete_description').replace('{name}', deleteModal.name)}
         isPending={deleteMutation.isPending}
       />
     </div>

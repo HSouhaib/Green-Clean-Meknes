@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export function ImageUpload({
   value,
   onChange,
-  label = 'Campaign Image',
+  label,
 }: {
   value: string;
   onChange: (url: string) => void;
   label?: string;
 }) {
+  const { t } = useLanguage();
   const [uploading, setUploading] = useState(false);
   const uploadMutation = trpc.contact.uploadImage.useMutation();
 
@@ -30,7 +33,7 @@ export function ImageUpload({
         });
         onChange(result.url);
       } catch (err) {
-        alert('Upload failed: ' + (err as Error).message);
+        toast.error(t('admin.shared.upload_failed').replace('{message}', (err as Error).message));
       } finally {
         setUploading(false);
       }
@@ -41,11 +44,11 @@ export function ImageUpload({
   return (
     <div className="space-y-2">
       <label className="text-xs font-mono uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
-        {label}
+        {label ?? t('admin.shared.image_label')}
       </label>
       {value && (
         <div className="mb-2">
-          <img src={value} alt="Preview" className="h-24 w-auto rounded object-cover" loading="lazy" />
+          <img src={value} alt={t('admin.shared.image_preview_alt')} className="h-24 w-auto rounded object-cover" loading="lazy" />
         </div>
       )}
       <div className="flex gap-2">
@@ -57,10 +60,10 @@ export function ImageUpload({
           className="admin-input flex-1"
           style={{ padding: '8px' }}
         />
-        {uploading && <span className="text-xs self-center" style={{ color: 'var(--text-secondary)' }}>Uploading...</span>}
+        {uploading && <span className="text-xs self-center" style={{ color: 'var(--text-secondary)' }}>{t('admin.shared.uploading')}</span>}
       </div>
       <input
-        placeholder="Or enter image URL"
+        placeholder={t('admin.shared.image_url_placeholder')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="admin-input"

@@ -6,6 +6,8 @@ import { useErrorModal } from "@/hooks/useErrorModal";
 import { DataTable } from "./shared/DataTable";
 import { DeleteModal } from "./shared";
 import UserAvatar from "@/components/UserAvatar";
+import { roleColors } from "./shared/roleColors";
+import { roleLabelByName } from "@/lib/roleLabels";
 import {
   Search,
   Shield,
@@ -17,26 +19,8 @@ import {
   Award,
 } from "lucide-react";
 
-const BUILTIN_ROLE_KEYS: Record<string, string> = {
-  super_admin: "admin.roles.super_admin",
-  admin: "admin.roles.admin",
-  content_manager: "admin.roles.content_manager",
-  volunteer_coordinator: "admin.roles.volunteer_coordinator",
-  viewer: "admin.roles.viewer",
-  user: "admin.roles.user",
-};
-
-const roleColors: Record<string, string> = {
-  super_admin: "var(--accent-terracotta)",
-  admin: "var(--accent-amber)",
-  content_manager: "var(--accent-green)",
-  volunteer_coordinator: "var(--accent-blue)",
-  viewer: "var(--text-tertiary)",
-  user: "var(--text-tertiary)",
-};
-
 export function UsersTab() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -97,10 +81,8 @@ export function UsersTab() {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const getRoleLabel = (roleName: string) => {
-    if (BUILTIN_ROLE_KEYS[roleName]) return t(BUILTIN_ROLE_KEYS[roleName]);
-    return roles?.find((r) => r.name === roleName)?.labelEn ?? roleName;
-  };
+  const getRoleLabel = (roleName: string) =>
+    roleLabelByName(roleName, roles, lang, t);
 
   return (
     <div className="space-y-6">
@@ -173,7 +155,7 @@ export function UsersTab() {
                     className="text-sm font-medium"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {u.name || t("admin.users.unnamed")}
+                    {u.name || t("admin.users.unnamed_user")}
                   </p>
                   <p
                     className="text-xs"
@@ -209,7 +191,7 @@ export function UsersTab() {
               <span
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                 style={{
-                  background: `${roleColors[u.role] || "var(--text-tertiary)"}20`,
+                  background: `color-mix(in srgb, ${roleColors[u.role] || "var(--text-tertiary)"} 12%, transparent)`,
                   color: roleColors[u.role] || "var(--text-tertiary)",
                 }}
               >
@@ -245,7 +227,7 @@ export function UsersTab() {
               >
                 {u.lastSignInAt
                   ? new Date(u.lastSignInAt).toLocaleDateString()
-                  : t("admin.users.never")}
+                  : t("admin.shared.never")}
               </span>
             ),
           },
@@ -259,7 +241,7 @@ export function UsersTab() {
               >
                 {u.createdAt
                   ? new Date(u.createdAt).toLocaleDateString()
-                  : t("admin.users.unknown")}
+                  : t("admin.shared.unknown")}
               </span>
             ),
           },
@@ -612,7 +594,11 @@ export function UsersTab() {
                                   : "var(--text-secondary)",
                             }}
                           >
-                            {reg.status}
+                            {["registered", "attended", "cancelled"].includes(
+                              reg.status
+                            )
+                              ? t(`admin.shared.registration_status.${reg.status}`)
+                              : reg.status}
                           </span>
                         </div>
                       ))}

@@ -120,54 +120,54 @@ export function NeighborhoodsTab() {
     }
   };
 
-  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>Loading neighborhoods...</div>;
+  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>{t('admin.neighborhoods.loading')}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>Neighborhoods</h2>
+        <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>{t('admin.neighborhoods.title')}</h2>
         <button
           onClick={() => { setShowForm(!showForm); setEditingId(null); resetForm(); }}
           className="px-4 py-2 rounded-md text-sm font-medium transition-colors"
           style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
         >
-          {showForm ? 'Cancel' : 'Add Neighborhood'}
+          {showForm ? t('admin.shared.cancel') : t('admin.neighborhoods.add')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="space-y-4 mb-8 p-6 rounded-lg" style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}>
           <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-            {editingId ? 'Edit Neighborhood' : 'New Neighborhood'}
+            {editingId ? t('admin.neighborhoods.edit_title') : t('admin.neighborhoods.new_title')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input placeholder="Name (EN) *" value={formData.nameEn} onChange={e => setFormData({ ...formData, nameEn: e.target.value })} required className="admin-input" />
-            <input placeholder="Name (FR)" value={formData.nameFr} onChange={e => setFormData({ ...formData, nameFr: e.target.value })} className="admin-input" />
-            <input placeholder="Name (AR)" value={formData.nameAr} onChange={e => setFormData({ ...formData, nameAr: e.target.value })} className="admin-input" dir="rtl" />
+            <input placeholder={t('admin.neighborhoods.name_en')} value={formData.nameEn} onChange={e => setFormData({ ...formData, nameEn: e.target.value })} required className="admin-input" />
+            <input placeholder={t('admin.neighborhoods.name_fr')} value={formData.nameFr} onChange={e => setFormData({ ...formData, nameFr: e.target.value })} className="admin-input" />
+            <input placeholder={t('admin.neighborhoods.name_ar')} value={formData.nameAr} onChange={e => setFormData({ ...formData, nameAr: e.target.value })} className="admin-input" dir="rtl" />
           </div>
-          <input placeholder="Slug (e.g., hamria) *" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} required className="admin-input" />
+          <input placeholder={t('admin.neighborhoods.slug_label')} value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} required className="admin-input" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <textarea placeholder="Description (EN) *" value={formData.descriptionEn} onChange={e => setFormData({ ...formData, descriptionEn: e.target.value })} required rows={3} className="admin-input" />
-            <textarea placeholder="Description (FR)" value={formData.descriptionFr} onChange={e => setFormData({ ...formData, descriptionFr: e.target.value })} rows={3} className="admin-input" />
-            <textarea placeholder="Description (AR)" value={formData.descriptionAr} onChange={e => setFormData({ ...formData, descriptionAr: e.target.value })} rows={3} className="admin-input" dir="rtl" />
+            <textarea placeholder={t('admin.neighborhoods.description_en')} value={formData.descriptionEn} onChange={e => setFormData({ ...formData, descriptionEn: e.target.value })} required rows={3} className="admin-input" />
+            <textarea placeholder={t('admin.neighborhoods.description_fr')} value={formData.descriptionFr} onChange={e => setFormData({ ...formData, descriptionFr: e.target.value })} rows={3} className="admin-input" />
+            <textarea placeholder={t('admin.neighborhoods.description_ar')} value={formData.descriptionAr} onChange={e => setFormData({ ...formData, descriptionAr: e.target.value })} rows={3} className="admin-input" dir="rtl" />
           </div>
-          <ImageUpload value={formData.image} onChange={(url) => setFormData({ ...formData, image: url })} label="Neighborhood Image" />
+          <ImageUpload value={formData.image} onChange={(url) => setFormData({ ...formData, image: url })} label={t('admin.neighborhoods.image_label')} />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <input type="number" placeholder="Waste (kg)" value={formData.statsWasteKg} onChange={e => setFormData({ ...formData, statsWasteKg: e.target.value })} className="admin-input" />
-            <input type="number" placeholder="Trees" value={formData.statsTrees} onChange={e => setFormData({ ...formData, statsTrees: e.target.value })} className="admin-input" />
-            <input type="number" placeholder="Volunteers" value={formData.statsVolunteers} onChange={e => setFormData({ ...formData, statsVolunteers: e.target.value })} className="admin-input" />
-            <input type="number" placeholder="Campaigns" value={formData.statsCampaigns} onChange={e => setFormData({ ...formData, statsCampaigns: e.target.value })} className="admin-input" />
+            <input type="number" placeholder={t('admin.neighborhoods.stat_waste')} value={formData.statsWasteKg} onChange={e => setFormData({ ...formData, statsWasteKg: e.target.value })} className="admin-input" />
+            <input type="number" placeholder={t('admin.neighborhoods.stat_trees')} value={formData.statsTrees} onChange={e => setFormData({ ...formData, statsTrees: e.target.value })} className="admin-input" />
+            <input type="number" placeholder={t('admin.neighborhoods.stat_volunteers')} value={formData.statsVolunteers} onChange={e => setFormData({ ...formData, statsVolunteers: e.target.value })} className="admin-input" />
+            <input type="number" placeholder={t('admin.neighborhoods.stat_campaigns')} value={formData.statsCampaigns} onChange={e => setFormData({ ...formData, statsCampaigns: e.target.value })} className="admin-input" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input placeholder="Map Latitude" value={formData.mapX} onChange={e => setFormData({ ...formData, mapX: e.target.value })} className="admin-input" />
-            <input placeholder="Map Longitude" value={formData.mapY} onChange={e => setFormData({ ...formData, mapY: e.target.value })} className="admin-input" />
+            <input placeholder={t('admin.neighborhoods.map_lat')} value={formData.mapX} onChange={e => setFormData({ ...formData, mapX: e.target.value })} className="admin-input" />
+            <input placeholder={t('admin.neighborhoods.map_lng')} value={formData.mapY} onChange={e => setFormData({ ...formData, mapY: e.target.value })} className="admin-input" />
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }} disabled={createMutation.isPending || updateMutation.isPending}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => { setShowForm(false); setEditingId(null); resetForm(); }} className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -202,24 +202,24 @@ export function NeighborhoodsTab() {
                   background: n.isActive ? 'rgba(58,90,42,0.3)' : 'rgba(85,85,85,0.3)',
                   color: n.isActive ? 'var(--accent-green-light)' : 'var(--text-tertiary)',
                 }}
-                title="Toggle visibility"
+                title={t('admin.shared.toggle_visibility')}
               >
-                {n.isActive ? 'Active' : 'Hidden'}
+                {n.isActive ? t('admin.shared.active') : t('admin.shared.hidden')}
               </button>
-              <button onClick={() => handleEdit(n)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>Edit</button>
+              <button onClick={() => handleEdit(n)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.edit')}</button>
               <button
                 onClick={() => setDeleteModal({ open: true, id: n.id, name: n.nameEn })}
                 className="text-xs transition-colors hover:text-red-400"
                 style={{ color: 'var(--text-tertiary)' }}
               >
-                Delete
+                {t('admin.shared.delete')}
               </button>
             </div>
           </div>
         ))}
         {(!neighborhoods || neighborhoods.length === 0) && (
           <div className="text-center py-16 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            No neighborhoods yet. Click "Add Neighborhood" to create one.
+            {t('admin.neighborhoods.empty')}
           </div>
         )}
       </div>
@@ -231,8 +231,8 @@ export function NeighborhoodsTab() {
           if (deleteModal.id) deleteMutation.mutate({ id: deleteModal.id });
           setDeleteModal({ open: false, id: null, name: '' });
         }}
-        title="Delete Neighborhood"
-        description={`Are you sure you want to delete the neighborhood "${deleteModal.name}"? This action cannot be undone.`}
+        title={t('admin.neighborhoods.delete_title')}
+        description={t('admin.neighborhoods.delete_description').replace('{name}', deleteModal.name)}
         isPending={deleteMutation.isPending}
       />
     </div>

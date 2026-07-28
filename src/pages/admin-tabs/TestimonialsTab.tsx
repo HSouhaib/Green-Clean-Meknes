@@ -106,72 +106,72 @@ export function TestimonialsTab() {
     }
   }
 
-  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>Loading testimonials...</div>;
+  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>{t('admin.testimonials.loading')}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
-          Testimonials ({testimonials?.length ?? 0})
+          {t('admin.testimonials.title')} ({testimonials?.length ?? 0})
         </h2>
         <button
           onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
           className="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
           style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}
         >
-          + Add Testimonial
+          {t('admin.testimonials.add')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-8 p-6 rounded-lg space-y-4" style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-surface-light)' }}>
           <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-            {editingId ? 'Edit Testimonial' : 'New Testimonial'}
+            {editingId ? t('admin.testimonials.edit_title') : t('admin.testimonials.new_title')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Name (EN)</label>
-              <input className="admin-input" placeholder="Name (EN) *" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.name_en')}</label>
+              <input className="admin-input" placeholder={t('admin.testimonials.name_en')} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
             </div>
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Name (FR)</label>
-              <input className="admin-input" placeholder="Name (FR)" value={formData.nameFr} onChange={e => setFormData({ ...formData, nameFr: e.target.value })} />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.name_fr')}</label>
+              <input className="admin-input" placeholder={t('admin.testimonials.name_fr')} value={formData.nameFr} onChange={e => setFormData({ ...formData, nameFr: e.target.value })} />
             </div>
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Name (AR)</label>
-              <input className="admin-input" placeholder="Name (AR)" value={formData.nameAr} onChange={e => setFormData({ ...formData, nameAr: e.target.value })} dir="rtl" />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.name_ar')}</label>
+              <input className="admin-input" placeholder={t('admin.testimonials.name_ar')} value={formData.nameAr} onChange={e => setFormData({ ...formData, nameAr: e.target.value })} dir="rtl" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Role (EN)</label>
-              <input className="admin-input" placeholder="Role (EN) *" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} required />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.role_en')}</label>
+              <input className="admin-input" placeholder={t('admin.testimonials.role_en')} value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} required />
             </div>
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Role (FR)</label>
-              <input className="admin-input" placeholder="Role (FR)" value={formData.roleFr} onChange={e => setFormData({ ...formData, roleFr: e.target.value })} />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.role_fr')}</label>
+              <input className="admin-input" placeholder={t('admin.testimonials.role_fr')} value={formData.roleFr} onChange={e => setFormData({ ...formData, roleFr: e.target.value })} />
             </div>
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Role (AR)</label>
-              <input className="admin-input" placeholder="Role (AR)" value={formData.roleAr} onChange={e => setFormData({ ...formData, roleAr: e.target.value })} dir="rtl" />
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.role_ar')}</label>
+              <input className="admin-input" placeholder={t('admin.testimonials.role_ar')} value={formData.roleAr} onChange={e => setFormData({ ...formData, roleAr: e.target.value })} dir="rtl" />
             </div>
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Quote (EN)</label>
-            <textarea className="admin-input" placeholder="Quote (EN) *" rows={3} value={formData.quoteEn} onChange={e => setFormData({ ...formData, quoteEn: e.target.value })} required />
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.quote_en')}</label>
+            <textarea className="admin-input" placeholder={t('admin.testimonials.quote_en')} rows={3} value={formData.quoteEn} onChange={e => setFormData({ ...formData, quoteEn: e.target.value })} required />
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Quote (FR)</label>
-            <textarea className="admin-input" placeholder="Quote (FR)" rows={3} value={formData.quoteFr} onChange={e => setFormData({ ...formData, quoteFr: e.target.value })} />
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.quote_fr')}</label>
+            <textarea className="admin-input" placeholder={t('admin.testimonials.quote_fr')} rows={3} value={formData.quoteFr} onChange={e => setFormData({ ...formData, quoteFr: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Quote (AR)</label>
-            <textarea className="admin-input" placeholder="Quote (AR)" rows={3} value={formData.quoteAr} onChange={e => setFormData({ ...formData, quoteAr: e.target.value })} dir="rtl" />
+            <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.testimonials.quote_ar')}</label>
+            <textarea className="admin-input" placeholder={t('admin.testimonials.quote_ar')} rows={3} value={formData.quoteAr} onChange={e => setFormData({ ...formData, quoteAr: e.target.value })} dir="rtl" />
           </div>
           <ImageUpload value={formData.avatar} onChange={(url) => setFormData({ ...formData, avatar: url })} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>Sort Order</label>
+              <label className="text-xs font-mono uppercase tracking-wider block mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.sort_order')}</label>
               <input type="number" className="admin-input" placeholder="0" value={formData.sortOrder} onChange={e => setFormData({ ...formData, sortOrder: Number(e.target.value) })} />
             </div>
             <div className="flex items-center gap-2 pt-6">
@@ -182,15 +182,15 @@ export function TestimonialsTab() {
                 onChange={e => setFormData({ ...formData, isActive: e.target.checked })}
                 className="cursor-pointer"
               />
-              <label htmlFor="t-active" className="text-xs font-mono uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Active</label>
+              <label htmlFor="t-active" className="text-xs font-mono uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.active')}</label>
             </div>
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }} disabled={createMutation.isPending || updateMutation.isPending}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => { setShowForm(false); setEditingId(null); resetForm(); }} className="px-6 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -225,24 +225,24 @@ export function TestimonialsTab() {
                   background: tItem.isActive ? 'rgba(58,90,42,0.3)' : 'rgba(85,85,85,0.3)',
                   color: tItem.isActive ? 'var(--accent-green-light)' : 'var(--text-tertiary)',
                 }}
-                title="Toggle visibility"
+                title={t('admin.shared.toggle_visibility')}
               >
-                {tItem.isActive ? 'Active' : 'Hidden'}
+                {tItem.isActive ? t('admin.shared.active') : t('admin.shared.hidden')}
               </button>
-              <button onClick={() => handleEdit(tItem)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>Edit</button>
+              <button onClick={() => handleEdit(tItem)} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-tertiary)' }}>{t('admin.shared.edit')}</button>
               <button
                 onClick={() => setDeleteModal({ open: true, id: tItem.id, name: tItem.name })}
                 className="text-xs transition-colors hover:text-red-400"
                 style={{ color: 'var(--text-tertiary)' }}
               >
-                Delete
+                {t('admin.shared.delete')}
               </button>
             </div>
           </div>
         ))}
         {(!testimonials || testimonials.length === 0) && (
           <div className="text-center py-16 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            No testimonials yet. Click "Add Testimonial" to create one.
+            {t('admin.testimonials.empty')}
           </div>
         )}
       </div>
@@ -254,8 +254,8 @@ export function TestimonialsTab() {
           if (deleteModal.id) deleteMutation.mutate({ id: deleteModal.id });
           setDeleteModal({ open: false, id: null, name: '' });
         }}
-        title="Delete Testimonial"
-        description={`Are you sure you want to delete the testimonial from "${deleteModal.name}"? This action cannot be undone.`}
+        title={t('admin.testimonials.delete_title')}
+        description={t('admin.testimonials.delete_description').replace('{name}', deleteModal.name)}
         isPending={deleteMutation.isPending}
       />
     </div>

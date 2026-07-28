@@ -42,16 +42,16 @@ export function ContactsTab() {
     name: '',
   });
 
-  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>Loading contacts...</div>;
+  if (isLoading) return <div className="p-8" style={{ color: 'var(--text-secondary)' }}>{t('admin.contacts.loading')}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
-          Contact Submissions
+          {t('admin.contacts.title')}
           {unreadCount ? (
             <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-mono" style={{ background: 'var(--accent-green)', color: 'var(--bg-primary)' }}>
-              {unreadCount} unread
+              {t('admin.contacts.unread').replace('{count}', String(unreadCount))}
             </span>
           ) : null}
         </h2>
@@ -75,7 +75,7 @@ export function ContactsTab() {
                   <a href={`mailto:${contact.email}`} className="text-xs transition-colors hover:text-[var(--accent-green-light)]" style={{ color: 'var(--text-secondary)' }}>{contact.email}</a>
                   <span className="text-xs font-mono" style={{ color: 'var(--text-tertiary)' }}>{formatDate(contact.createdAt)}</span>
                   {!contact.isRead && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase" style={{ background: 'rgba(58,90,42,0.3)', color: 'var(--accent-green-light)' }}>New</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase" style={{ background: 'rgba(58,90,42,0.3)', color: 'var(--accent-green-light)' }}>{t('admin.contacts.new_badge')}</span>
                   )}
                 </div>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{contact.message}</p>
@@ -87,7 +87,7 @@ export function ContactsTab() {
                     className="px-3 py-1.5 rounded text-xs transition-colors"
                     style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}
                   >
-                    Mark Read
+                    {t('admin.contacts.mark_read')}
                   </button>
                 )}
                 {contact.isRead && !contact.isReplied && (
@@ -96,7 +96,7 @@ export function ContactsTab() {
                     className="px-3 py-1.5 rounded text-xs transition-colors"
                     style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}
                   >
-                    Mark Replied
+                    {t('admin.contacts.mark_replied')}
                   </button>
                 )}
                 <button
@@ -104,14 +104,14 @@ export function ContactsTab() {
                   className="px-3 py-1.5 rounded text-xs transition-colors hover:text-red-400"
                   style={{ background: 'var(--bg-surface-light)', color: 'var(--text-tertiary)' }}
                 >
-                  Delete
+                  {t('admin.shared.delete')}
                 </button>
               </div>
             </div>
           </div>
         ))}
         {contacts?.length === 0 && (
-          <div className="text-center py-16 text-sm" style={{ color: 'var(--text-tertiary)' }}>No contact submissions yet.</div>
+          <div className="text-center py-16 text-sm" style={{ color: 'var(--text-tertiary)' }}>{t('admin.contacts.empty')}</div>
         )}
       </div>
 
@@ -124,8 +124,8 @@ export function ContactsTab() {
             setDeleteModal({ open: false, id: null, name: '' });
           }
         }}
-        title="Delete Message"
-        description={`Are you sure you want to delete the message from "${deleteModal.name}"? This action cannot be undone.`}
+        title={t('admin.contacts.delete_title')}
+        description={t('admin.contacts.delete_description').replace('{name}', deleteModal.name)}
         isPending={deleteMutation.isPending}
       />
     </div>

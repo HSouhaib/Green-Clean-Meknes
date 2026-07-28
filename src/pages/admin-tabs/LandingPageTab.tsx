@@ -1,8 +1,8 @@
-// useState imported for future use
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { SortableList } from './shared/SortableList';
 import { useErrorModal } from '@/hooks/useErrorModal';
+import { useLanguage } from '@/hooks/useLanguage';
 import {
   Eye,
   EyeOff,
@@ -25,26 +25,27 @@ import {
   Rss,
 } from 'lucide-react';
 
-const SECTION_CONFIG: Record<string, { label: string; icon: React.ReactNode }> = {
-  hero: { label: 'Hero Banner', icon: <Home size={16} /> },
-  impact: { label: 'Impact Stats', icon: <BarChart3 size={16} /> },
-  about: { label: 'About Us', icon: <Info size={16} /> },
-  leaderboard: { label: 'Leaderboard', icon: <Trophy size={16} /> },
-  neighborhoods: { label: 'Neighborhoods', icon: <MapPin size={16} /> },
-  testimonials: { label: 'Testimonials', icon: <MessageSquare size={16} /> },
-  gallery: { label: 'Photo Gallery', icon: <Camera size={16} /> },
-  sponsors: { label: 'Sponsors', icon: <Handshake size={16} /> },
-  socialFeed: { label: 'Social Feed', icon: <Rss size={16} /> },
-  howToJoin: { label: 'How to Join', icon: <Users size={16} /> },
-  faq: { label: 'FAQ', icon: <HelpCircle size={16} /> },
-  campaigns: { label: 'Campaigns', icon: <Calendar size={16} /> },
-  contact: { label: 'Contact', icon: <Mail size={16} /> },
-  donation: { label: 'Donation', icon: <Heart size={16} /> },
-  airQuality: { label: 'Air Quality', icon: <Wind size={16} /> },
-  poll: { label: 'Poll', icon: <Vote size={16} /> },
+const SECTION_CONFIG: Record<string, { icon: React.ReactNode }> = {
+  hero: { icon: <Home size={16} /> },
+  impact: { icon: <BarChart3 size={16} /> },
+  about: { icon: <Info size={16} /> },
+  leaderboard: { icon: <Trophy size={16} /> },
+  neighborhoods: { icon: <MapPin size={16} /> },
+  testimonials: { icon: <MessageSquare size={16} /> },
+  gallery: { icon: <Camera size={16} /> },
+  sponsors: { icon: <Handshake size={16} /> },
+  socialFeed: { icon: <Rss size={16} /> },
+  howToJoin: { icon: <Users size={16} /> },
+  faq: { icon: <HelpCircle size={16} /> },
+  campaigns: { icon: <Calendar size={16} /> },
+  contact: { icon: <Mail size={16} /> },
+  donation: { icon: <Heart size={16} /> },
+  airQuality: { icon: <Wind size={16} /> },
+  poll: { icon: <Vote size={16} /> },
 };
 
 export function LandingPageTab() {
+  const { t } = useLanguage();
   const utils = trpc.useUtils();
   const { showError } = useErrorModal();
   const { data: visibilityData } = trpc.section.list.useQuery();
@@ -53,17 +54,17 @@ export function LandingPageTab() {
   const toggleMutation = trpc.section.toggle.useMutation({
     onSuccess: () => {
       utils.section.list.invalidate();
-      toast.success('Section visibility updated');
+      toast.success(t('toast.section_visibility_updated'));
     },
-    onError: () => showError('Failed to update visibility'),
+    onError: () => showError(t('toast.error_generic')),
   });
 
   const orderMutation = trpc.section.updateOrder.useMutation({
     onSuccess: () => {
       utils.section.getOrder.invalidate();
-      toast.success('Section order updated');
+      toast.success(t('toast.section_order_updated'));
     },
-    onError: () => showError('Failed to update order'),
+    onError: () => showError(t('toast.error_generic')),
   });
 
   // Merge visibility and order data
@@ -72,7 +73,7 @@ export function LandingPageTab() {
     const order = orderData?.find((o) => o.sectionKey === key);
     return {
       key,
-      label: config.label,
+      label: t(`admin.landing.section.${key}`),
       icon: config.icon,
       isVisible: visibility?.isVisible ?? true,
       sortOrder: order?.sortOrder ?? 0,
@@ -98,10 +99,10 @@ export function LandingPageTab() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-medium" style={{ color: 'var(--text-primary)' }}>
-            Landing Page Builder
+            {t('admin.landing.title')}
           </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Drag to reorder sections. Toggle visibility to show or hide sections on the landing page.
+            {t('admin.landing.description')}
           </p>
         </div>
       </div>
@@ -110,7 +111,7 @@ export function LandingPageTab() {
         {/* Section List */}
         <div>
           <h3 className="text-sm font-mono uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
-            Sections
+            {t('admin.landing.sections')}
           </h3>
           <div
             className="rounded-lg overflow-hidden"
@@ -144,7 +145,7 @@ export function LandingPageTab() {
                       {item.label}
                     </p>
                     <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                      Order: {index + 1}
+                      {t('admin.landing.order').replace('{index}', String(index + 1))}
                     </p>
                   </div>
                   <button
@@ -154,7 +155,7 @@ export function LandingPageTab() {
                       background: item.isVisible ? 'var(--accent-green)' : 'var(--bg-surface-light)',
                       color: item.isVisible ? 'white' : 'var(--text-tertiary)',
                     }}
-                    title={item.isVisible ? 'Hide section' : 'Show section'}
+                    title={item.isVisible ? t('admin.landing.hide_section') : t('admin.landing.show_section')}
                   >
                     {item.isVisible ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
@@ -167,7 +168,7 @@ export function LandingPageTab() {
         {/* Preview */}
         <div>
           <h3 className="text-sm font-mono uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
-            Preview
+            {t('admin.landing.preview')}
           </h3>
           <div
             className="rounded-lg p-4 space-y-2"
@@ -197,7 +198,7 @@ export function LandingPageTab() {
                 </span>
                 {!section.isVisible && (
                   <span className="text-xs ml-auto font-mono" style={{ color: 'var(--text-tertiary)' }}>
-                    Hidden
+                    {t('admin.landing.hidden')}
                   </span>
                 )}
               </div>

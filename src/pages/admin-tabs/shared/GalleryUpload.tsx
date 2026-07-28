@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import { X } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export function GalleryUpload({
   value,
   onChange,
-  label = "Campaign Gallery",
+  label,
   max = 10,
 }: {
   value: string[];
@@ -13,6 +15,7 @@ export function GalleryUpload({
   label?: string;
   max?: number;
 }) {
+  const { t } = useLanguage();
   const [uploading, setUploading] = useState(false);
   const [urlInput, setUrlInput] = useState("");
   const uploadMutation = trpc.contact.uploadImage.useMutation();
@@ -35,16 +38,20 @@ export function GalleryUpload({
 
     setUploading(true);
     try {
+      let current = [...value];
       for (const file of files) {
-        if (value.length >= max) break;
+        if (current.length >= max) break;
         const base64 = await readFileAsDataURL(file);
         const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
         const filename = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
         const result = await uploadMutation.mutateAsync({ data: base64, filename });
-        addImage(result.url);
+        if (!current.includes(result.url)) {
+          current = [...current, result.url];
+          onChange(current);
+        }
       }
     } catch (err) {
-      alert("Upload failed: " + (err as Error).message);
+      toast.error(t("admin.shared.upload_failed").replace("{message}", (err as Error).message));
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -62,7 +69,7 @@ export function GalleryUpload({
         className="block text-xs font-mono uppercase tracking-wider"
         style={{ color: "var(--text-tertiary)" }}
       >
-        {label} ({value.length}/{max})
+        {label ?? t("admin.shared.gallery_label")} ({value.length}/{max})
       </label>
 
       {value.length > 0 && (
@@ -79,7 +86,7 @@ export function GalleryUpload({
             >
               <img
                 src={url}
-                alt={`Gallery ${index + 1}`}
+                alt={t("admin.shared.gallery_alt").replace("{index}", String(index + 1))}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
@@ -88,7 +95,7 @@ export function GalleryUpload({
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full opacity-80 group-hover:opacity-100 transition-opacity"
                 style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}
-                aria-label="Remove image"
+                aria-label={t("admin.shared.remove_image")}
               >
                 <X size={12} />
               </button>
@@ -109,12 +116,12 @@ export function GalleryUpload({
         />
         {uploading && (
           <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
-            Uploading...
+            {t("admin.shared.uploading")}
           </span>
         )}
         <div className="flex gap-2">
           <input
-            placeholder="Or enter image URL and press Add"
+            placeholder={t("admin.shared.gallery_url_placeholder")}
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyDown={(e) => {
@@ -136,7 +143,7 @@ export function GalleryUpload({
               color: "var(--bg-primary)",
             }}
           >
-            Add
+            {t("admin.shared.add")}
           </button>
         </div>
       </div>

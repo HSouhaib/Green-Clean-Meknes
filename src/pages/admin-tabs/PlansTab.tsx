@@ -3,6 +3,7 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
 import { useLanguage } from '@/hooks/useLanguage';
+import { DeleteModal } from './shared';
 import type { Plan } from '@db/schema';
 import {
   Plus,
@@ -216,6 +217,8 @@ export function PlansTab() {
     onError: (err) => showError(err.message),
   });
 
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: number | null }>({ open: false, id: null });
+
   const addCommentMutation = trpc.plan.addComment.useMutation({
     onSuccess: () => {
       utils.plan.getById.invalidate();
@@ -275,7 +278,7 @@ export function PlansTab() {
 
   const hasAnyPlans = filteredPlans.length > 0;
 
-  const statusLabel = (status: (typeof STATUSES)[number]) => t(`planning.status_${status}` as const);
+  const statusLabel = (status: (typeof STATUSES)[number]) => t(`planning.${status}` as const);
   const priorityLabel = (priority: (typeof PRIORITIES)[number]) => t(`planning.priority_${priority}` as const);
   const categoryLabel = (category: string) => t(`planning.category_${category}` as const);
 
@@ -791,9 +794,7 @@ export function PlansTab() {
                   </button>
                 )}
                 <button
-                  onClick={() => {
-                    if (confirm(t('planning.delete_confirm'))) deleteMutation.mutate({ id: selectedPlan.id });
-                  }}
+                  onClick={() => setDeleteModal({ open: true, id: selectedPlan.id })}
                   className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-surface-light)]"
                   style={{ color: 'var(--accent-terracotta)' }}
                 >
@@ -984,6 +985,20 @@ export function PlansTab() {
           </div>
         </div>
       )}
+
+      <DeleteModal
+        open={deleteModal.open}
+        onClose={() => setDeleteModal({ open: false, id: null })}
+        onConfirm={() => {
+          if (deleteModal.id) {
+            deleteMutation.mutate({ id: deleteModal.id });
+            setDeleteModal({ open: false, id: null });
+          }
+        }}
+        title={t('admin.shared.delete')}
+        description={t('planning.delete_confirm')}
+        isPending={deleteMutation.isPending}
+      />
     </div>
   );
 }

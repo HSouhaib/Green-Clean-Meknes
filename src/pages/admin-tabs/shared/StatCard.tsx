@@ -50,7 +50,7 @@ export function StatCard({ title, value, trend, trendLabel, icon, color, onClick
         </div>
         <div
           className="flex items-center justify-center w-10 h-10 rounded-lg flex-shrink-0"
-          style={{ background: `${color}20`, color }}
+          style={{ background: `color-mix(in srgb, ${color} 12%, transparent)`, color }}
         >
           {icon}
         </div>

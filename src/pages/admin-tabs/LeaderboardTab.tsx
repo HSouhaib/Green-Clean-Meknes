@@ -3,24 +3,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useErrorModal } from '@/hooks/useErrorModal';
+import UserAvatar from '@/components/UserAvatar';
 import { Award, Search, Trophy, Users, Plus, Settings2 } from 'lucide-react';
-
-function Avatar({ src, name }: { src: string | null; name: string }) {
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        className="w-full h-full object-cover"
-      />
-    );
-  }
-  return (
-    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-      {name.charAt(0).toUpperCase()}
-    </span>
-  );
-}
 
 export function LeaderboardTab() {
   const { t } = useLanguage();
@@ -56,7 +40,7 @@ export function LeaderboardTab() {
     }
   }, [settings]);
 
-  const updateSettingMutation = trpc.settings.update.useMutation({
+  const updateSettingMutation = trpc.settings.updateMany.useMutation({
     onSuccess: () => {
       utils.settings.list.invalidate();
       toast.success(t('toast.settings_saved'));
@@ -80,16 +64,9 @@ export function LeaderboardTab() {
       return;
     }
     updateSettingMutation.mutate({
-      key: 'points_registration',
-      value: String(reg),
-    });
-    updateSettingMutation.mutate({
-      key: 'points_attendance',
-      value: String(att),
-    });
-    updateSettingMutation.mutate({
-      key: 'points_per_waste_kg',
-      value: String(waste),
+      points_registration: String(reg),
+      points_attendance: String(att),
+      points_per_waste_kg: String(waste),
     });
   };
 
@@ -378,7 +355,7 @@ export function LeaderboardTab() {
                 className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
                 style={{ background: 'var(--bg-surface-light)' }}
               >
-                <Avatar src={leader.avatar} name={leader.name} />
+                <UserAvatar src={leader.avatar} name={leader.name} className="w-full h-full" />
               </div>
               <div className="flex-1 min-w-0">
                 <p

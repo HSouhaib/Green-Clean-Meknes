@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { roleLabelByName } from '@/lib/roleLabels';
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { trpc } from '@/lib/trpc';
@@ -185,9 +186,7 @@ export default function Profile() {
                         color: "white",
                       }}
                     >
-                      {user.role === "admin" || user.role === "super_admin"
-                        ? t("login.role_admin")
-                        : t("login.role_volunteer")}
+                      {roleLabelByName(user.role, undefined, lang, t)}
                     </span>
                     <button
                       onClick={() => setUserBadgeOpen(true)}

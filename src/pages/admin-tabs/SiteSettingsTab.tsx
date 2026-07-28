@@ -37,8 +37,8 @@ export function SiteSettingsTab() {
     setHasChanges(true);
   };
 
-  const handleToggle = (key: string) => {
-    const current = formData[key] ?? settings?.[key] ?? "false";
+  const handleToggle = (key: string, defaultValue = "false") => {
+    const current = formData[key] ?? settings?.[key] ?? defaultValue;
     const next = current === "true" ? "false" : "true";
     setFormData(prev => ({ ...prev, [key]: next }));
     setHasChanges(true);
@@ -62,32 +62,48 @@ export function SiteSettingsTab() {
 
   const textGroups = [
     {
-      title: "Contact Information",
+      titleKey: 'admin.settings.section.contact_info',
       keys: ["contact_email", "contact_phone"],
-      labels: ["Email Address", "Phone Number"],
+      labelKeys: [
+        'admin.settings.label.contact_email',
+        'admin.settings.label.contact_phone',
+      ],
     },
     {
-      title: "Social Links",
+      titleKey: 'admin.settings.section.social_links',
       keys: ["social_whatsapp", "social_instagram", "social_facebook"],
-      labels: ["WhatsApp URL", "Instagram URL", "Facebook URL"],
+      labelKeys: [
+        'admin.settings.label.social_whatsapp',
+        'admin.settings.label.social_instagram',
+        'admin.settings.label.social_facebook',
+      ],
     },
     {
-      title: "Donation Text (English)",
+      titleKey: 'admin.settings.section.donation_en',
       keys: ["donation_title", "donation_description"],
-      labels: ["Title (EN)", "Description (EN)"],
+      labelKeys: [
+        'admin.settings.label.donation_title',
+        'admin.settings.label.donation_description',
+      ],
     },
     {
-      title: "Donation Text (French)",
+      titleKey: 'admin.settings.section.donation_fr',
       keys: ["donation_title_fr", "donation_description_fr"],
-      labels: ["Title (FR)", "Description (FR)"],
+      labelKeys: [
+        'admin.settings.label.donation_title_fr',
+        'admin.settings.label.donation_description_fr',
+      ],
     },
     {
-      title: "Donation Text (Arabic)",
+      titleKey: 'admin.settings.section.donation_ar',
       keys: ["donation_title_ar", "donation_description_ar"],
-      labels: ["Title (AR)", "Description (AR)"],
+      labelKeys: [
+        'admin.settings.label.donation_title_ar',
+        'admin.settings.label.donation_description_ar',
+      ],
     },
     {
-      title: "Donation Banking",
+      titleKey: 'admin.settings.section.donation_banking',
       keys: [
         "donation_bank_name",
         "donation_rib",
@@ -97,42 +113,55 @@ export function SiteSettingsTab() {
         "donation_paypal",
         "donation_qr_image",
       ],
-      labels: [
-        "Bank Name",
-        "RIB",
-        "IBAN",
-        "SWIFT/BIC",
-        "Account Holder",
-        "PayPal URL",
-        "QR Image URL",
+      labelKeys: [
+        'admin.settings.label.donation_bank_name',
+        'admin.settings.label.donation_rib',
+        'admin.settings.label.donation_iban',
+        'admin.settings.label.donation_swift',
+        'admin.settings.label.donation_account_holder',
+        'admin.settings.label.donation_paypal',
+        'admin.settings.label.donation_qr_image',
       ],
     },
     {
-      title: "Footer Text (English)",
+      titleKey: 'admin.settings.section.footer_en',
       keys: ["footer_tagline", "footer_copyright"],
-      labels: ["Tagline (EN)", "Copyright (EN)"],
+      labelKeys: [
+        'admin.settings.label.footer_tagline',
+        'admin.settings.label.footer_copyright',
+      ],
     },
     {
-      title: "Footer Text (French)",
+      titleKey: 'admin.settings.section.footer_fr',
       keys: ["footer_tagline_fr", "footer_copyright_fr"],
-      labels: ["Tagline (FR)", "Copyright (FR)"],
+      labelKeys: [
+        'admin.settings.label.footer_tagline_fr',
+        'admin.settings.label.footer_copyright_fr',
+      ],
     },
     {
-      title: "Footer Text (Arabic)",
+      titleKey: 'admin.settings.section.footer_ar',
       keys: ["footer_tagline_ar", "footer_copyright_ar"],
-      labels: ["Tagline (AR)", "Copyright (AR)"],
+      labelKeys: [
+        'admin.settings.label.footer_tagline_ar',
+        'admin.settings.label.footer_copyright_ar',
+      ],
     },
   ];
 
   const toggleGroups = [
     {
-      title: "Social Visibility",
+      titleKey: 'admin.settings.section.social_visibility',
       keys: [
         "social_show_whatsapp",
         "social_show_instagram",
         "social_show_facebook",
       ],
-      labels: ["Show WhatsApp", "Show Instagram", "Show Facebook"],
+      labelKeys: [
+        'admin.settings.label.social_show_whatsapp',
+        'admin.settings.label.social_show_instagram',
+        'admin.settings.label.social_show_facebook',
+      ],
     },
   ];
 
@@ -140,31 +169,31 @@ export function SiteSettingsTab() {
   const statOverrides = [
     {
       key: "stat_override_campaigns",
-      label: "Campaigns",
+      labelKey: 'admin.settings.stat_campaigns',
       autoValue: stats?.campaigns ?? 0,
       isOverridden: stats?._meta?.campaignsOverridden ?? false,
     },
     {
       key: "stat_override_volunteers",
-      label: "Volunteers",
+      labelKey: 'admin.settings.stat_volunteers',
       autoValue: stats?.volunteers ?? 0,
       isOverridden: stats?._meta?.volunteersOverridden ?? false,
     },
     {
       key: "stat_override_neighborhoods",
-      label: "Neighborhoods",
+      labelKey: 'admin.settings.stat_neighborhoods',
       autoValue: stats?.neighborhoods ?? 0,
       isOverridden: stats?._meta?.neighborhoodsOverridden ?? false,
     },
     {
       key: "stat_waste_kg",
-      label: "Waste Collected (kg)",
+      labelKey: 'admin.settings.stat_waste_kg',
       autoValue: null, // always manual
       isOverridden: false,
     },
     {
       key: "stat_trees",
-      label: "Trees Planted",
+      labelKey: 'admin.settings.stat_trees',
       autoValue: null, // always manual
       isOverridden: false,
     },
@@ -173,7 +202,7 @@ export function SiteSettingsTab() {
   if (isLoading)
     return (
       <div className="p-8" style={{ color: "var(--text-secondary)" }}>
-        Loading settings...
+        {t('admin.settings.loading')}
       </div>
     );
 
@@ -184,7 +213,7 @@ export function SiteSettingsTab() {
           className="text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
-          Site Settings
+          {t('admin.settings.title')}
         </h2>
         {hasChanges && (
           <button
@@ -196,7 +225,9 @@ export function SiteSettingsTab() {
               color: "var(--bg-primary)",
             }}
           >
-            {updateMutation.isPending ? "Saving..." : "Save Changes"}
+            {updateMutation.isPending
+              ? t('admin.shared.saving')
+              : t('admin.settings.save_changes')}
           </button>
         )}
       </div>
@@ -208,15 +239,13 @@ export function SiteSettingsTab() {
             className="text-sm font-mono uppercase tracking-wider mb-4"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Dashboard Stats (Impact Section)
+            {t('admin.settings.stats_title')}
           </h3>
           <p
             className="text-xs mb-4"
             style={{ color: "var(--text-secondary)" }}
           >
-            Leave override fields empty to use auto-calculated values from
-            per-campaign totals. Enter a number to override the displayed value.
-            These overrides are never overwritten by campaign updates.
+            {t('admin.settings.stats_description')}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {statOverrides.map(stat => (
@@ -233,14 +262,14 @@ export function SiteSettingsTab() {
                     className="text-xs font-mono uppercase tracking-wider"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    {stat.label}
+                    {t(stat.labelKey)}
                   </label>
                   {stat.autoValue !== null && (
                     <span
                       className="text-xs"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      Auto: {stat.autoValue}
+                      {t('admin.settings.auto_prefix').replace("{value}", String(stat.autoValue))}
                     </span>
                   )}
                 </div>
@@ -249,8 +278,8 @@ export function SiteSettingsTab() {
                     type="number"
                     placeholder={
                       stat.autoValue !== null
-                        ? `Override (auto: ${stat.autoValue})`
-                        : "Enter value"
+                        ? t('admin.settings.override_placeholder_auto').replace("{value}", String(stat.autoValue))
+                        : t('admin.settings.override_placeholder_manual')
                     }
                     value={formData[stat.key] ?? settings?.[stat.key] ?? ""}
                     onChange={e => handleChange(stat.key, e.target.value)}
@@ -265,9 +294,9 @@ export function SiteSettingsTab() {
                         background: "var(--bg-surface-light)",
                         color: "var(--text-tertiary)",
                       }}
-                      title="Clear override, use auto-calculated"
+                      title={t('admin.settings.clear_override_title')}
                     >
-                      Clear
+                      {t('admin.shared.clear')}
                     </button>
                   )}
                 </div>
@@ -276,7 +305,7 @@ export function SiteSettingsTab() {
                     className="text-xs mt-1 block"
                     style={{ color: "var(--accent-terracotta)" }}
                   >
-                    Overriding auto-calculated value
+                    {t('admin.settings.overridden_note')}
                   </span>
                 )}
               </div>
@@ -286,12 +315,12 @@ export function SiteSettingsTab() {
 
         {/* Text input groups */}
         {textGroups.map(group => (
-          <div key={group.title}>
+          <div key={group.titleKey}>
             <h3
               className="text-sm font-mono uppercase tracking-wider mb-4"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {group.title}
+              {t(group.titleKey)}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {group.keys.map((key, i) => (
@@ -300,7 +329,7 @@ export function SiteSettingsTab() {
                     className="text-xs font-mono uppercase tracking-wider block mb-2"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    {group.labels[i]}
+                    {t(group.labelKeys[i])}
                   </label>
                   <input
                     value={formData[key] ?? settings?.[key] ?? ""}
@@ -319,7 +348,7 @@ export function SiteSettingsTab() {
             className="text-sm font-mono uppercase tracking-wider mb-4"
             style={{ color: "var(--text-tertiary)" }}
           >
-            Maintenance Mode
+            {t('admin.settings.section.maintenance')}
           </h3>
           <div
             className="flex items-center justify-between p-4 rounded-lg mb-4"
@@ -333,14 +362,13 @@ export function SiteSettingsTab() {
                 className="text-sm font-medium block"
                 style={{ color: "var(--text-primary)" }}
               >
-                Enable maintenance mode
+                {t('admin.settings.maintenance_enable')}
               </span>
               <span
                 className="text-xs"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Blocks public pages with a non-dismissible modal. Admins can
-                still access the dashboard.
+                {t('admin.settings.maintenance_description')}
               </span>
             </div>
             <button
@@ -374,7 +402,7 @@ export function SiteSettingsTab() {
               className="text-xs font-mono uppercase tracking-wider block mb-2"
               style={{ color: "var(--text-tertiary)" }}
             >
-              Maintenance message
+              {t('admin.settings.maintenance_message_label')}
             </label>
             <textarea
               value={
@@ -385,7 +413,7 @@ export function SiteSettingsTab() {
               onChange={e =>
                 handleChange("maintenance_message", e.target.value)
               }
-              placeholder="We are currently performing security updates. Please check back soon."
+              placeholder={t('admin.settings.maintenance_placeholder')}
               rows={3}
               className="admin-input"
             />
@@ -394,12 +422,12 @@ export function SiteSettingsTab() {
 
         {/* Toggle groups */}
         {toggleGroups.map(group => (
-          <div key={group.title}>
+          <div key={group.titleKey}>
             <h3
               className="text-sm font-mono uppercase tracking-wider mb-4"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {group.title}
+              {t(group.titleKey)}
             </h3>
             <div className="space-y-3">
               {group.keys.map((key, i) => {
@@ -418,10 +446,10 @@ export function SiteSettingsTab() {
                       className="text-sm font-medium"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      {group.labels[i]}
+                      {t(group.labelKeys[i])}
                     </span>
                     <button
-                      onClick={() => handleToggle(key)}
+                      onClick={() => handleToggle(key, "true")}
                       className="relative w-12 h-6 rounded-full transition-colors duration-200"
                       style={{
                         background: isOn

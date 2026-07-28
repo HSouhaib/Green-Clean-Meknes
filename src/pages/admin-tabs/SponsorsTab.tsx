@@ -121,19 +121,19 @@ export function SponsorsTab() {
   };
 
   if (isLoading) {
-    return <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading sponsors...</div>;
+    return <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.loading')}</div>;
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-display text-xl" style={{ color: 'var(--text-primary)' }}>Sponsors & Partners</h2>
+        <h2 className="font-display text-xl" style={{ color: 'var(--text-primary)' }}>{t('admin.sponsors.title')}</h2>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
           className="px-4 py-2 rounded-lg text-sm font-medium border-none cursor-pointer transition-colors"
           style={{ background: 'var(--accent-green)', color: '#fff' }}
         >
-          {showForm ? 'Cancel' : 'Add Sponsor'}
+          {showForm ? t('admin.shared.cancel') : t('admin.sponsors.add')}
         </button>
       </div>
 
@@ -142,67 +142,66 @@ export function SponsorsTab() {
         <form onSubmit={handleSubmit} className="mb-8 p-4 rounded-xl space-y-4" style={{ background: 'var(--bg-surface)' }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Name (default) *</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.name_default')}</label>
               <input className="admin-input" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} required />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Type</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.type_label')}</label>
               <select className="admin-input" value={formData.sponsorType} onChange={e => setFormData(p => ({ ...p, sponsorType: e.target.value as typeof SPONSOR_TYPES[number] }))}>
-                {SPONSOR_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                {SPONSOR_TYPES.map(type => <option key={type} value={type}>{t(`admin.sponsors.type_${type}`)}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Name (English)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.name_en')}</label>
               <input className="admin-input" value={formData.nameEn} onChange={e => setFormData(p => ({ ...p, nameEn: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Name (Français)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.name_fr')}</label>
               <input className="admin-input" value={formData.nameFr} onChange={e => setFormData(p => ({ ...p, nameFr: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Name (العربية)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.name_ar')}</label>
               <input className="admin-input" dir="rtl" value={formData.nameAr} onChange={e => setFormData(p => ({ ...p, nameAr: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Website URL</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.website_url')}</label>
               <input className="admin-input" type="url" value={formData.websiteUrl} onChange={e => setFormData(p => ({ ...p, websiteUrl: e.target.value }))} placeholder="https://..." />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Sort Order</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.shared.sort_order')}</label>
               <input className="admin-input" type="number" value={formData.sortOrder} onChange={e => setFormData(p => ({ ...p, sortOrder: e.target.value }))} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Logo *</label>
             <ImageUpload
               value={formData.logoUrl}
               onChange={handleImageUpload}
-              label="Logo"
+              label={t('admin.sponsors.logo_label')}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Description (EN)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.description_en')}</label>
               <textarea className="admin-input" rows={2} value={formData.descriptionEn} onChange={e => setFormData(p => ({ ...p, descriptionEn: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Description (FR)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.description_fr')}</label>
               <textarea className="admin-input" rows={2} value={formData.descriptionFr} onChange={e => setFormData(p => ({ ...p, descriptionFr: e.target.value }))} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Description (AR)</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('admin.sponsors.description_ar')}</label>
               <textarea className="admin-input" rows={2} dir="rtl" value={formData.descriptionAr} onChange={e => setFormData(p => ({ ...p, descriptionAr: e.target.value }))} />
             </div>
           </div>
 
           <div className="flex gap-2">
             <button type="submit" className="px-4 py-2 rounded-lg text-sm font-medium border-none cursor-pointer" style={{ background: 'var(--accent-green)', color: '#fff' }}>
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? t('admin.shared.update') : t('admin.shared.create')}
             </button>
             <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="px-4 py-2 rounded-lg text-sm border-none cursor-pointer" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-              Cancel
+              {t('admin.shared.cancel')}
             </button>
           </div>
         </form>
@@ -230,23 +229,23 @@ export function SponsorsTab() {
                   )}
                 </div>
                 <span className="text-xs px-1.5 py-0.5 rounded-full inline-block mt-1" style={{ background: 'var(--accent-green-muted)', color: 'var(--accent-green)' }}>
-                  {sponsor.sponsorType}
+                  {t(`admin.sponsors.type_${sponsor.sponsorType}`)}
                 </span>
                 <p className="text-xs mt-1 truncate" style={{ color: 'var(--text-tertiary)' }}>
-                  Order: {sponsor.sortOrder} {sponsor.descriptionEn && `· ${sponsor.descriptionEn}`}
+                  {t('admin.sponsors.order').replace('{order}', String(sponsor.sortOrder))} {sponsor.descriptionEn && `· ${sponsor.descriptionEn}`}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-auto pt-2" style={{ borderTop: '1px solid var(--bg-surface-light)' }}>
               <button onClick={() => handleEdit(sponsor)} className="px-3 py-1.5 rounded-md text-xs font-medium border-none cursor-pointer transition-colors" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
-                Edit
+                {t('admin.shared.edit')}
               </button>
               <button onClick={() => setDeleteModal({ open: true, id: sponsor.id })} className="px-3 py-1.5 rounded-md text-xs font-medium border-none cursor-pointer transition-colors" style={{ background: 'var(--bg-surface-light)', color: '#ef4444' }}>
-                Delete
+                {t('admin.shared.delete')}
               </button>
               <button onClick={() => toggleMutation.mutate({ id: sponsor.id })} className="px-3 py-1.5 rounded-md text-xs font-medium border-none cursor-pointer transition-colors flex items-center gap-1 ml-auto" style={{ background: 'var(--bg-surface-light)', color: 'var(--text-secondary)' }}>
                 {sponsor.isActive ? <EyeOff size={12} /> : <Eye size={12} />}
-                {sponsor.isActive ? 'Hide' : 'Show'}
+                {sponsor.isActive ? t('admin.shared.hide') : t('admin.shared.show')}
               </button>
             </div>
           </div>
@@ -255,7 +254,7 @@ export function SponsorsTab() {
 
       {sponsors?.length === 0 && (
         <div className="text-center py-12 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-          No sponsors yet. Add your first sponsor above.
+          {t('admin.sponsors.empty')}
         </div>
       )}
 
@@ -263,8 +262,8 @@ export function SponsorsTab() {
         open={deleteModal.open}
         onClose={() => setDeleteModal({ open: false, id: null })}
         onConfirm={() => deleteModal.id && deleteMutation.mutate({ id: deleteModal.id })}
-        title="Delete Sponsor"
-        description="Are you sure you want to delete this sponsor? This action cannot be undone."
+        title={t('admin.sponsors.delete_title')}
+        description={t('admin.sponsors.delete_description')}
         isPending={deleteMutation.isPending}
       />
     </div>

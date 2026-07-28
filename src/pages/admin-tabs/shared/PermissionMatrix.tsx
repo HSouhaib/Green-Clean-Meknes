@@ -1,5 +1,6 @@
+import { useLanguage } from '@/hooks/useLanguage';
+
 interface PermissionMatrixProps {
-  
   selected: string[];
   onChange: (selected: string[]) => void;
 }
@@ -17,6 +18,8 @@ const PERMISSION_CATEGORIES: Record<string, string[]> = {
 };
 
 export function PermissionMatrix({ selected, onChange }: PermissionMatrixProps) {
+  const { t } = useLanguage();
+
   const togglePermission = (perm: string) => {
     if (selected.includes(perm)) {
       onChange(selected.filter((p) => p !== perm));
@@ -57,7 +60,7 @@ export function PermissionMatrix({ selected, onChange }: PermissionMatrixProps) 
                 borderColor: 'var(--bg-surface-light)',
                 background: isCategorySelected(categoryPerms) ? 'var(--accent-green)' : 'transparent',
               }}
-              aria-label={`Toggle ${category}`}
+              aria-label={t('admin.shared.toggle').replace('{name}', t(`admin.shared.permission_category.${category.toLowerCase()}`))}
             >
               {isCategorySelected(categoryPerms) && (
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ color: 'white' }}>
@@ -69,13 +72,12 @@ export function PermissionMatrix({ selected, onChange }: PermissionMatrixProps) 
               )}
             </button>
             <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-              {category}
+              {t(`admin.shared.permission_category.${category.toLowerCase()}`)}
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-8">
             {categoryPerms.map((perm) => {
               const isChecked = selected.includes(perm);
-              const label = perm.split('.')[1].replace(/_/g, ' ');
               return (
                 <label
                   key={perm}
@@ -92,7 +94,7 @@ export function PermissionMatrix({ selected, onChange }: PermissionMatrixProps) 
                     style={{ accentColor: 'var(--accent-green)' }}
                   />
                   <span className="text-sm capitalize truncate" style={{ color: 'var(--text-secondary)' }}>
-                    {label}
+                    {t(`admin.shared.permission.${perm}`)}
                   </span>
                 </label>
               );
