@@ -35,8 +35,8 @@ export const env = {
   googleClientId: optional("GOOGLE_CLIENT_ID"),
   googleClientSecret: optional("GOOGLE_CLIENT_SECRET"),
 
-  // Kimi OAuth (legacy/optional)
-  appId: optional("KIMI_APP_ID"),
-  kimiAuthUrl: optional("KIMI_AUTH_URL"),
-  kimiOpenUrl: optional("KIMI_OPEN_URL"),
+  // GreenMeknes OAuth (legacy/optional)
+  appId: optional("GREENMEKNES_APP_ID"),
+  greenmeknesAuthUrl: optional("GREENMEKNES_AUTH_URL"),
+  greenmeknesOpenUrl: optional("GREENMEKNES_OPEN_URL"),
 };

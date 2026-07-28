@@ -3,7 +3,7 @@ import { Session } from "@contracts/constants";
 import { getSessionCookieOptions } from "./lib/cookies";
 import { z } from "zod";
 import { createRouter, publicQuery, authedQuery } from "./middleware";
-import { signSessionToken, verifySessionToken, verifyTwoFactorPendingToken } from "./kimi/session";
+import { signSessionToken, verifySessionToken, verifyTwoFactorPendingToken } from "./greenmeknes/session";
 import { env } from "./lib/env";
 import { findUserByUnionId, upsertUser } from "./queries/users";
 import {
@@ -83,7 +83,7 @@ export const authRouter = createRouter({
     ];
   }),
 
-  // Dev-only: bypass Kimi OAuth for local testing (Admin)
+  // Dev-only: bypass OAuth for local testing (Admin)
   devLogin: publicQuery.mutation(async ({ ctx }) => {
     if (env.isProduction || !env.allowDevLogin) {
       throw new Error("Dev login is not available");

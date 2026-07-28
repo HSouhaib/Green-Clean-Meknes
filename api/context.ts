@@ -1,7 +1,7 @@
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import type { User } from "@db/schema";
 import * as cookie from "cookie";
-import { authenticateRequest } from "./kimi/auth";
+import { authenticateRequest } from "./greenmeknes/auth";
 
 export type TrpcContext = {
   req: Request;

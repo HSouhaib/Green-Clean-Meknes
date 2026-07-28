@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import { setCookie, getCookie } from "hono/cookie";
 import { getSessionCookieOptions } from "../lib/cookies";
 import { Session } from "@contracts/constants";
-import { signSessionToken, signTwoFactorPendingToken } from "../kimi/session";
+import { signSessionToken, signTwoFactorPendingToken } from "../greenmeknes/session";
 import { findUserByUnionId, upsertUser } from "../queries/users";
 import { getOAuthProviders, type OAuthProvider } from "./providers";
 

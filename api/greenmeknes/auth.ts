@@ -7,7 +7,7 @@ import { getSessionCookieOptions } from "../lib/cookies";
 import { Session } from "@contracts/constants";
 import { Errors } from "@contracts/errors";
 import { signSessionToken, verifySessionToken } from "./session";
-import { users as kimiUsers } from "./platform";
+import { users as greenmeknesUsers } from "./platform";
 import { findUserByUnionId, upsertUser } from "../queries/users";
 import type { TokenResponse } from "./types";
 import type { User } from "@db/schema";
@@ -24,7 +24,7 @@ async function exchangeAuthCode(
     client_secret: env.appSecret,
   });
 
-  const resp = await fetch(`${env.kimiAuthUrl}/api/oauth/token`, {
+  const resp = await fetch(`${env.greenmeknesAuthUrl}/api/oauth/token`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: body.toString(),
@@ -39,9 +39,9 @@ async function exchangeAuthCode(
 }
 
 const getJwks = () => {
-  const url = `${env.kimiAuthUrl}/api/.well-known/jwks.json`;
-  if (!env.kimiAuthUrl) {
-    throw new Error("KIMI_AUTH_URL is not configured");
+  const url = `${env.greenmeknesAuthUrl}/api/.well-known/jwks.json`;
+  if (!env.greenmeknesAuthUrl) {
+    throw new Error("GREENMEKNES_AUTH_URL is not configured");
   }
   return jose.createRemoteJWKSet(new URL(url));
 };
@@ -118,9 +118,9 @@ export function createOAuthCallbackHandler() {
       const redirectUri = atob(state);
       const tokenResp = await exchangeAuthCode(code, redirectUri);
       const { userId } = await verifyAccessToken(tokenResp.access_token);
-      const userProfile = await kimiUsers.getProfile(tokenResp.access_token);
+      const userProfile = await greenmeknesUsers.getProfile(tokenResp.access_token);
       if (!userProfile) {
-        throw new Error("Failed to fetch user profile from Kimi Open");
+        throw new Error("Failed to fetch user profile from GreenMeknes Open");
       }
 
       await upsertUser({

@@ -10,7 +10,7 @@ import { setTestDb, clearTestDb } from "./queries/connection";
 import { authRouter } from "./auth-router";
 import { userRouter } from "./user-router";
 import { settingsRouter } from "./settings-router";
-import { signTwoFactorPendingToken } from "./kimi/session";
+import { signTwoFactorPendingToken } from "./greenmeknes/session";
 import { encryptSecret, generateSecret } from "./lib/totp";
 import * as OTPAuth from "otpauth";
 import { Session } from "@contracts/constants";
