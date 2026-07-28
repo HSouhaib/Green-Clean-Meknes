@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLanguage } from '@/hooks/useLanguage';
-import { trpc } from '@/lib/trpc';
+import { useLanguage } from "@/hooks/useLanguage";
+import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Shield, KeyRound } from "lucide-react";
 import {
@@ -17,24 +17,27 @@ export default function TwoFactorVerifyModal({
   onVerified,
 }: TwoFactorVerifyModalProps) {
   const { t } = useLanguage();
+  const utils = trpc.useUtils();
   const [mode, setMode] = useState<"totp" | "backup">("totp");
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Refresh all cached queries (auth.me in particular) before navigating away,
+  // otherwise the SPA keeps showing the logged-out state until a hard reload.
+  const handleVerified = async () => {
+    await utils.invalidate();
+    toast.success(t("two_factor.success_verified"));
+    onVerified();
+  };
+
   const verifyTotpMutation = trpc.auth.verifyTwoFactor.useMutation({
-    onSuccess: () => {
-      toast.success(t("two_factor.success_verified"));
-      onVerified();
-    },
+    onSuccess: handleVerified,
     onError: err =>
       toast.error(err.message || t("two_factor.error_verify_failed")),
   });
 
   const verifyBackupMutation = trpc.auth.verifyTwoFactorBackup.useMutation({
-    onSuccess: () => {
-      toast.success(t("two_factor.success_verified"));
-      onVerified();
-    },
+    onSuccess: handleVerified,
     onError: err =>
       toast.error(err.message || t("two_factor.error_verify_failed")),
   });
