@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from '@/hooks/useLanguage';
 import { trpc } from '@/lib/trpc';
 import { toast } from "sonner";
 import { useErrorModal } from "@/hooks/useErrorModal";
@@ -16,7 +17,26 @@ import {
   Award,
 } from "lucide-react";
 
+const BUILTIN_ROLE_KEYS: Record<string, string> = {
+  super_admin: "admin.roles.super_admin",
+  admin: "admin.roles.admin",
+  content_manager: "admin.roles.content_manager",
+  volunteer_coordinator: "admin.roles.volunteer_coordinator",
+  viewer: "admin.roles.viewer",
+  user: "admin.roles.user",
+};
+
+const roleColors: Record<string, string> = {
+  super_admin: "var(--accent-terracotta)",
+  admin: "var(--accent-amber)",
+  content_manager: "var(--accent-green)",
+  volunteer_coordinator: "var(--accent-blue)",
+  viewer: "var(--text-tertiary)",
+  user: "var(--text-tertiary)",
+};
+
 export function UsersTab() {
+  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -44,7 +64,7 @@ export function UsersTab() {
     onSuccess: () => {
       utils.user.list.invalidate();
       utils.user.getById.invalidate();
-      toast.success("Role updated");
+      toast.success(t("toast.role_updated"));
     },
     onError: err => showError(err.message),
   });
@@ -52,47 +72,34 @@ export function UsersTab() {
   const toggleStatusMutation = trpc.user.toggleStatus.useMutation({
     onSuccess: () => {
       utils.user.list.invalidate();
-      toast.success("User status updated");
+      toast.success(t("toast.user_status_updated"));
     },
-    onError: () => showError("Failed to update status"),
+    onError: () => showError(t("toast.failed_update_status")),
   });
 
   const deleteMutation = trpc.user.delete.useMutation({
     onSuccess: () => {
       utils.user.list.invalidate();
       setSelectedUserId(null);
-      toast.success("User deleted");
+      toast.success(t("toast.user_deleted"));
     },
-    onError: () => showError("Failed to delete user"),
+    onError: () => showError(t("toast.failed_delete_user")),
   });
 
   const resetTwoFactorMutation = trpc.user.resetTwoFactor.useMutation({
     onSuccess: () => {
       utils.user.list.invalidate();
       utils.user.getById.invalidate();
-      toast.success("Two-factor authentication reset");
+      toast.success(t("toast.two_factor_reset"));
     },
-    onError: () => showError("Failed to reset two-factor authentication"),
+    onError: () => showError(t("toast.failed_reset_2fa")),
   });
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const roleColors: Record<string, string> = {
-    super_admin: "var(--accent-terracotta)",
-    admin: "var(--accent-amber)",
-    content_manager: "var(--accent-green)",
-    volunteer_coordinator: "var(--accent-blue)",
-    viewer: "var(--text-tertiary)",
-    user: "var(--text-tertiary)",
-  };
-
-  const roleLabels: Record<string, string> = {
-    super_admin: "Super Admin",
-    admin: "Admin",
-    content_manager: "Content Manager",
-    volunteer_coordinator: "Volunteer Coordinator",
-    viewer: "Viewer",
-    user: "User",
+  const getRoleLabel = (roleName: string) => {
+    if (BUILTIN_ROLE_KEYS[roleName]) return t(BUILTIN_ROLE_KEYS[roleName]);
+    return roles?.find((r) => r.name === roleName)?.labelEn ?? roleName;
   };
 
   return (
@@ -102,10 +109,10 @@ export function UsersTab() {
           className="text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
-          Users
+          {t("admin.users.title")}
         </h2>
         <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          {userList?.total ?? 0} total users
+          {userList?.total ?? 0} {t("admin.users.total_users")}
         </span>
       </div>
 
@@ -119,7 +126,7 @@ export function UsersTab() {
           />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t("admin.users.search_placeholder")}
             value={search}
             onChange={e => {
               setSearch(e.target.value);
@@ -136,10 +143,10 @@ export function UsersTab() {
           }}
           className="admin-input w-full sm:w-40"
         >
-          <option value="">All Roles</option>
+          <option value="">{t("admin.users.all_roles")}</option>
           {roles?.map(role => (
             <option key={role.name} value={role.name}>
-              {role.labelEn}
+              {getRoleLabel(role.name)}
             </option>
           ))}
         </select>
@@ -153,7 +160,7 @@ export function UsersTab() {
         columns={[
           {
             key: "name",
-            header: "User",
+            header: t("admin.users.user_column"),
             render: u => (
               <div className="flex items-center gap-3">
                 <UserAvatar
@@ -166,13 +173,13 @@ export function UsersTab() {
                     className="text-sm font-medium"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {u.name || "Unnamed"}
+                    {u.name || t("admin.users.unnamed")}
                   </p>
                   <p
                     className="text-xs"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    {u.email || "No email"}
+                    {u.email || t("admin.users.no_email")}
                   </p>
                 </div>
               </div>
@@ -180,7 +187,7 @@ export function UsersTab() {
           },
           {
             key: "twoFactorEnabled",
-            header: "2FA",
+            header: t("admin.users.two_fa_column"),
             render: u => (
               <span
                 className="inline-flex items-center gap-1 text-xs"
@@ -191,13 +198,13 @@ export function UsersTab() {
                 }}
               >
                 <Shield size={12} />
-                {u.twoFactorEnabled ? "Enabled" : "Disabled"}
+                {u.twoFactorEnabled ? t("admin.users.enabled") : t("admin.users.disabled")}
               </span>
             ),
           },
           {
             key: "role",
-            header: "Role",
+            header: t("admin.users.role_column"),
             render: u => (
               <span
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
@@ -207,13 +214,13 @@ export function UsersTab() {
                 }}
               >
                 <Shield size={10} />
-                {roleLabels[u.role] || u.role}
+                {getRoleLabel(u.role)}
               </span>
             ),
           },
           {
             key: "isActive",
-            header: "Status",
+            header: t("admin.users.status_column"),
             render: u => (
               <span
                 className="inline-flex items-center gap-1 text-xs"
@@ -224,13 +231,13 @@ export function UsersTab() {
                 }}
               >
                 {u.isActive ? <UserCheck size={12} /> : <UserX size={12} />}
-                {u.isActive ? "Active" : "Inactive"}
+                {u.isActive ? t("admin.users.active") : t("admin.users.inactive")}
               </span>
             ),
           },
           {
             key: "lastSignInAt",
-            header: "Last Sign In",
+            header: t("admin.users.last_sign_in_column"),
             render: u => (
               <span
                 className="text-xs"
@@ -238,13 +245,13 @@ export function UsersTab() {
               >
                 {u.lastSignInAt
                   ? new Date(u.lastSignInAt).toLocaleDateString()
-                  : "Never"}
+                  : t("admin.users.never")}
               </span>
             ),
           },
           {
             key: "createdAt",
-            header: "Joined",
+            header: t("admin.users.joined_column"),
             render: u => (
               <span
                 className="text-xs"
@@ -252,7 +259,7 @@ export function UsersTab() {
               >
                 {u.createdAt
                   ? new Date(u.createdAt).toLocaleDateString()
-                  : "Unknown"}
+                  : t("admin.users.unknown")}
               </span>
             ),
           },
@@ -271,10 +278,10 @@ export function UsersTab() {
               color: "var(--text-primary)",
             }}
           >
-            Previous
+            {t("admin.users.previous")}
           </button>
           <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
-            Page {page} of {userList.totalPages}
+            {t("admin.users.page")} {page} {t("admin.users.of")} {userList.totalPages}
           </span>
           <button
             onClick={() => setPage(p => Math.min(userList.totalPages, p + 1))}
@@ -285,7 +292,7 @@ export function UsersTab() {
               color: "var(--text-primary)",
             }}
           >
-            Next
+            {t("admin.users.next")}
           </button>
         </div>
       )}
@@ -314,7 +321,7 @@ export function UsersTab() {
                 className="text-lg font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
-                User Details
+                {t("admin.users.user_details")}
               </h3>
               <button
                 onClick={() => setSelectedUserId(null)}
@@ -338,7 +345,7 @@ export function UsersTab() {
                     className="font-medium"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {selectedUser.name || "Unnamed User"}
+                    {selectedUser.name || t("admin.users.unnamed_user")}
                   </p>
                   <p
                     className="text-sm"
@@ -359,7 +366,7 @@ export function UsersTab() {
                           color: "var(--accent-green)",
                         }}
                       >
-                        Local
+                        {t("admin.users.local")}
                       </span>
                     )}
                   </p>
@@ -381,7 +388,7 @@ export function UsersTab() {
                       className="text-xs"
                       style={{ color: "var(--text-tertiary)" }}
                     >
-                      Registrations
+                      {t("admin.users.registrations")}
                     </span>
                   </div>
                   <p
@@ -404,7 +411,7 @@ export function UsersTab() {
                       className="text-xs"
                       style={{ color: "var(--text-tertiary)" }}
                     >
-                      Attended
+                      {t("admin.users.attended")}
                     </span>
                   </div>
                   <p
@@ -422,7 +429,7 @@ export function UsersTab() {
                   className="text-xs font-mono uppercase tracking-wider block mb-2"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  Role
+                  {t("admin.users.role_label")}
                 </label>
                 <div className="flex gap-2">
                   <select
@@ -438,7 +445,7 @@ export function UsersTab() {
                   >
                     {roles?.map(role => (
                       <option key={role.name} value={role.name}>
-                        {role.labelEn}
+                        {getRoleLabel(role.name)}
                       </option>
                     ))}
                   </select>
@@ -454,7 +461,7 @@ export function UsersTab() {
                   className="text-sm"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  Account Status
+                  {t("admin.users.account_status")}
                 </span>
                 <button
                   onClick={() =>
@@ -501,7 +508,7 @@ export function UsersTab() {
                     className="text-sm"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    Two-Factor Authentication
+                    {t("admin.users.two_factor_auth")}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -513,7 +520,7 @@ export function UsersTab() {
                         : "var(--text-tertiary)",
                     }}
                   >
-                    {selectedUser.twoFactorEnabled ? "Enabled" : "Disabled"}
+                    {selectedUser.twoFactorEnabled ? t("admin.users.enabled") : t("admin.users.disabled")}
                   </span>
                   {selectedUser.twoFactorEnabled && (
                     <button
@@ -527,7 +534,7 @@ export function UsersTab() {
                         color: "#ef4444",
                       }}
                     >
-                      Reset
+                      {t("admin.users.reset")}
                     </button>
                   )}
                 </div>
@@ -545,7 +552,7 @@ export function UsersTab() {
                   className="text-sm"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  Delete Account
+                  {t("admin.users.delete_account")}
                 </span>
                 <button
                   onClick={() => setDeleteModalOpen(true)}
@@ -557,7 +564,7 @@ export function UsersTab() {
                   }}
                 >
                   <Trash2 size={14} />
-                  Delete
+                  {t("admin.shared.delete")}
                 </button>
               </div>
 
@@ -569,7 +576,7 @@ export function UsersTab() {
                       className="text-xs font-mono uppercase tracking-wider block mb-2"
                       style={{ color: "var(--text-tertiary)" }}
                     >
-                      Campaign History
+                      {t("admin.users.campaign_history")}
                     </label>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {selectedUser.registrations.map(reg => (
@@ -626,8 +633,8 @@ export function UsersTab() {
             deleteMutation.mutate({ id: selectedUser.id });
             setDeleteModalOpen(false);
           }}
-          title="Delete User"
-          description={`Are you sure you want to permanently delete ${selectedUser.name || "this user"}? This action cannot be undone.`}
+          title={t("admin.users.delete_user_title")}
+          description={t("admin.users.delete_user_description")}
           isPending={deleteMutation.isPending}
         />
       )}

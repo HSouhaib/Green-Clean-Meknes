@@ -287,7 +287,7 @@ export function CampaignsTab() {
   if (isLoading)
     return (
       <div className="p-8" style={{ color: "var(--text-secondary)" }}>
-        Loading campaigns...
+        {t("admin.campaigns.loading")}
       </div>
     );
 
@@ -298,7 +298,7 @@ export function CampaignsTab() {
           className="text-xl font-medium"
           style={{ color: "var(--text-primary)" }}
         >
-          Campaigns
+          {t("admin.campaigns.title")}
         </h2>
         <button
           onClick={() => {
@@ -312,7 +312,7 @@ export function CampaignsTab() {
             color: "var(--bg-primary)",
           }}
         >
-          + Add Campaign
+          {t("admin.campaigns.add")}
         </button>
       </div>
 
@@ -330,11 +330,11 @@ export function CampaignsTab() {
             className="text-lg font-medium mb-4"
             style={{ color: "var(--text-primary)" }}
           >
-            {editingId ? "Edit Campaign" : "New Campaign"}
+            {editingId ? t("admin.campaigns.edit_title") : t("admin.campaigns.new_title")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
-              placeholder="Title (EN) *"
+              placeholder={t("admin.campaigns.title_en_placeholder")}
               value={formData.titleEn}
               onChange={e =>
                 setFormData({ ...formData, titleEn: e.target.value })
@@ -343,7 +343,7 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <input
-              placeholder="Title (FR)"
+              placeholder={t("admin.campaigns.title_fr_placeholder")}
               value={formData.titleFr}
               onChange={e =>
                 setFormData({ ...formData, titleFr: e.target.value })
@@ -351,7 +351,7 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <input
-              placeholder="Title (AR)"
+              placeholder={t("admin.campaigns.title_ar_placeholder")}
               value={formData.titleAr}
               onChange={e =>
                 setFormData({ ...formData, titleAr: e.target.value })
@@ -361,7 +361,7 @@ export function CampaignsTab() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
-              placeholder="Location (EN) *"
+              placeholder={t("admin.campaigns.location_en_placeholder")}
               value={formData.locationEn}
               onChange={e =>
                 setFormData({ ...formData, locationEn: e.target.value })
@@ -370,7 +370,7 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <input
-              placeholder="Location (FR)"
+              placeholder={t("admin.campaigns.location_fr_placeholder")}
               value={formData.locationFr}
               onChange={e =>
                 setFormData({ ...formData, locationFr: e.target.value })
@@ -378,7 +378,7 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <input
-              placeholder="Location (AR)"
+              placeholder={t("admin.campaigns.location_ar_placeholder")}
               value={formData.locationAr}
               onChange={e =>
                 setFormData({ ...formData, locationAr: e.target.value })
@@ -388,7 +388,7 @@ export function CampaignsTab() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <textarea
-              placeholder="Description (EN) *"
+              placeholder={t("admin.campaigns.description_en_placeholder")}
               value={formData.descriptionEn}
               onChange={e =>
                 setFormData({ ...formData, descriptionEn: e.target.value })
@@ -398,7 +398,7 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <textarea
-              placeholder="Description (FR)"
+              placeholder={t("admin.campaigns.description_fr_placeholder")}
               value={formData.descriptionFr}
               onChange={e =>
                 setFormData({ ...formData, descriptionFr: e.target.value })
@@ -407,7 +407,7 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <textarea
-              placeholder="Description (AR)"
+              placeholder={t("admin.campaigns.description_ar_placeholder")}
               value={formData.descriptionAr}
               onChange={e =>
                 setFormData({ ...formData, descriptionAr: e.target.value })
@@ -418,7 +418,7 @@ export function CampaignsTab() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
-              placeholder="Date (e.g., 12 July 2026) *"
+              placeholder={t("admin.campaigns.date_placeholder")}
               value={formData.date}
               onChange={e => setFormData({ ...formData, date: e.target.value })}
               required
@@ -426,7 +426,7 @@ export function CampaignsTab() {
             />
             <input
               type="time"
-              placeholder="Start time (HH:MM)"
+              placeholder={t("admin.campaigns.time_placeholder")}
               value={formData.eventTime}
               onChange={e =>
                 setFormData({ ...formData, eventTime: e.target.value })
@@ -434,14 +434,14 @@ export function CampaignsTab() {
               className="admin-input"
             />
             <input
-              placeholder="Slug (e.g., bab-mansour-cleanup) *"
+              placeholder={t("admin.campaigns.slug_placeholder")}
               value={formData.slug}
               onChange={e => setFormData({ ...formData, slug: e.target.value })}
               required
               className="admin-input"
             />
             <input
-              placeholder="Filter Tags (e.g., all,community,outdoor)"
+              placeholder={t("admin.campaigns.filter_tags_placeholder")}
               value={formData.filterTags}
               onChange={e =>
                 setFormData({ ...formData, filterTags: e.target.value })
@@ -452,7 +452,7 @@ export function CampaignsTab() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <input
-                placeholder="Map Latitude (e.g., 33.8933)"
+                placeholder={t("admin.campaigns.map_lat_placeholder")}
                 value={formData.mapX}
                 onChange={e =>
                   setFormData({ ...formData, mapX: e.target.value })
@@ -467,12 +467,12 @@ export function CampaignsTab() {
                   className="text-xs mt-1 inline-block"
                   style={{ color: "var(--accent-green-light)" }}
                 >
-                  Preview on Google Maps →
+                  {t("admin.campaigns.map_preview")}
                 </a>
               )}
             </div>
             <input
-              placeholder="Map Longitude (e.g., -5.5582)"
+              placeholder={t("admin.campaigns.map_lng_placeholder")}
               value={formData.mapY}
               onChange={e => setFormData({ ...formData, mapY: e.target.value })}
               className="admin-input"
@@ -619,7 +619,7 @@ export function CampaignsTab() {
           <GalleryUpload
             value={formData.galleryImages}
             onChange={urls => setFormData({ ...formData, galleryImages: urls })}
-            label="Campaign Images"
+            label={t("admin.campaigns.gallery_label")}
           />
           <div className="flex gap-3 pt-2">
             <button
@@ -630,7 +630,7 @@ export function CampaignsTab() {
                 color: "var(--bg-primary)",
               }}
             >
-              {editingId ? "Update" : "Create"}
+              {editingId ? t("admin.shared.update") : t("admin.shared.create")}
             </button>
             <button
               type="button"
@@ -641,7 +641,7 @@ export function CampaignsTab() {
                 color: "var(--text-secondary)",
               }}
             >
-              Cancel
+              {t("admin.shared.cancel")}
             </button>
           </div>
         </form>
@@ -659,37 +659,37 @@ export function CampaignsTab() {
                 className="text-left py-3 px-2 font-mono text-xs uppercase tracking-wider"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Title
+                {t("admin.campaigns.header.title")}
               </th>
               <th
                 className="text-left py-3 px-2 font-mono text-xs uppercase tracking-wider"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Date
+                {t("admin.campaigns.header.date")}
               </th>
               <th
                 className="text-left py-3 px-2 font-mono text-xs uppercase tracking-wider"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Location
+                {t("admin.campaigns.header.location")}
               </th>
               <th
                 className="text-center py-3 px-2 font-mono text-xs uppercase tracking-wider"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Status
+                {t("admin.campaigns.header.status")}
               </th>
               <th
                 className="text-center py-3 px-2 font-mono text-xs uppercase tracking-wider"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Visible
+                {t("admin.campaigns.header.visible")}
               </th>
               <th
                 className="text-right py-3 px-2 font-mono text-xs uppercase tracking-wider"
                 style={{ color: "var(--text-tertiary)" }}
               >
-                Actions
+                {t("admin.campaigns.header.actions")}
               </th>
             </tr>
           </thead>
@@ -746,7 +746,7 @@ export function CampaignsTab() {
                         : "var(--text-tertiary)",
                     }}
                   >
-                    {campaign.isActive ? "Active" : "Inactive"}
+                    {campaign.isActive ? t("admin.shared.active") : t("admin.shared.inactive")}
                   </button>
                 </td>
                 <td className="py-3 px-2 text-right">
@@ -761,14 +761,14 @@ export function CampaignsTab() {
                     className="mr-3 text-xs transition-colors hover:text-[var(--accent-green-light)]"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    View
+                    {t("admin.shared.view")}
                   </button>
                   <button
                     onClick={() => handleEdit(campaign)}
                     className="mr-3 text-xs transition-colors hover:text-[var(--accent-green-light)]"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    Edit
+                    {t("admin.shared.edit")}
                   </button>
                   <button
                     onClick={() =>
@@ -781,7 +781,7 @@ export function CampaignsTab() {
                     className="text-xs transition-colors hover:text-red-400"
                     style={{ color: "var(--text-tertiary)" }}
                   >
-                    Delete
+                    {t("admin.shared.delete")}
                   </button>
                 </td>
               </tr>
@@ -799,8 +799,8 @@ export function CampaignsTab() {
             setDeleteModal({ open: false, id: null, name: "" });
           }
         }}
-        title="Delete Campaign"
-        description={`Are you sure you want to delete "${deleteModal.name}"? This action cannot be undone.`}
+        title={t("admin.campaigns.delete_title")}
+        description={t("admin.campaigns.delete_description").replace("{name}", deleteModal.name)}
         isPending={deleteMutation.isPending}
       />
 
@@ -832,7 +832,7 @@ export function CampaignsTab() {
                   className="text-lg font-medium"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  Registrations
+                  {t("admin.campaigns.registrations_title")}
                 </h3>
                 <p
                   className="text-xs mt-0.5"
@@ -868,7 +868,7 @@ export function CampaignsTab() {
                   className="py-8 text-center text-sm"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  Loading registrations...
+                  {t("admin.campaigns.loading_registrations")}
                 </div>
               ) : !registrations || registrations.length === 0 ? (
                 <div className="py-8 text-center">
@@ -881,7 +881,7 @@ export function CampaignsTab() {
                     className="text-sm"
                     style={{ color: "var(--text-secondary)" }}
                   >
-                    No registrations yet.
+                    {t("admin.campaigns.no_registrations")}
                   </p>
                 </div>
               ) : (
@@ -896,31 +896,31 @@ export function CampaignsTab() {
                         className="text-left py-2 px-2 font-mono text-xs uppercase tracking-wider"
                         style={{ color: "var(--text-tertiary)" }}
                       >
-                        Volunteer
+                        {t("admin.campaigns.reg_header.volunteer")}
                       </th>
                       <th
                         className="text-left py-2 px-2 font-mono text-xs uppercase tracking-wider"
                         style={{ color: "var(--text-tertiary)" }}
                       >
-                        Email
+                        {t("admin.campaigns.reg_header.email")}
                       </th>
                       <th
                         className="text-left py-2 px-2 font-mono text-xs uppercase tracking-wider"
                         style={{ color: "var(--text-tertiary)" }}
                       >
-                        Status
+                        {t("admin.campaigns.reg_header.status")}
                       </th>
                       <th
                         className="text-left py-2 px-2 font-mono text-xs uppercase tracking-wider"
                         style={{ color: "var(--text-tertiary)" }}
                       >
-                        Registered
+                        {t("admin.campaigns.reg_header.registered")}
                       </th>
                       <th
                         className="text-right py-2 px-2 font-mono text-xs uppercase tracking-wider"
                         style={{ color: "var(--text-tertiary)" }}
                       >
-                        Actions
+                        {t("admin.campaigns.reg_header.actions")}
                       </th>
                     </tr>
                   </thead>
@@ -953,14 +953,14 @@ export function CampaignsTab() {
                             />
                             <div className="flex flex-col">
                               <span className="text-sm">
-                                {reg.user?.name ?? reg.guestName ?? "Unknown"}
+                                {reg.user?.name ?? reg.guestName ?? t("admin.shared.unknown")}
                               </span>
                               {!reg.user && reg.userId && (
                                 <span
                                   className="text-[10px] font-medium"
                                   style={{ color: "#ef4444" }}
                                 >
-                                  Deleted User
+                                  {t("admin.campaigns.deleted_user")}
                                 </span>
                               )}
                               {!reg.user && !reg.userId && reg.guestName && (
@@ -968,7 +968,7 @@ export function CampaignsTab() {
                                   className="text-[10px] font-medium"
                                   style={{ color: "var(--text-tertiary)" }}
                                 >
-                                  Guest
+                                  {t("admin.shared.guest")}
                                 </span>
                               )}
                             </div>

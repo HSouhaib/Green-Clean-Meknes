@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface DataTableProps<T> {
   data: T[];
@@ -13,6 +14,7 @@ interface DataTableProps<T> {
 }
 
 export function DataTable<T>({ data, columns, keyExtractor, onRowClick }: DataTableProps<T>) {
+  const { t } = useLanguage();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
@@ -86,7 +88,7 @@ export function DataTable<T>({ data, columns, keyExtractor, onRowClick }: DataTa
                 className="px-4 py-8 text-center text-sm"
                 style={{ color: 'var(--text-tertiary)' }}
               >
-                No data available
+                {t('admin.shared.no_data')}
               </td>
             </tr>
           )}
