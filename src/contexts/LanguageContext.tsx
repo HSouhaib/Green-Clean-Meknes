@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import { LanguageContext, type Lang } from "@/contexts/language-context";
 
@@ -249,8 +245,10 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.sign_in_title": "Welcome back",
     "login.sign_up_title": "Create your account",
     "login.sign_in_subtitle": "Sign in to continue making Meknes cleaner.",
-    "login.sign_up_subtitle": "Join the movement for a cleaner, greener Meknes.",
-    "login.sign_up_note": "One account works for both volunteers and admins. Signing up is free and takes a second.",
+    "login.sign_up_subtitle":
+      "Join the movement for a cleaner, greener Meknes.",
+    "login.sign_up_note":
+      "One account works for both volunteers and admins. Signing up is free and takes a second.",
 
     "volunteer.form_title": "Become a Volunteer",
     "volunteer.form_subtitle":
@@ -485,7 +483,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "neighborhoods.campaigns_label": "Campaigns",
     "neighborhoods.close": "Close",
     "neighborhoods.view_campaigns": "View campaigns",
-    "neighborhoods.view_campaigns_sub": "{count} campaigns in this neighborhood",
+    "neighborhoods.view_campaigns_sub":
+      "{count} campaigns in this neighborhood",
     "campaigns.neighborhood_label": "Neighborhood",
     "campaigns.no_neighborhood": "None",
     "campaigns.all_neighborhoods": "All neighborhoods",
@@ -555,7 +554,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "planning.completed": "Completed",
     "planning.cancelled": "Cancelled",
     "planning.no_plans_title": "No plans yet",
-    "planning.no_plans_body": "Create your first plan to start tracking tasks and team progress.",
+    "planning.no_plans_body":
+      "Create your first plan to start tracking tasks and team progress.",
     "planning.no_backlog_plans": "No backlog plans",
     "planning.no_planned_plans": "No planned plans",
     "planning.no_in_progress_plans": "No in progress plans",
@@ -611,6 +611,25 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.dashboard.no_activity": "No recent activity",
     "admin.dashboard.just_now": "Just now",
     "admin.dashboard.unknown": "Unknown",
+    "admin.dashboard.filter_all": "All",
+    "admin.dashboard.filter_campaigns": "Campaigns",
+    "admin.dashboard.filter_volunteers": "Volunteers",
+    "admin.dashboard.filter_users": "Users",
+    "admin.dashboard.filter_plans": "Plans",
+    "admin.dashboard.filter_content": "Content",
+    "admin.dashboard.today": "Today",
+    "admin.dashboard.yesterday": "Yesterday",
+    "admin.dashboard.load_more": "Load more",
+    "admin.dashboard.loading": "Loading…",
+    "admin.dashboard.col_role": "Role",
+    "admin.dashboard.col_action": "Action",
+    "admin.dashboard.col_description": "Description",
+    "admin.dashboard.col_time": "Time",
+    "admin.dashboard.system": "System",
+    "admin.dashboard.search_placeholder": "Search user, role, action…",
+    "admin.dashboard.date_from": "From",
+    "admin.dashboard.date_to": "To",
+    "admin.dashboard.clear_filters": "Clear",
 
     "toast.role_updated": "Role updated",
     "toast.user_status_updated": "User status updated",
@@ -664,9 +683,15 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.activity.sponsor.updated": "updated sponsor",
     "admin.activity.sponsor.deleted": "deleted sponsor",
     "admin.activity.leaderboard.award_points": "awarded points",
-    "admin.activity.user.two_factor_reset": "reset user two-factor authentication",
+    "admin.activity.user.two_factor_reset":
+      "reset user two-factor authentication",
     "admin.activity.user.deleted": "deleted user",
     "admin.activity.volunteer.deleted": "deleted volunteer registration",
+    "admin.activity.volunteer.approved": "approved volunteer registration",
+    "admin.activity.volunteer.rejected": "rejected volunteer registration",
+    "admin.activity.socialFeed.created": "added social feed post",
+    "admin.activity.socialFeed.updated": "updated social feed post",
+    "admin.activity.socialFeed.deleted": "deleted social feed post",
 
     "admin.tabs.dashboard": "Dashboard",
     "admin.tabs.landing": "Landing Page",
@@ -723,7 +748,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.landing.section.poll": "Poll",
 
     "leaderboard.heading": "Top Volunteers",
-    "leaderboard.subheading": "Celebrating the people making Meknes cleaner, one campaign at a time.",
+    "leaderboard.subheading":
+      "Celebrating the people making Meknes cleaner, one campaign at a time.",
     "leaderboard.rank": "Rank",
     "leaderboard.points": "points",
     "leaderboard.participants": "participants",
@@ -743,8 +769,6 @@ const translations: Record<Lang, Record<string, string>> = {
     "user_badge.subtitle": "Scan to check in at your campaign",
     "user_badge.select_campaign": "Select a campaign",
     "user_badge.no_campaigns": "Register for a campaign to get your badge.",
-    "user_badge.print": "Print Badge",
-    "user_badge.download_pdf": "Download PDF",
 
     "admin.leaderboard.title": "Leaderboard",
     "admin.leaderboard.award_points": "Award points",
@@ -754,13 +778,15 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.leaderboard.award": "Award",
     "admin.leaderboard.search": "Search leaderboard...",
     "admin.leaderboard.points_system": "Points system",
-    "admin.leaderboard.points_system_help": "Set how many points volunteers earn automatically when they register for a campaign, when their attendance is confirmed, and for every kilogram of waste recorded for them in the presence check.",
+    "admin.leaderboard.points_system_help":
+      "Set how many points volunteers earn automatically when they register for a campaign, when their attendance is confirmed, and for every kilogram of waste recorded for them in the presence check.",
     "admin.leaderboard.points_registration": "Points per registration",
     "admin.leaderboard.points_attendance": "Points per attendance",
     "admin.leaderboard.points_per_waste_kg": "Points per waste kg",
     "admin.leaderboard.save_points": "Save point values",
     "admin.leaderboard.saving": "Saving...",
-    "admin.leaderboard.invalid_points": "Point values must be non-negative numbers.",
+    "admin.leaderboard.invalid_points":
+      "Point values must be non-negative numbers.",
 
     "admin.shared.active": "Active",
     "admin.shared.inactive": "Inactive",
@@ -856,7 +882,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.date_placeholder": "Date (e.g., 12 July 2026) *",
     "admin.campaigns.time_placeholder": "Start time (HH:MM)",
     "admin.campaigns.slug_placeholder": "Slug (e.g., bab-mansour-cleanup) *",
-    "admin.campaigns.filter_tags_placeholder": "Filter Tags (e.g., all,community,outdoor)",
+    "admin.campaigns.filter_tags_placeholder":
+      "Filter Tags (e.g., all,community,outdoor)",
     "admin.campaigns.map_lat_placeholder": "Map Latitude (e.g., 33.8933)",
     "admin.campaigns.map_lng_placeholder": "Map Longitude (e.g., -5.5582)",
     "admin.campaigns.map_preview": "Preview on Google Maps →",
@@ -868,7 +895,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.header.visible": "Visible",
     "admin.campaigns.header.actions": "Actions",
     "admin.campaigns.delete_title": "Delete Campaign",
-    "admin.campaigns.delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+    "admin.campaigns.delete_description":
+      'Are you sure you want to delete "{name}"? This action cannot be undone.',
     "admin.campaigns.registrations_title": "Registrations",
     "admin.campaigns.loading_registrations": "Loading registrations...",
     "admin.campaigns.no_registrations": "No registrations yet.",
@@ -880,7 +908,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.deleted_user": "Deleted User",
     "admin.campaigns.remove_registration": "Remove registration",
     "admin.campaigns.remove_registration_title": "Remove Registration",
-    "admin.campaigns.remove_registration_description": "Are you sure you want to remove {name}'s registration? This action cannot be undone.",
+    "admin.campaigns.remove_registration_description":
+      "Are you sure you want to remove {name}'s registration? This action cannot be undone.",
     "admin.campaigns.volunteer_one": "volunteer",
     "admin.campaigns.volunteer_other": "volunteers",
 
@@ -915,7 +944,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.users.two_factor_auth": "Two-Factor Authentication",
     "admin.users.reset": "Reset",
     "admin.users.delete_user_title": "Delete User",
-    "admin.users.delete_user_description": "Are you sure you want to permanently delete this user? This action cannot be undone.",
+    "admin.users.delete_user_description":
+      "Are you sure you want to permanently delete this user? This action cannot be undone.",
 
     "admin.shared.hide": "Hide",
     "admin.shared.show": "Show",
@@ -934,9 +964,10 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.faqs.answer_en": "Answer (EN) *",
     "admin.faqs.answer_fr": "Answer (FR)",
     "admin.faqs.answer_ar": "Answer (AR)",
-    "admin.faqs.empty": "No FAQs yet. Click \"Add FAQ\" to create one.",
+    "admin.faqs.empty": 'No FAQs yet. Click "Add FAQ" to create one.',
     "admin.faqs.delete_title": "Delete FAQ",
-    "admin.faqs.delete_description": "Are you sure you want to delete the FAQ \"{name}\"? This action cannot be undone.",
+    "admin.faqs.delete_description":
+      'Are you sure you want to delete the FAQ "{name}"? This action cannot be undone.',
 
     "admin.polls.loading": "Loading polls...",
     "admin.polls.title": "Polls",
@@ -954,9 +985,10 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.polls.option_ar_placeholder": "Option AR {index}",
     "admin.polls.votes": "votes",
     "admin.polls.toggle_active": "Toggle active",
-    "admin.polls.empty": "No polls yet. Click \"Add Poll\" to create one.",
+    "admin.polls.empty": 'No polls yet. Click "Add Poll" to create one.',
     "admin.polls.delete_title": "Delete Poll",
-    "admin.polls.delete_description": "Are you sure you want to delete the poll \"{name}\"? This action cannot be undone.",
+    "admin.polls.delete_description":
+      'Are you sure you want to delete the poll "{name}"? This action cannot be undone.',
 
     "admin.testimonials.loading": "Loading testimonials...",
     "admin.testimonials.title": "Testimonials",
@@ -972,9 +1004,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.testimonials.quote_en": "Quote (EN) *",
     "admin.testimonials.quote_fr": "Quote (FR)",
     "admin.testimonials.quote_ar": "Quote (AR)",
-    "admin.testimonials.empty": "No testimonials yet. Click \"Add Testimonial\" to create one.",
+    "admin.testimonials.empty":
+      'No testimonials yet. Click "Add Testimonial" to create one.',
     "admin.testimonials.delete_title": "Delete Testimonial",
-    "admin.testimonials.delete_description": "Are you sure you want to delete the testimonial from {name}? This action cannot be undone.",
+    "admin.testimonials.delete_description":
+      "Are you sure you want to delete the testimonial from {name}? This action cannot be undone.",
 
     "admin.sponsors.loading": "Loading sponsors...",
     "admin.sponsors.title": "Sponsors & Partners",
@@ -997,7 +1031,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.sponsors.order": "Order: {order}",
     "admin.sponsors.empty": "No sponsors yet. Add your first sponsor above.",
     "admin.sponsors.delete_title": "Delete Sponsor",
-    "admin.sponsors.delete_description": "Are you sure you want to delete this sponsor? This action cannot be undone.",
+    "admin.sponsors.delete_description":
+      "Are you sure you want to delete this sponsor? This action cannot be undone.",
 
     "admin.socialfeed.loading": "Loading social feed...",
     "admin.socialfeed.title": "Social Media Feed",
@@ -1017,7 +1052,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.socialfeed.caption_ar": "Caption (AR)",
     "admin.socialfeed.empty": "No social posts yet. Add your first post above.",
     "admin.socialfeed.delete_title": "Delete Post",
-    "admin.socialfeed.delete_description": "Are you sure you want to delete this post? This action cannot be undone.",
+    "admin.socialfeed.delete_description":
+      "Are you sure you want to delete this post? This action cannot be undone.",
 
     "admin.photos.loading": "Loading photos...",
     "admin.photos.title": "Campaign Photos",
@@ -1038,7 +1074,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.photos.badge_after": "after",
     "admin.photos.empty": "No photos yet. Add your first before/after photo!",
     "admin.photos.delete_title": "Delete Photo",
-    "admin.photos.delete_description": "Are you sure you want to delete this photo? This action cannot be undone.",
+    "admin.photos.delete_description":
+      "Are you sure you want to delete this photo? This action cannot be undone.",
 
     "admin.neighborhoods.loading": "Loading neighborhoods...",
     "admin.neighborhoods.title": "Neighborhoods",
@@ -1059,9 +1096,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.neighborhoods.stat_campaigns": "Campaigns",
     "admin.neighborhoods.map_lat": "Map Latitude",
     "admin.neighborhoods.map_lng": "Map Longitude",
-    "admin.neighborhoods.empty": "No neighborhoods yet. Add your first neighborhood above.",
+    "admin.neighborhoods.empty":
+      "No neighborhoods yet. Add your first neighborhood above.",
     "admin.neighborhoods.delete_title": "Delete Neighborhood",
-    "admin.neighborhoods.delete_description": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "admin.neighborhoods.delete_description":
+      "Are you sure you want to delete {name}? This action cannot be undone.",
 
     "admin.contacts.loading": "Loading contacts...",
     "admin.contacts.title": "Contact Submissions",
@@ -1071,7 +1110,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.contacts.mark_replied": "Mark Replied",
     "admin.contacts.empty": "No contact submissions yet.",
     "admin.contacts.delete_title": "Delete Message",
-    "admin.contacts.delete_description": "Are you sure you want to delete the message from {name}? This action cannot be undone.",
+    "admin.contacts.delete_description":
+      "Are you sure you want to delete the message from {name}? This action cannot be undone.",
 
     "admin.volunteers.title": "Volunteer Registrations",
     "admin.volunteers.search_placeholder": "Search by name or email...",
@@ -1095,7 +1135,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.loading": "Loading settings...",
     "admin.settings.save_changes": "Save Changes",
     "admin.settings.stats_title": "Dashboard Stats (Impact Section)",
-    "admin.settings.stats_description": "Leave override fields empty to use auto-calculated values from per-campaign totals. Enter a number to override the displayed value. These overrides are never overwritten by campaign updates.",
+    "admin.settings.stats_description":
+      "Leave override fields empty to use auto-calculated values from per-campaign totals. Enter a number to override the displayed value. These overrides are never overwritten by campaign updates.",
     "admin.settings.stat_campaigns": "Campaigns",
     "admin.settings.stat_volunteers": "Volunteers",
     "admin.settings.stat_neighborhoods": "Neighborhoods",
@@ -1104,7 +1145,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.auto_prefix": "Auto: {value}",
     "admin.settings.override_placeholder_auto": "Override (auto: {value})",
     "admin.settings.override_placeholder_manual": "Enter value",
-    "admin.settings.clear_override_title": "Clear override, use auto-calculated",
+    "admin.settings.clear_override_title":
+      "Clear override, use auto-calculated",
     "admin.settings.overridden_note": "Overriding auto-calculated value",
     "admin.settings.section.contact_info": "Contact Information",
     "admin.settings.label.contact_email": "Email Address",
@@ -1141,9 +1183,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.label.footer_copyright_ar": "Copyright (AR)",
     "admin.settings.section.maintenance": "Maintenance Mode",
     "admin.settings.maintenance_enable": "Enable maintenance mode",
-    "admin.settings.maintenance_description": "Blocks public pages with a non-dismissible modal. Admins can still access the dashboard.",
+    "admin.settings.maintenance_description":
+      "Blocks public pages with a non-dismissible modal. Admins can still access the dashboard.",
     "admin.settings.maintenance_message_label": "Maintenance message",
-    "admin.settings.maintenance_placeholder": "We are currently performing security updates. Please check back soon.",
+    "admin.settings.maintenance_placeholder":
+      "We are currently performing security updates. Please check back soon.",
     "admin.settings.section.social_visibility": "Social Visibility",
     "admin.settings.label.social_show_whatsapp": "Show WhatsApp",
     "admin.settings.label.social_show_instagram": "Show Instagram",
@@ -1167,7 +1211,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.roles.label_ar_label": "Label (Arabic)",
     "admin.roles.label_ar_placeholder": "محرر المحتوى",
     "admin.roles.permissions": "Permissions",
-    "admin.roles.delete_confirm": "Delete role \"{name}\"? This cannot be undone.",
+    "admin.roles.delete_confirm":
+      'Delete role "{name}"? This cannot be undone.',
 
     "toast.registration_deleted": "Registration removed",
     "toast.registration_delete_failed": "Failed to remove registration",
@@ -1176,7 +1221,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "toast.role_name_required": "Name and English label are required",
     "toast.user_role_updated": "Role updated",
     "toast.update_status_failed": "Failed to update status",
-    "toast.reset_two_factor_failed": "Failed to reset two-factor authentication",
+    "toast.reset_two_factor_failed":
+      "Failed to reset two-factor authentication",
 
     "toast.points_awarded": "Points awarded",
   },
@@ -1424,9 +1470,12 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.sign_up": "S'inscrire",
     "login.sign_in_title": "Bon retour",
     "login.sign_up_title": "Creez votre compte",
-    "login.sign_in_subtitle": "Connectez-vous pour continuer a rendre Meknes plus propre.",
-    "login.sign_up_subtitle": "Rejoignez le mouvement pour un Meknes plus propre et plus vert.",
-    "login.sign_up_note": "Un seul compte fonctionne pour les benevoles et les admins. L'inscription est gratuite et rapide.",
+    "login.sign_in_subtitle":
+      "Connectez-vous pour continuer a rendre Meknes plus propre.",
+    "login.sign_up_subtitle":
+      "Rejoignez le mouvement pour un Meknes plus propre et plus vert.",
+    "login.sign_up_note":
+      "Un seul compte fonctionne pour les benevoles et les admins. L'inscription est gratuite et rapide.",
 
     "volunteer.form_title": "Devenez Benevole",
     "volunteer.form_subtitle":
@@ -1741,7 +1790,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "planning.completed": "Terminé",
     "planning.cancelled": "Annulé",
     "planning.no_plans_title": "Aucun plan",
-    "planning.no_plans_body": "Créez votre premier plan pour commencer à suivre les tâches et la progression de l’équipe.",
+    "planning.no_plans_body":
+      "Créez votre premier plan pour commencer à suivre les tâches et la progression de l’équipe.",
     "planning.no_backlog_plans": "Aucun plan en backlog",
     "planning.no_planned_plans": "Aucun plan planifié",
     "planning.no_in_progress_plans": "Aucun plan en cours",
@@ -1797,6 +1847,26 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.dashboard.no_activity": "Aucune activité récente",
     "admin.dashboard.just_now": "À l’instant",
     "admin.dashboard.unknown": "Inconnu",
+    "admin.dashboard.filter_all": "Tout",
+    "admin.dashboard.filter_campaigns": "Campagnes",
+    "admin.dashboard.filter_volunteers": "Bénévoles",
+    "admin.dashboard.filter_users": "Utilisateurs",
+    "admin.dashboard.filter_plans": "Plans",
+    "admin.dashboard.filter_content": "Contenu",
+    "admin.dashboard.today": "Aujourd'hui",
+    "admin.dashboard.yesterday": "Hier",
+    "admin.dashboard.load_more": "Charger plus",
+    "admin.dashboard.loading": "Chargement…",
+    "admin.dashboard.col_role": "Rôle",
+    "admin.dashboard.col_action": "Action",
+    "admin.dashboard.col_description": "Description",
+    "admin.dashboard.col_time": "Heure",
+    "admin.dashboard.system": "Système",
+    "admin.dashboard.search_placeholder":
+      "Rechercher utilisateur, rôle, action…",
+    "admin.dashboard.date_from": "Du",
+    "admin.dashboard.date_to": "Au",
+    "admin.dashboard.clear_filters": "Effacer",
 
     "toast.role_updated": "Rôle mis à jour",
     "toast.user_status_updated": "Statut de l'utilisateur mis à jour",
@@ -1804,7 +1874,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "toast.two_factor_reset": "Authentification à deux facteurs réinitialisée",
     "toast.failed_update_status": "Échec de la mise à jour du statut",
     "toast.failed_delete_user": "Échec de la suppression de l'utilisateur",
-    "toast.failed_reset_2fa": "Échec de la réinitialisation de l'authentification à deux facteurs",
+    "toast.failed_reset_2fa":
+      "Échec de la réinitialisation de l'authentification à deux facteurs",
 
     "admin.roles.super_admin": "Super Admin",
     "admin.roles.admin": "Admin",
@@ -1850,9 +1921,17 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.activity.sponsor.updated": "a mis à jour un partenaire",
     "admin.activity.sponsor.deleted": "a supprimé un partenaire",
     "admin.activity.leaderboard.award_points": "a attribué des points",
-    "admin.activity.user.two_factor_reset": "a réinitialisé l'authentification à deux facteurs de l'utilisateur",
+    "admin.activity.user.two_factor_reset":
+      "a réinitialisé l'authentification à deux facteurs de l'utilisateur",
     "admin.activity.user.deleted": "a supprimé l'utilisateur",
-    "admin.activity.volunteer.deleted": "a supprimé une inscription de bénévole",
+    "admin.activity.volunteer.deleted":
+      "a supprimé une inscription de bénévole",
+    "admin.activity.volunteer.approved":
+      "a approuvé une inscription de bénévole",
+    "admin.activity.volunteer.rejected": "a rejeté une inscription de bénévole",
+    "admin.activity.socialFeed.created": "a ajouté une publication sociale",
+    "admin.activity.socialFeed.updated": "a mis à jour une publication sociale",
+    "admin.activity.socialFeed.deleted": "a supprimé une publication sociale",
 
     "admin.tabs.dashboard": "Tableau de Bord",
     "admin.tabs.landing": "Page d'Accueil",
@@ -1909,7 +1988,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.landing.section.poll": "Sondage",
 
     "leaderboard.heading": "Meilleurs bénévoles",
-    "leaderboard.subheading": "Célébrons ceux qui rendent Meknès plus propre, une campagne à la fois.",
+    "leaderboard.subheading":
+      "Célébrons ceux qui rendent Meknès plus propre, une campagne à la fois.",
     "leaderboard.rank": "Classement",
     "leaderboard.points": "points",
     "leaderboard.participants": "participants",
@@ -1921,16 +2001,17 @@ const translations: Record<Lang, Record<string, string>> = {
     "leaderboard.period.year": "Cette année",
     "leaderboard.period.month": "Ce mois",
     "leaderboard.search_placeholder": "Rechercher des bénévoles...",
-    "leaderboard.no_search_results": "Aucun bénévole ne correspond à votre recherche.",
+    "leaderboard.no_search_results":
+      "Aucun bénévole ne correspond à votre recherche.",
     "leaderboard.guest": "Invité",
-    "leaderboard.modal_footer": "Continuez à participer aux campagnes pour grimper au classement",
+    "leaderboard.modal_footer":
+      "Continuez à participer aux campagnes pour grimper au classement",
 
     "user_badge.title": "Badge numérique",
     "user_badge.subtitle": "Scannez pour pointer à votre campagne",
     "user_badge.select_campaign": "Sélectionner une campagne",
-    "user_badge.no_campaigns": "Inscrivez-vous à une campagne pour obtenir votre badge.",
-    "user_badge.print": "Imprimer le badge",
-    "user_badge.download_pdf": "Télécharger le PDF",
+    "user_badge.no_campaigns":
+      "Inscrivez-vous à une campagne pour obtenir votre badge.",
 
     "admin.leaderboard.title": "Classement",
     "admin.leaderboard.award_points": "Attribuer des points",
@@ -1940,13 +2021,15 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.leaderboard.award": "Attribuer",
     "admin.leaderboard.search": "Rechercher dans le classement...",
     "admin.leaderboard.points_system": "Système de points",
-    "admin.leaderboard.points_system_help": "Définissez combien de points les bénévoles gagnent automatiquement lors de l'inscription à une campagne, lorsque leur présence est confirmée, et pour chaque kilogramme de déchets enregistré pour eux dans le contrôle de présence.",
+    "admin.leaderboard.points_system_help":
+      "Définissez combien de points les bénévoles gagnent automatiquement lors de l'inscription à une campagne, lorsque leur présence est confirmée, et pour chaque kilogramme de déchets enregistré pour eux dans le contrôle de présence.",
     "admin.leaderboard.points_registration": "Points par inscription",
     "admin.leaderboard.points_attendance": "Points par présence",
     "admin.leaderboard.points_per_waste_kg": "Points par kg de déchets",
     "admin.leaderboard.save_points": "Enregistrer les points",
     "admin.leaderboard.saving": "Enregistrement...",
-    "admin.leaderboard.invalid_points": "Les valeurs de points doivent être des nombres positifs ou nuls.",
+    "admin.leaderboard.invalid_points":
+      "Les valeurs de points doivent être des nombres positifs ou nuls.",
 
     "admin.shared.active": "Actif",
     "admin.shared.inactive": "Inactif",
@@ -1977,7 +2060,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.shared.uploading": "Envoi en cours...",
     "admin.shared.upload_failed": "Échec de l'envoi : {message}",
     "admin.shared.gallery_label": "Galerie de la campagne",
-    "admin.shared.gallery_url_placeholder": "Ou saisissez une URL d'image et appuyez sur Ajouter",
+    "admin.shared.gallery_url_placeholder":
+      "Ou saisissez une URL d'image et appuyez sur Ajouter",
     "admin.shared.gallery_alt": "Galerie {index}",
     "admin.shared.toggle": "Activer/Désactiver {name}",
     "admin.shared.image_label": "Image",
@@ -2002,7 +2086,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.shared.permission.dashboard.view": "Voir le tableau de bord",
     "admin.shared.permission.users.view": "Voir les utilisateurs",
     "admin.shared.permission.users.manage": "Gérer les utilisateurs",
-    "admin.shared.permission.users.edit_role": "Modifier les rôles utilisateurs",
+    "admin.shared.permission.users.edit_role":
+      "Modifier les rôles utilisateurs",
     "admin.shared.permission.roles.view": "Voir les rôles",
     "admin.shared.permission.roles.manage": "Gérer les rôles",
     "admin.shared.permission.campaigns.view": "Voir les campagnes",
@@ -2023,7 +2108,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.shared.permission.contacts.manage": "Gérer les contacts",
     "admin.shared.permission.plans.view": "Voir les plans",
     "admin.shared.permission.plans.manage": "Gérer les plans",
-    "admin.shared.permission.activity_logs.view": "Voir les journaux d'activité",
+    "admin.shared.permission.activity_logs.view":
+      "Voir les journaux d'activité",
 
     "admin.campaigns.title": "Campagnes",
     "admin.campaigns.add": "+ Ajouter une campagne",
@@ -2042,7 +2128,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.date_placeholder": "Date (ex. 12 juillet 2026) *",
     "admin.campaigns.time_placeholder": "Heure de début (HH:MM)",
     "admin.campaigns.slug_placeholder": "Slug (ex. bab-mansour-cleanup) *",
-    "admin.campaigns.filter_tags_placeholder": "Tags de filtre (ex. all,community,outdoor)",
+    "admin.campaigns.filter_tags_placeholder":
+      "Tags de filtre (ex. all,community,outdoor)",
     "admin.campaigns.map_lat_placeholder": "Latitude (ex. 33.8933)",
     "admin.campaigns.map_lng_placeholder": "Longitude (ex. -5.5582)",
     "admin.campaigns.map_preview": "Aperçu sur Google Maps →",
@@ -2054,7 +2141,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.header.visible": "Visible",
     "admin.campaigns.header.actions": "Actions",
     "admin.campaigns.delete_title": "Supprimer la campagne",
-    "admin.campaigns.delete_description": "Voulez-vous vraiment supprimer \"{name}\" ? Cette action est irréversible.",
+    "admin.campaigns.delete_description":
+      'Voulez-vous vraiment supprimer "{name}" ? Cette action est irréversible.',
     "admin.campaigns.registrations_title": "Inscriptions",
     "admin.campaigns.loading_registrations": "Chargement des inscriptions...",
     "admin.campaigns.no_registrations": "Aucune inscription pour le moment.",
@@ -2066,7 +2154,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.deleted_user": "Utilisateur supprimé",
     "admin.campaigns.remove_registration": "Supprimer l'inscription",
     "admin.campaigns.remove_registration_title": "Supprimer l'inscription",
-    "admin.campaigns.remove_registration_description": "Voulez-vous vraiment supprimer l'inscription de {name} ? Cette action est irréversible.",
+    "admin.campaigns.remove_registration_description":
+      "Voulez-vous vraiment supprimer l'inscription de {name} ? Cette action est irréversible.",
     "admin.campaigns.volunteer_one": "bénévole",
     "admin.campaigns.volunteer_other": "bénévoles",
 
@@ -2101,7 +2190,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.users.two_factor_auth": "Authentification à deux facteurs",
     "admin.users.reset": "Réinitialiser",
     "admin.users.delete_user_title": "Supprimer l'utilisateur",
-    "admin.users.delete_user_description": "Voulez-vous vraiment supprimer définitivement cet utilisateur ? Cette action est irréversible.",
+    "admin.users.delete_user_description":
+      "Voulez-vous vraiment supprimer définitivement cet utilisateur ? Cette action est irréversible.",
 
     "admin.shared.hide": "Masquer",
     "admin.shared.show": "Afficher",
@@ -2120,9 +2210,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.faqs.answer_en": "Réponse (EN) *",
     "admin.faqs.answer_fr": "Réponse (FR)",
     "admin.faqs.answer_ar": "Réponse (AR)",
-    "admin.faqs.empty": "Aucune FAQ pour le moment. Cliquez sur \"Ajouter une FAQ\" pour en créer une.",
+    "admin.faqs.empty":
+      'Aucune FAQ pour le moment. Cliquez sur "Ajouter une FAQ" pour en créer une.',
     "admin.faqs.delete_title": "Supprimer la FAQ",
-    "admin.faqs.delete_description": "Voulez-vous vraiment supprimer la FAQ \"{name}\" ? Cette action est irréversible.",
+    "admin.faqs.delete_description":
+      'Voulez-vous vraiment supprimer la FAQ "{name}" ? Cette action est irréversible.',
 
     "admin.polls.loading": "Chargement des sondages...",
     "admin.polls.title": "Sondages",
@@ -2140,9 +2232,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.polls.option_ar_placeholder": "Option AR {index}",
     "admin.polls.votes": "votes",
     "admin.polls.toggle_active": "Activer/Désactiver",
-    "admin.polls.empty": "Aucun sondage pour le moment. Cliquez sur \"Ajouter un sondage\" pour en créer un.",
+    "admin.polls.empty":
+      'Aucun sondage pour le moment. Cliquez sur "Ajouter un sondage" pour en créer un.',
     "admin.polls.delete_title": "Supprimer le sondage",
-    "admin.polls.delete_description": "Voulez-vous vraiment supprimer le sondage \"{name}\" ? Cette action est irréversible.",
+    "admin.polls.delete_description":
+      'Voulez-vous vraiment supprimer le sondage "{name}" ? Cette action est irréversible.',
 
     "admin.testimonials.loading": "Chargement des témoignages...",
     "admin.testimonials.title": "Témoignages",
@@ -2158,9 +2252,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.testimonials.quote_en": "Citation (EN) *",
     "admin.testimonials.quote_fr": "Citation (FR)",
     "admin.testimonials.quote_ar": "Citation (AR)",
-    "admin.testimonials.empty": "Aucun témoignage pour le moment. Cliquez sur \"Ajouter un témoignage\" pour en créer un.",
+    "admin.testimonials.empty":
+      'Aucun témoignage pour le moment. Cliquez sur "Ajouter un témoignage" pour en créer un.',
     "admin.testimonials.delete_title": "Supprimer le témoignage",
-    "admin.testimonials.delete_description": "Voulez-vous vraiment supprimer le témoignage de {name} ? Cette action est irréversible.",
+    "admin.testimonials.delete_description":
+      "Voulez-vous vraiment supprimer le témoignage de {name} ? Cette action est irréversible.",
 
     "admin.sponsors.loading": "Chargement des partenaires...",
     "admin.sponsors.title": "Partenaires & Sponsors",
@@ -2181,9 +2277,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.sponsors.description_fr": "Description (FR)",
     "admin.sponsors.description_ar": "Description (AR)",
     "admin.sponsors.order": "Ordre : {order}",
-    "admin.sponsors.empty": "Aucun partenaire pour le moment. Ajoutez votre premier partenaire ci-dessus.",
+    "admin.sponsors.empty":
+      "Aucun partenaire pour le moment. Ajoutez votre premier partenaire ci-dessus.",
     "admin.sponsors.delete_title": "Supprimer le partenaire",
-    "admin.sponsors.delete_description": "Voulez-vous vraiment supprimer ce partenaire ? Cette action est irréversible.",
+    "admin.sponsors.delete_description":
+      "Voulez-vous vraiment supprimer ce partenaire ? Cette action est irréversible.",
 
     "admin.socialfeed.loading": "Chargement du flux social...",
     "admin.socialfeed.title": "Flux des réseaux sociaux",
@@ -2201,9 +2299,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.socialfeed.caption_en": "Légende (EN)",
     "admin.socialfeed.caption_fr": "Légende (FR)",
     "admin.socialfeed.caption_ar": "Légende (AR)",
-    "admin.socialfeed.empty": "Aucune publication pour le moment. Ajoutez votre première publication ci-dessus.",
+    "admin.socialfeed.empty":
+      "Aucune publication pour le moment. Ajoutez votre première publication ci-dessus.",
     "admin.socialfeed.delete_title": "Supprimer la publication",
-    "admin.socialfeed.delete_description": "Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.",
+    "admin.socialfeed.delete_description":
+      "Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.",
 
     "admin.photos.loading": "Chargement des photos...",
     "admin.photos.title": "Photos des campagnes",
@@ -2222,9 +2322,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.photos.badge_photos": "photos",
     "admin.photos.badge_before": "avant",
     "admin.photos.badge_after": "après",
-    "admin.photos.empty": "Aucune photo pour le moment. Ajoutez votre première photo avant/après !",
+    "admin.photos.empty":
+      "Aucune photo pour le moment. Ajoutez votre première photo avant/après !",
     "admin.photos.delete_title": "Supprimer la photo",
-    "admin.photos.delete_description": "Voulez-vous vraiment supprimer cette photo ? Cette action est irréversible.",
+    "admin.photos.delete_description":
+      "Voulez-vous vraiment supprimer cette photo ? Cette action est irréversible.",
 
     "admin.neighborhoods.loading": "Chargement des quartiers...",
     "admin.neighborhoods.title": "Quartiers",
@@ -2245,9 +2347,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.neighborhoods.stat_campaigns": "Campagnes",
     "admin.neighborhoods.map_lat": "Latitude",
     "admin.neighborhoods.map_lng": "Longitude",
-    "admin.neighborhoods.empty": "Aucun quartier pour le moment. Ajoutez votre premier quartier ci-dessus.",
+    "admin.neighborhoods.empty":
+      "Aucun quartier pour le moment. Ajoutez votre premier quartier ci-dessus.",
     "admin.neighborhoods.delete_title": "Supprimer le quartier",
-    "admin.neighborhoods.delete_description": "Voulez-vous vraiment supprimer {name} ? Cette action est irréversible.",
+    "admin.neighborhoods.delete_description":
+      "Voulez-vous vraiment supprimer {name} ? Cette action est irréversible.",
 
     "admin.contacts.loading": "Chargement des messages...",
     "admin.contacts.title": "Messages de contact",
@@ -2257,7 +2361,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.contacts.mark_replied": "Marquer répondu",
     "admin.contacts.empty": "Aucun message de contact pour le moment.",
     "admin.contacts.delete_title": "Supprimer le message",
-    "admin.contacts.delete_description": "Voulez-vous vraiment supprimer le message de {name} ? Cette action est irréversible.",
+    "admin.contacts.delete_description":
+      "Voulez-vous vraiment supprimer le message de {name} ? Cette action est irréversible.",
 
     "admin.volunteers.title": "Inscriptions des bénévoles",
     "admin.volunteers.search_placeholder": "Rechercher par nom ou e-mail...",
@@ -2275,13 +2380,16 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.volunteers.reject": "Rejeter",
     "admin.volunteers.delete_confirm": "Supprimer l'inscription de {name} ?",
     "admin.volunteers.empty": "Aucune inscription de bénévole trouvée.",
-    "admin.volunteers.page_info": "Page {page} sur {totalPages} ({total} au total)",
+    "admin.volunteers.page_info":
+      "Page {page} sur {totalPages} ({total} au total)",
 
     "admin.settings.title": "Paramètres du site",
     "admin.settings.loading": "Chargement des paramètres...",
     "admin.settings.save_changes": "Enregistrer les modifications",
-    "admin.settings.stats_title": "Statistiques du tableau de bord (section Impact)",
-    "admin.settings.stats_description": "Laissez les champs de surcharge vides pour utiliser les valeurs auto-calculées à partir des totaux par campagne. Saisissez un nombre pour remplacer la valeur affichée. Ces surcharges ne sont jamais écrasées par les mises à jour de campagne.",
+    "admin.settings.stats_title":
+      "Statistiques du tableau de bord (section Impact)",
+    "admin.settings.stats_description":
+      "Laissez les champs de surcharge vides pour utiliser les valeurs auto-calculées à partir des totaux par campagne. Saisissez un nombre pour remplacer la valeur affichée. Ces surcharges ne sont jamais écrasées par les mises à jour de campagne.",
     "admin.settings.stat_campaigns": "Campagnes",
     "admin.settings.stat_volunteers": "Bénévoles",
     "admin.settings.stat_neighborhoods": "Quartiers",
@@ -2290,7 +2398,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.auto_prefix": "Auto : {value}",
     "admin.settings.override_placeholder_auto": "Surcharge (auto : {value})",
     "admin.settings.override_placeholder_manual": "Saisissez une valeur",
-    "admin.settings.clear_override_title": "Effacer la surcharge, utiliser la valeur auto-calculée",
+    "admin.settings.clear_override_title":
+      "Effacer la surcharge, utiliser la valeur auto-calculée",
     "admin.settings.overridden_note": "Remplace la valeur auto-calculée",
     "admin.settings.section.contact_info": "Coordonnées",
     "admin.settings.label.contact_email": "Adresse e-mail",
@@ -2327,10 +2436,13 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.label.footer_copyright_ar": "Copyright (AR)",
     "admin.settings.section.maintenance": "Mode maintenance",
     "admin.settings.maintenance_enable": "Activer le mode maintenance",
-    "admin.settings.maintenance_description": "Bloque les pages publiques avec une modal non fermable. Les administrateurs peuvent toujours accéder au tableau de bord.",
+    "admin.settings.maintenance_description":
+      "Bloque les pages publiques avec une modal non fermable. Les administrateurs peuvent toujours accéder au tableau de bord.",
     "admin.settings.maintenance_message_label": "Message de maintenance",
-    "admin.settings.maintenance_placeholder": "Nous effectuons actuellement des mises à jour de sécurité. Veuillez revenir bientôt.",
-    "admin.settings.section.social_visibility": "Visibilité des réseaux sociaux",
+    "admin.settings.maintenance_placeholder":
+      "Nous effectuons actuellement des mises à jour de sécurité. Veuillez revenir bientôt.",
+    "admin.settings.section.social_visibility":
+      "Visibilité des réseaux sociaux",
     "admin.settings.label.social_show_whatsapp": "Afficher WhatsApp",
     "admin.settings.label.social_show_instagram": "Afficher Instagram",
     "admin.settings.label.social_show_facebook": "Afficher Facebook",
@@ -2353,16 +2465,19 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.roles.label_ar_label": "Libellé (arabe)",
     "admin.roles.label_ar_placeholder": "محرر المحتوى",
     "admin.roles.permissions": "Permissions",
-    "admin.roles.delete_confirm": "Supprimer le rôle \"{name}\" ? Cette action est irréversible.",
+    "admin.roles.delete_confirm":
+      'Supprimer le rôle "{name}" ? Cette action est irréversible.',
 
     "toast.registration_deleted": "Inscription supprimée",
-    "toast.registration_delete_failed": "Échec de la suppression de l'inscription",
+    "toast.registration_delete_failed":
+      "Échec de la suppression de l'inscription",
     "toast.role_created": "Rôle créé",
     "toast.role_deleted": "Rôle supprimé",
     "toast.role_name_required": "Le nom et le libellé anglais sont requis",
     "toast.user_role_updated": "Rôle mis à jour",
     "toast.update_status_failed": "Échec de la mise à jour du statut",
-    "toast.reset_two_factor_failed": "Échec de la réinitialisation de l'authentification à deux facteurs",
+    "toast.reset_two_factor_failed":
+      "Échec de la réinitialisation de l'authentification à deux facteurs",
 
     "toast.points_awarded": "Points attribués",
   },
@@ -2604,7 +2719,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "login.sign_up_title": "أنشئ حسابك",
     "login.sign_in_subtitle": "سجّل الدخول للاستمرار في جعل مكناس أنظف.",
     "login.sign_up_subtitle": "انضم إلى الحركة من أجل مكناس أنظف وأخضر.",
-    "login.sign_up_note": "حساب واحد يعمل للمتطوعين والمسؤولين. التسجيل مجاني ويستغرق ثانية.",
+    "login.sign_up_note":
+      "حساب واحد يعمل للمتطوعين والمسؤولين. التسجيل مجاني ويستغرق ثانية.",
 
     "volunteer.form_title": "كن متطوعاً",
     "volunteer.form_subtitle": "املأ النموذج أدناه وسيقوم المشرف بمراجعة طلبك.",
@@ -2895,7 +3011,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "planning.completed": "مكتملة",
     "planning.cancelled": "ملغاة",
     "planning.no_plans_title": "لا توجد خطط",
-    "planning.no_plans_body": "أنشئ خطتك الأولى لتبدأ بتتبع المهام وتقدم الفريق.",
+    "planning.no_plans_body":
+      "أنشئ خطتك الأولى لتبدأ بتتبع المهام وتقدم الفريق.",
     "planning.no_backlog_plans": "لا توجد خطط معلّقة",
     "planning.no_planned_plans": "لا توجد خطط مخطط لها",
     "planning.no_in_progress_plans": "لا توجد خطط قيد التنفيذ",
@@ -2951,6 +3068,25 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.dashboard.no_activity": "لا يوجد نشاط حديث",
     "admin.dashboard.just_now": "الآن",
     "admin.dashboard.unknown": "غير معروف",
+    "admin.dashboard.filter_all": "الكل",
+    "admin.dashboard.filter_campaigns": "الحملات",
+    "admin.dashboard.filter_volunteers": "المتطوعون",
+    "admin.dashboard.filter_users": "المستخدمون",
+    "admin.dashboard.filter_plans": "الخطط",
+    "admin.dashboard.filter_content": "المحتوى",
+    "admin.dashboard.today": "اليوم",
+    "admin.dashboard.yesterday": "أمس",
+    "admin.dashboard.load_more": "تحميل المزيد",
+    "admin.dashboard.loading": "جاري التحميل…",
+    "admin.dashboard.col_role": "الدور",
+    "admin.dashboard.col_action": "الإجراء",
+    "admin.dashboard.col_description": "الوصف",
+    "admin.dashboard.col_time": "الوقت",
+    "admin.dashboard.system": "النظام",
+    "admin.dashboard.search_placeholder": "ابحث عن مستخدم أو دور أو إجراء…",
+    "admin.dashboard.date_from": "من",
+    "admin.dashboard.date_to": "إلى",
+    "admin.dashboard.clear_filters": "مسح",
 
     "toast.role_updated": "تم تحديث الدور",
     "toast.user_status_updated": "تم تحديث حالة المستخدم",
@@ -3004,9 +3140,15 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.activity.sponsor.updated": "حدّث شريكاً",
     "admin.activity.sponsor.deleted": "حذف شريكاً",
     "admin.activity.leaderboard.award_points": "منح نقاطاً",
-    "admin.activity.user.two_factor_reset": "أعاد تعيين المصادقة الثنائية للمستخدم",
+    "admin.activity.user.two_factor_reset":
+      "أعاد تعيين المصادقة الثنائية للمستخدم",
     "admin.activity.user.deleted": "حذف المستخدم",
     "admin.activity.volunteer.deleted": "حذف تسجيل متطوع",
+    "admin.activity.volunteer.approved": "وافق على تسجيل متطوع",
+    "admin.activity.volunteer.rejected": "رفض تسجيل متطوع",
+    "admin.activity.socialFeed.created": "أضاف منشوراً اجتماعياً",
+    "admin.activity.socialFeed.updated": "حدّث منشوراً اجتماعياً",
+    "admin.activity.socialFeed.deleted": "حذف منشوراً اجتماعياً",
 
     "admin.tabs.dashboard": "لوحة التحكم",
     "admin.tabs.landing": "الصفحة الرئيسية",
@@ -3063,7 +3205,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.landing.section.poll": "استطلاع",
 
     "leaderboard.heading": "أفضل المتطوعين",
-    "leaderboard.subheading": "نحتفي بالأشخاص الذين يجعلون مكناس أنظف، حملة تلو الأخرى.",
+    "leaderboard.subheading":
+      "نحتفي بالأشخاص الذين يجعلون مكناس أنظف، حملة تلو الأخرى.",
     "leaderboard.rank": "الترتيب",
     "leaderboard.points": "نقطة",
     "leaderboard.participants": "مشارك",
@@ -3083,8 +3226,6 @@ const translations: Record<Lang, Record<string, string>> = {
     "user_badge.subtitle": "امسح للتسجيل في حملتك",
     "user_badge.select_campaign": "اختر حملة",
     "user_badge.no_campaigns": "سجل في حملة للحصول على بطاقتك.",
-    "user_badge.print": "طباعة البطاقة",
-    "user_badge.download_pdf": "تحميل PDF",
 
     "admin.leaderboard.title": "لوحة المتصدرين",
     "admin.leaderboard.award_points": "منح نقاط",
@@ -3094,13 +3235,15 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.leaderboard.award": "منح",
     "admin.leaderboard.search": "البحث في لوحة المتصدرين...",
     "admin.leaderboard.points_system": "نظام النقاط",
-    "admin.leaderboard.points_system_help": "حدد عدد النقاط التي يكتسبها المتطوعون تلقائياً عند التسجيل في حملة، وتأكيد حضورهم، ولكل كيلوغرام من النفايات المسجلة لهم في التحقق من الحضور.",
+    "admin.leaderboard.points_system_help":
+      "حدد عدد النقاط التي يكتسبها المتطوعون تلقائياً عند التسجيل في حملة، وتأكيد حضورهم، ولكل كيلوغرام من النفايات المسجلة لهم في التحقق من الحضور.",
     "admin.leaderboard.points_registration": "نقاط لكل تسجيل",
     "admin.leaderboard.points_attendance": "نقاط لكل حضور",
     "admin.leaderboard.points_per_waste_kg": "نقاط لكل كغ من النفايات",
     "admin.leaderboard.save_points": "حفظ قيم النقاط",
     "admin.leaderboard.saving": "جاري الحفظ...",
-    "admin.leaderboard.invalid_points": "يجب أن تكون قيم النقاط أرقام غير سالبة.",
+    "admin.leaderboard.invalid_points":
+      "يجب أن تكون قيم النقاط أرقام غير سالبة.",
 
     "admin.shared.active": "نشط",
     "admin.shared.inactive": "غير نشط",
@@ -3131,7 +3274,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.shared.uploading": "جاري الرفع...",
     "admin.shared.upload_failed": "فشل التحميل: {message}",
     "admin.shared.gallery_label": "معرض الحملة",
-    "admin.shared.gallery_url_placeholder": "أو أدخل عنوان URL للصورة واضغط على إضافة",
+    "admin.shared.gallery_url_placeholder":
+      "أو أدخل عنوان URL للصورة واضغط على إضافة",
     "admin.shared.gallery_alt": "معرض {index}",
     "admin.shared.toggle": "تبديل {name}",
     "admin.shared.image_label": "صورة",
@@ -3196,7 +3340,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.date_placeholder": "التاريخ (مثال: 12 يوليو 2026) *",
     "admin.campaigns.time_placeholder": "وقت البدء (HH:MM)",
     "admin.campaigns.slug_placeholder": "الرابط (مثال: bab-mansour-cleanup) *",
-    "admin.campaigns.filter_tags_placeholder": "وسوم التصفية (مثال: all,community,outdoor)",
+    "admin.campaigns.filter_tags_placeholder":
+      "وسوم التصفية (مثال: all,community,outdoor)",
     "admin.campaigns.map_lat_placeholder": "خط العرض (مثال: 33.8933)",
     "admin.campaigns.map_lng_placeholder": "خط الطول (مثال: -5.5582)",
     "admin.campaigns.map_preview": "معاينة على خرائط Google →",
@@ -3208,7 +3353,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.header.visible": "مرئي",
     "admin.campaigns.header.actions": "إجراءات",
     "admin.campaigns.delete_title": "حذف الحملة",
-    "admin.campaigns.delete_description": "هل تريد بالتأكيد حذف \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.campaigns.delete_description":
+      'هل تريد بالتأكيد حذف "{name}"؟ لا يمكن التراجع عن هذا الإجراء.',
     "admin.campaigns.registrations_title": "التسجيلات",
     "admin.campaigns.loading_registrations": "جاري تحميل التسجيلات...",
     "admin.campaigns.no_registrations": "لا توجد تسجيلات بعد.",
@@ -3220,7 +3366,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.campaigns.deleted_user": "مستخدم محذوف",
     "admin.campaigns.remove_registration": "إزالة التسجيل",
     "admin.campaigns.remove_registration_title": "إزالة التسجيل",
-    "admin.campaigns.remove_registration_description": "هل تريد بالتأكيد إزالة تسجيل {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.campaigns.remove_registration_description":
+      "هل تريد بالتأكيد إزالة تسجيل {name}؟ لا يمكن التراجع عن هذا الإجراء.",
     "admin.campaigns.volunteer_one": "متطوع",
     "admin.campaigns.volunteer_other": "متطوعون",
 
@@ -3255,7 +3402,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.users.two_factor_auth": "المصادقة الثنائية",
     "admin.users.reset": "إعادة تعيين",
     "admin.users.delete_user_title": "حذف المستخدم",
-    "admin.users.delete_user_description": "هل أنت متأكد أنك تريد حذف هذا المستخدم نهائياً؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.users.delete_user_description":
+      "هل أنت متأكد أنك تريد حذف هذا المستخدم نهائياً؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.shared.hide": "إخفاء",
     "admin.shared.show": "إظهار",
@@ -3274,9 +3422,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.faqs.answer_en": "الإجابة (EN) *",
     "admin.faqs.answer_fr": "الإجابة (FR)",
     "admin.faqs.answer_ar": "الإجابة (AR)",
-    "admin.faqs.empty": "لا توجد أسئلة شائعة بعد. انقر على \"إضافة سؤال\" لإنشاء واحد.",
+    "admin.faqs.empty":
+      'لا توجد أسئلة شائعة بعد. انقر على "إضافة سؤال" لإنشاء واحد.',
     "admin.faqs.delete_title": "حذف السؤال",
-    "admin.faqs.delete_description": "هل أنت متأكد أنك تريد حذف السؤال \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.faqs.delete_description":
+      'هل أنت متأكد أنك تريد حذف السؤال "{name}"؟ لا يمكن التراجع عن هذا الإجراء.',
 
     "admin.polls.loading": "جارٍ تحميل الاستطلاعات...",
     "admin.polls.title": "استطلاعات الرأي",
@@ -3294,9 +3444,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.polls.option_ar_placeholder": "الخيار AR {index}",
     "admin.polls.votes": "صوت",
     "admin.polls.toggle_active": "تبديل التفعيل",
-    "admin.polls.empty": "لا توجد استطلاعات بعد. انقر على \"إضافة استطلاع\" لإنشاء واحد.",
+    "admin.polls.empty":
+      'لا توجد استطلاعات بعد. انقر على "إضافة استطلاع" لإنشاء واحد.',
     "admin.polls.delete_title": "حذف الاستطلاع",
-    "admin.polls.delete_description": "هل أنت متأكد أنك تريد حذف الاستطلاع \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.polls.delete_description":
+      'هل أنت متأكد أنك تريد حذف الاستطلاع "{name}"؟ لا يمكن التراجع عن هذا الإجراء.',
 
     "admin.testimonials.loading": "جارٍ تحميل الشهادات...",
     "admin.testimonials.title": "الشهادات",
@@ -3312,9 +3464,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.testimonials.quote_en": "الاقتباس (EN) *",
     "admin.testimonials.quote_fr": "الاقتباس (FR)",
     "admin.testimonials.quote_ar": "الاقتباس (AR)",
-    "admin.testimonials.empty": "لا توجد شهادات بعد. انقر على \"إضافة شهادة\" لإنشاء واحدة.",
+    "admin.testimonials.empty":
+      'لا توجد شهادات بعد. انقر على "إضافة شهادة" لإنشاء واحدة.',
     "admin.testimonials.delete_title": "حذف الشهادة",
-    "admin.testimonials.delete_description": "هل أنت متأكد أنك تريد حذف شهادة {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.testimonials.delete_description":
+      "هل أنت متأكد أنك تريد حذف شهادة {name}؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.sponsors.loading": "جارٍ تحميل الشركاء...",
     "admin.sponsors.title": "الشركاء والرعاة",
@@ -3337,7 +3491,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.sponsors.order": "الترتيب: {order}",
     "admin.sponsors.empty": "لا يوجد شركاء بعد. أضف أول شريك أعلاه.",
     "admin.sponsors.delete_title": "حذف الشريك",
-    "admin.sponsors.delete_description": "هل أنت متأكد أنك تريد حذف هذا الشريك؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.sponsors.delete_description":
+      "هل أنت متأكد أنك تريد حذف هذا الشريك؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.socialfeed.loading": "جارٍ تحميل التواصل الاجتماعي...",
     "admin.socialfeed.title": "موجز التواصل الاجتماعي",
@@ -3357,7 +3512,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.socialfeed.caption_ar": "التسمية (AR)",
     "admin.socialfeed.empty": "لا توجد منشورات بعد. أضف أول منشور أعلاه.",
     "admin.socialfeed.delete_title": "حذف المنشور",
-    "admin.socialfeed.delete_description": "هل أنت متأكد أنك تريد حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.socialfeed.delete_description":
+      "هل أنت متأكد أنك تريد حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.photos.loading": "جارٍ تحميل الصور...",
     "admin.photos.title": "صور الحملات",
@@ -3378,7 +3534,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.photos.badge_after": "بعد",
     "admin.photos.empty": "لا توجد صور بعد. أضف أول صورة قبل/بعد!",
     "admin.photos.delete_title": "حذف الصورة",
-    "admin.photos.delete_description": "هل أنت متأكد أنك تريد حذف هذه الصورة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.photos.delete_description":
+      "هل أنت متأكد أنك تريد حذف هذه الصورة؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.neighborhoods.loading": "جارٍ تحميل الأحياء...",
     "admin.neighborhoods.title": "الأحياء",
@@ -3401,7 +3558,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.neighborhoods.map_lng": "خط الطول",
     "admin.neighborhoods.empty": "لا توجد أحياء بعد. أضف أول حي أعلاه.",
     "admin.neighborhoods.delete_title": "حذف الحي",
-    "admin.neighborhoods.delete_description": "هل أنت متأكد أنك تريد حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.neighborhoods.delete_description":
+      "هل أنت متأكد أنك تريد حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.contacts.loading": "جارٍ تحميل الرسائل...",
     "admin.contacts.title": "رسائل الاتصال",
@@ -3411,10 +3569,12 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.contacts.mark_replied": "تعليم كمُجاب",
     "admin.contacts.empty": "لا توجد رسائل اتصال بعد.",
     "admin.contacts.delete_title": "حذف الرسالة",
-    "admin.contacts.delete_description": "هل أنت متأكد أنك تريد حذف رسالة {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.contacts.delete_description":
+      "هل أنت متأكد أنك تريد حذف رسالة {name}؟ لا يمكن التراجع عن هذا الإجراء.",
 
     "admin.volunteers.title": "تسجيلات المتطوعين",
-    "admin.volunteers.search_placeholder": "البحث بالاسم أو البريد الإلكتروني...",
+    "admin.volunteers.search_placeholder":
+      "البحث بالاسم أو البريد الإلكتروني...",
     "admin.volunteers.all_status": "كل الحالات",
     "admin.volunteers.status.pending": "معلق",
     "admin.volunteers.status.approved": "مقبول",
@@ -3429,13 +3589,15 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.volunteers.reject": "رفض",
     "admin.volunteers.delete_confirm": "حذف تسجيل {name}؟",
     "admin.volunteers.empty": "لم يتم العثور على تسجيلات متطوعين.",
-    "admin.volunteers.page_info": "صفحة {page} من {totalPages} ({total} إجمالاً)",
+    "admin.volunteers.page_info":
+      "صفحة {page} من {totalPages} ({total} إجمالاً)",
 
     "admin.settings.title": "إعدادات الموقع",
     "admin.settings.loading": "جاري تحميل الإعدادات...",
     "admin.settings.save_changes": "حفظ التغييرات",
     "admin.settings.stats_title": "إحصائيات لوحة التحكم (قسم التأثير)",
-    "admin.settings.stats_description": "اترك حقول التجاوز فارغة لاستخدام القيم المحسوبة تلقائياً من إجماليات كل حملة. أدخل رقماً لتجاوز القيمة المعروضة. لا تُستبدل هذه التجاوزات أبداً بتحديثات الحملات.",
+    "admin.settings.stats_description":
+      "اترك حقول التجاوز فارغة لاستخدام القيم المحسوبة تلقائياً من إجماليات كل حملة. أدخل رقماً لتجاوز القيمة المعروضة. لا تُستبدل هذه التجاوزات أبداً بتحديثات الحملات.",
     "admin.settings.stat_campaigns": "الحملات",
     "admin.settings.stat_volunteers": "المتطوعون",
     "admin.settings.stat_neighborhoods": "الأحياء",
@@ -3444,7 +3606,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.auto_prefix": "تلقائي: {value}",
     "admin.settings.override_placeholder_auto": "تجاوز (تلقائي: {value})",
     "admin.settings.override_placeholder_manual": "أدخل قيمة",
-    "admin.settings.clear_override_title": "مسح التجاوز، استخدام القيمة المحسوبة تلقائياً",
+    "admin.settings.clear_override_title":
+      "مسح التجاوز، استخدام القيمة المحسوبة تلقائياً",
     "admin.settings.overridden_note": "تجاوز القيمة المحسوبة تلقائياً",
     "admin.settings.section.contact_info": "معلومات الاتصال",
     "admin.settings.label.contact_email": "عنوان البريد الإلكتروني",
@@ -3481,9 +3644,11 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.settings.label.footer_copyright_ar": "حقوق النشر (AR)",
     "admin.settings.section.maintenance": "وضع الصيانة",
     "admin.settings.maintenance_enable": "تفعيل وضع الصيانة",
-    "admin.settings.maintenance_description": "يحجب الصفحات العامة بنافذة لا يمكن تجاهلها. يمكن للمسؤولين الاستمرار في الوصول إلى لوحة التحكم.",
+    "admin.settings.maintenance_description":
+      "يحجب الصفحات العامة بنافذة لا يمكن تجاهلها. يمكن للمسؤولين الاستمرار في الوصول إلى لوحة التحكم.",
     "admin.settings.maintenance_message_label": "رسالة الصيانة",
-    "admin.settings.maintenance_placeholder": "نقوم حالياً بإجراء تحديثات أمنية. يرجى العودة قريباً.",
+    "admin.settings.maintenance_placeholder":
+      "نقوم حالياً بإجراء تحديثات أمنية. يرجى العودة قريباً.",
     "admin.settings.section.social_visibility": "رؤية وسائل التواصل",
     "admin.settings.label.social_show_whatsapp": "إظهار واتساب",
     "admin.settings.label.social_show_instagram": "إظهار إنستغرام",
@@ -3507,7 +3672,8 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.roles.label_ar_label": "التسمية (العربية)",
     "admin.roles.label_ar_placeholder": "محرر المحتوى",
     "admin.roles.permissions": "الصلاحيات",
-    "admin.roles.delete_confirm": "حذف الدور \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "admin.roles.delete_confirm":
+      'حذف الدور "{name}"؟ لا يمكن التراجع عن هذا الإجراء.',
 
     "toast.registration_deleted": "تمت إزالة التسجيل",
     "toast.registration_delete_failed": "فشل إزالة التسجيل",
@@ -3563,5 +3729,3 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     </LanguageContext.Provider>
   );
 }
-
-

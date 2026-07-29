@@ -217,6 +217,16 @@ export function createTestDb() {
       awarded_by INTEGER,
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
+    CREATE TABLE IF NOT EXISTS activity_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      action TEXT NOT NULL,
+      entity_type TEXT,
+      entity_id INTEGER,
+      details TEXT,
+      ip_address TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
   `);
   return { db, client };
 }
