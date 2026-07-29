@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLanguage } from '@/hooks/useLanguage';
-import { trpc } from '@/lib/trpc';
+import { useLanguage } from "@/hooks/useLanguage";
+import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useErrorModal } from "@/hooks/useErrorModal";
 import { DataTable } from "./shared/DataTable";
@@ -180,7 +180,9 @@ export function UsersTab() {
                 }}
               >
                 <Shield size={12} />
-                {u.twoFactorEnabled ? t("admin.users.enabled") : t("admin.users.disabled")}
+                {u.twoFactorEnabled
+                  ? t("admin.users.enabled")
+                  : t("admin.users.disabled")}
               </span>
             ),
           },
@@ -213,7 +215,9 @@ export function UsersTab() {
                 }}
               >
                 {u.isActive ? <UserCheck size={12} /> : <UserX size={12} />}
-                {u.isActive ? t("admin.users.active") : t("admin.users.inactive")}
+                {u.isActive
+                  ? t("admin.users.active")
+                  : t("admin.users.inactive")}
               </span>
             ),
           },
@@ -263,7 +267,8 @@ export function UsersTab() {
             {t("admin.users.previous")}
           </button>
           <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
-            {t("admin.users.page")} {page} {t("admin.users.of")} {userList.totalPages}
+            {t("admin.users.page")} {page} {t("admin.users.of")}{" "}
+            {userList.totalPages}
           </span>
           <button
             onClick={() => setPage(p => Math.min(userList.totalPages, p + 1))}
@@ -425,6 +430,14 @@ export function UsersTab() {
                     className="admin-input flex-1"
                     disabled={updateRoleMutation.isPending}
                   >
+                    {/* Fallback so a role missing from user_roles still
+                        displays truthfully instead of showing the first option */}
+                    {roles &&
+                      !roles.some(r => r.name === selectedUser.role) && (
+                        <option value={selectedUser.role}>
+                          {getRoleLabel(selectedUser.role)}
+                        </option>
+                      )}
                     {roles?.map(role => (
                       <option key={role.name} value={role.name}>
                         {getRoleLabel(role.name)}
@@ -502,7 +515,9 @@ export function UsersTab() {
                         : "var(--text-tertiary)",
                     }}
                   >
-                    {selectedUser.twoFactorEnabled ? t("admin.users.enabled") : t("admin.users.disabled")}
+                    {selectedUser.twoFactorEnabled
+                      ? t("admin.users.enabled")
+                      : t("admin.users.disabled")}
                   </span>
                   {selectedUser.twoFactorEnabled && (
                     <button
@@ -597,7 +612,9 @@ export function UsersTab() {
                             {["registered", "attended", "cancelled"].includes(
                               reg.status
                             )
-                              ? t(`admin.shared.registration_status.${reg.status}`)
+                              ? t(
+                                  `admin.shared.registration_status.${reg.status}`
+                                )
                               : reg.status}
                           </span>
                         </div>

@@ -87,9 +87,12 @@ async function seed() {
       nameFr: "Bab Mansour",
       nameAr: "باب المنصور",
       slug: "bab-mansour",
-      descriptionEn: "The historic gateway to Meknes' old medina, surrounded by bustling plazas and artisan shops.",
-      descriptionFr: "La porte historique de la vieille medina de Meknes, entouree de places animees et d'ateliers d'artisans.",
-      descriptionAr: "البوابة التاريخية للمدينة القديمة بمكناس، محاطة بساحات نابضة بالحياة ومحلات الحرفيين.",
+      descriptionEn:
+        "The historic gateway to Meknes' old medina, surrounded by bustling plazas and artisan shops.",
+      descriptionFr:
+        "La porte historique de la vieille medina de Meknes, entouree de places animees et d'ateliers d'artisans.",
+      descriptionAr:
+        "البوابة التاريخية للمدينة القديمة بمكناس، محاطة بساحات نابضة بالحياة ومحلات الحرفيين.",
       image: "/assets/campaign-bab-mansour.jpg",
       statsWasteKg: 1200,
       statsTrees: 45,
@@ -104,8 +107,10 @@ async function seed() {
       nameFr: "Hamria",
       nameAr: "الحمريـة",
       slug: "hamria",
-      descriptionEn: "A lively neighborhood known for its market and strong community spirit.",
-      descriptionFr: "Un quartier anime connu pour son marche et son fort esprit communautaire.",
+      descriptionEn:
+        "A lively neighborhood known for its market and strong community spirit.",
+      descriptionFr:
+        "Un quartier anime connu pour son marche et son fort esprit communautaire.",
       descriptionAr: "حي نابض بالحياة يشتهر بسوقه وروحه المجتمعية القوية.",
       image: "/assets/campaign-hamria.jpg",
       statsWasteKg: 950,
@@ -121,8 +126,10 @@ async function seed() {
       nameFr: "Ville Nouvelle",
       nameAr: "المدينة الجديدة",
       slug: "ville-nouvelle",
-      descriptionEn: "The modern heart of Meknes with wide avenues, parks, and cafés.",
-      descriptionFr: "Le coeur moderne de Meknes avec ses larges avenues, ses parcs et ses cafes.",
+      descriptionEn:
+        "The modern heart of Meknes with wide avenues, parks, and cafés.",
+      descriptionFr:
+        "Le coeur moderne de Meknes avec ses larges avenues, ses parcs et ses cafes.",
       descriptionAr: "قلب مكناس الحديثة مع شوارعها الواسعة وحدائقها ومقاهيها.",
       image: "/assets/campaign-ville-nouvelle.jpg",
       statsWasteKg: 780,
@@ -146,8 +153,13 @@ async function seed() {
   console.log(`Inserted ${sampleNeighborhoods.length} neighborhoods.`);
 
   // Build a slug -> id map for the inserted neighborhoods
-  const neighborhoodRows = db.select({ id: schema.neighborhoods.id, slug: schema.neighborhoods.slug }).from(schema.neighborhoods).all();
-  const neighborhoodIdBySlug = new Map(neighborhoodRows.map((n) => [n.slug, n.id]));
+  const neighborhoodRows = db
+    .select({ id: schema.neighborhoods.id, slug: schema.neighborhoods.slug })
+    .from(schema.neighborhoods)
+    .all();
+  const neighborhoodIdBySlug = new Map(
+    neighborhoodRows.map(n => [n.slug, n.id])
+  );
 
   // Insert sample campaigns linked to neighborhoods
   const sampleCampaigns = [
@@ -166,7 +178,10 @@ async function seed() {
         "انضم إلينا في حملة تنظيف مجتمعية حول باب المنصور التاريخي. سنقوم بإزالة النفايات وزراعة الزهور ورسم الجداريات.",
       date: "15 JUL 2025",
       slug: "bab-mansour-cleanup",
-      galleryImages: JSON.stringify(["/assets/campaign-bab-mansour.jpg", "/assets/campaign-hamria.jpg"]),
+      galleryImages: JSON.stringify([
+        "/assets/campaign-bab-mansour.jpg",
+        "/assets/campaign-hamria.jpg",
+      ]),
       filterTags: "outdoor,community",
       neighborhoodId: neighborhoodIdBySlug.get("bab-mansour"),
       isActive: true,
@@ -186,7 +201,10 @@ async function seed() {
         "ساعدنا في استعادة جمال منطقة نهر حري السواني. أحضر قفازات وأكياس قابلة لإعادة الاستخدام. المشروبات متوفرة!",
       date: "22 JUL 2025",
       slug: "heri-essouani-river",
-      galleryImages: JSON.stringify(["/assets/campaign-hamria.jpg", "/assets/campaign-ville-nouvelle.jpg"]),
+      galleryImages: JSON.stringify([
+        "/assets/campaign-hamria.jpg",
+        "/assets/campaign-ville-nouvelle.jpg",
+      ]),
       filterTags: "outdoor,water",
       neighborhoodId: neighborhoodIdBySlug.get("hamria"),
       isActive: true,
@@ -732,6 +750,15 @@ async function seed() {
       ]),
       isSystem: true,
     },
+    {
+      // Base role granted to every regular account; no admin permissions.
+      name: "user",
+      labelEn: "User",
+      labelFr: "Utilisateur",
+      labelAr: "مستخدم",
+      permissions: JSON.stringify([]),
+      isSystem: true,
+    },
   ];
   for (const role of defaultRoles) {
     try {
@@ -816,9 +843,7 @@ async function seed() {
   ];
   for (const post of sampleSocialPosts) {
     try {
-      db.insert(schema.socialFeedPosts)
-        .values(post)
-        .run();
+      db.insert(schema.socialFeedPosts).values(post).run();
     } catch {
       // may already exist
     }
