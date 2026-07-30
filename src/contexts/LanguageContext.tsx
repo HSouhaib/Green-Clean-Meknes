@@ -694,6 +694,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.activity.socialFeed.deleted": "deleted social feed post",
 
     "admin.tabs.dashboard": "Dashboard",
+    "admin.nav.group_content": "Content",
+    "admin.nav.group_community": "Community",
+    "admin.nav.group_system": "System",
     "admin.tabs.landing": "Landing Page",
     "admin.tabs.campaigns": "Campaigns",
     "admin.tabs.presence": "Presence",
@@ -1935,6 +1938,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.activity.socialFeed.deleted": "a supprimé une publication sociale",
 
     "admin.tabs.dashboard": "Tableau de Bord",
+    "admin.nav.group_content": "Contenu",
+    "admin.nav.group_community": "Communauté",
+    "admin.nav.group_system": "Système",
     "admin.tabs.landing": "Page d'Accueil",
     "admin.tabs.campaigns": "Campagnes",
     "admin.tabs.presence": "Présence",
@@ -3153,6 +3159,9 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.activity.socialFeed.deleted": "حذف منشوراً اجتماعياً",
 
     "admin.tabs.dashboard": "لوحة التحكم",
+    "admin.nav.group_content": "المحتوى",
+    "admin.nav.group_community": "المجتمع",
+    "admin.nav.group_system": "النظام",
     "admin.tabs.landing": "الصفحة الرئيسية",
     "admin.tabs.campaigns": "الحملات",
     "admin.tabs.presence": "الحضور",

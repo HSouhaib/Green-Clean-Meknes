@@ -32,6 +32,7 @@ import {
   Camera,
   ScanLine,
   Trophy,
+  ChevronDown,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
@@ -159,6 +160,46 @@ const tabs: TabConfig[] = [
   },
 ];
 
+/** Desktop/mobile nav grouping: keeps 18 tabs reachable without scrolling. */
+interface NavGroup {
+  key: string;
+  labelKey: string;
+  icon: React.ReactNode;
+  tabs: TabKey[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    key: "content",
+    labelKey: "admin.nav.group_content",
+    icon: <PanelTop size={16} />,
+    tabs: [
+      "landing",
+      "photos",
+      "sponsors",
+      "socialFeed",
+      "neighborhoods",
+      "faqs",
+      "testimonials",
+      "polls",
+    ],
+  },
+  {
+    key: "community",
+    labelKey: "admin.nav.group_community",
+    icon: <Users size={16} />,
+    tabs: ["campaigns", "presence", "volunteers", "users", "leaderboard"],
+  },
+  {
+    key: "system",
+    labelKey: "admin.nav.group_system",
+    icon: <Settings size={16} />,
+    tabs: ["contacts", "plans", "roles", "settings"],
+  },
+];
+
+const tabByKey = (key: TabKey): TabConfig => tabs.find(tab => tab.key === key)!;
+
 export default function Admin() {
   const { t } = useLanguage();
   const { user, isAuthenticated, isLoading, logout } = useAuth({
@@ -168,7 +209,9 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   // Notification badge counts
   const { data: unreadContacts } = trpc.contact.unreadCount.useQuery(
@@ -210,6 +253,17 @@ export default function Admin() {
         !profileRef.current.contains(e.target as Node)
       ) {
         setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Close nav group dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setOpenGroup(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -307,9 +361,112 @@ export default function Admin() {
             </a>
           </div>
 
-          {/* Desktop Tab Navigation */}
-          <nav className="hidden lg:flex gap-1 overflow-x-auto flex-1 mx-4">
-            {tabs.map(tab => renderTabButton(tab, false))}
+          {/* Desktop Tab Navigation: Dashboard + grouped dropdowns */}
+          <nav
+            className="hidden lg:flex items-center gap-1 flex-1 mx-4"
+            ref={navRef}
+          >
+            {renderTabButton(tabByKey("dashboard"), false)}
+            {NAV_GROUPS.map(group => {
+              const isGroupActive = group.tabs.includes(activeTab);
+              const groupBadge = group.tabs.reduce(
+                (sum, key) => sum + (badgeMap[key] ?? 0),
+                0
+              );
+              const isOpen = openGroup === group.key;
+              return (
+                <div key={group.key} className="relative">
+                  <button
+                    onClick={() => setOpenGroup(isOpen ? null : group.key)}
+                    className="px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] border-none cursor-pointer bg-transparent"
+                    style={{
+                      color: isGroupActive
+                        ? "var(--text-primary)"
+                        : "var(--text-tertiary)",
+                      background: isGroupActive
+                        ? "var(--bg-surface)"
+                        : "transparent",
+                    }}
+                  >
+                    {group.icon}
+                    <span className="hidden xl:inline">
+                      {t(group.labelKey)}
+                    </span>
+                    <ChevronDown
+                      size={12}
+                      style={{
+                        transform: isOpen ? "rotate(180deg)" : "none",
+                        transition: "transform 0.2s ease",
+                      }}
+                    />
+                    {groupBadge > 0 && (
+                      <span
+                        className="px-1.5 py-0 rounded-full text-[10px] font-bold min-w-[18px] text-center"
+                        style={{
+                          background: "var(--accent-terracotta)",
+                          color: "white",
+                        }}
+                      >
+                        {groupBadge}
+                      </span>
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div
+                      className="absolute start-0 top-full mt-2 w-56 rounded-lg overflow-hidden z-50 py-1"
+                      style={{
+                        background: "var(--bg-surface)",
+                        border: "1px solid var(--bg-surface-light)",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+                      }}
+                    >
+                      {group.tabs.map(key => {
+                        const tab = tabByKey(key);
+                        const isActive = activeTab === key;
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => {
+                              setActiveTab(key);
+                              setOpenGroup(null);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-surface-light)] text-start border-none bg-transparent cursor-pointer"
+                            style={{
+                              color: isActive
+                                ? "var(--text-primary)"
+                                : "var(--text-secondary)",
+                              fontWeight: isActive ? 600 : 400,
+                            }}
+                          >
+                            <span
+                              style={{
+                                color: isActive
+                                  ? "var(--accent-green)"
+                                  : "var(--text-tertiary)",
+                              }}
+                            >
+                              {tab.icon}
+                            </span>
+                            {t(tab.labelKey)}
+                            {badgeMap[key] ? (
+                              <span
+                                className="ml-auto px-1.5 py-0 rounded-full text-[10px] font-bold min-w-[18px] text-center"
+                                style={{
+                                  background: "var(--accent-terracotta)",
+                                  color: "white",
+                                }}
+                              >
+                                {badgeMap[key]}
+                              </span>
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* Right: Actions */}
@@ -456,7 +613,18 @@ export default function Admin() {
               className="mx-auto px-4 py-3 space-y-1"
               style={{ maxWidth: "1400px" }}
             >
-              {tabs.map(tab => renderTabButton(tab, true))}
+              {renderTabButton(tabByKey("dashboard"), true)}
+              {NAV_GROUPS.map(group => (
+                <div key={group.key}>
+                  <div
+                    className="px-3 pt-3 pb-1 text-[11px] font-mono uppercase tracking-wider"
+                    style={{ color: "var(--text-tertiary)" }}
+                  >
+                    {t(group.labelKey)}
+                  </div>
+                  {group.tabs.map(key => renderTabButton(tabByKey(key), true))}
+                </div>
+              ))}
             </div>
           </div>
         )}
