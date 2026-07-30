@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useTheme } from "@/hooks/useTheme";
 import { useNavigate } from "react-router";
 import Logo from "@/components/Logo";
-import { trpc } from '@/lib/trpc';
+import { trpc } from "@/lib/trpc";
 import {
   Sun,
   Moon,
+  Monitor,
   User,
   LogOut,
   Home,
@@ -214,21 +216,9 @@ export default function Admin() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    const saved = localStorage.getItem("admin-theme");
-    if (saved === "light" || saved === "dark") return saved;
-    return window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("admin-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () =>
-    setTheme(prev => (prev === "dark" ? "light" : "dark"));
+  // Follows the shared site theme (dark / light / auto = Meknes day-night),
+  // same as the landing page — no separate admin-only theme.
+  const { isLight, isAuto, cycle } = useTheme();
 
   const renderTabButton = (tab: TabConfig, mobile: boolean) => (
     <button
@@ -392,6 +382,18 @@ export default function Admin() {
                   </div>
                   <div className="p-2">
                     <a
+                      href="/profile"
+                      onClick={e => {
+                        e.preventDefault();
+                        navigate("/profile");
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors hover:bg-[var(--bg-surface-light)] no-underline"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      <User size={14} />
+                      {t("admin.header.profile")}
+                    </a>
+                    <a
                       href="/"
                       onClick={e => {
                         e.preventDefault();
@@ -411,19 +413,27 @@ export default function Admin() {
             <LanguageSwitcher />
 
             <button
-              onClick={toggleTheme}
+              onClick={cycle}
               className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full transition-colors"
               style={{
                 background: "var(--bg-surface)",
                 color: "var(--text-secondary)",
               }}
               title={
-                theme === "dark"
-                  ? t("admin.header.switch_to_light")
-                  : t("admin.header.switch_to_dark")
+                isAuto
+                  ? t("admin.header.theme_auto")
+                  : isLight
+                    ? t("admin.header.switch_to_dark")
+                    : t("admin.header.switch_to_light")
               }
             >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              {isAuto ? (
+                <Monitor size={18} />
+              ) : isLight ? (
+                <Sun size={18} />
+              ) : (
+                <Moon size={18} />
+              )}
             </button>
             <button
               onClick={logout}
@@ -458,7 +468,7 @@ export default function Admin() {
         style={{ maxWidth: "1400px" }}
       >
         {activeTab === "dashboard" && (
-          <DashboardTab onNavigate={(tab) => setActiveTab(tab as TabKey)} />
+          <DashboardTab onNavigate={tab => setActiveTab(tab as TabKey)} />
         )}
         {activeTab === "landing" && <LandingPageTab />}
         {activeTab === "campaigns" && <CampaignsTab />}

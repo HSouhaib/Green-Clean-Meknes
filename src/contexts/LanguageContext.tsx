@@ -720,6 +720,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.header.logout": "Logout",
     "admin.header.switch_to_light": "Switch to light mode",
     "admin.header.switch_to_dark": "Switch to dark mode",
+    "admin.header.theme_auto": "Auto (follows Meknes day/night)",
 
     "admin.landing.title": "Landing Page Builder",
     "admin.landing.description":
@@ -1960,6 +1961,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.header.logout": "Déconnexion",
     "admin.header.switch_to_light": "Passer en mode clair",
     "admin.header.switch_to_dark": "Passer en mode sombre",
+    "admin.header.theme_auto": "Auto (jour/nuit à Meknès)",
 
     "admin.landing.title": "Éditeur de Page d'Accueil",
     "admin.landing.description":
@@ -3177,6 +3179,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "admin.header.logout": "تسجيل الخروج",
     "admin.header.switch_to_light": "التبديل إلى الوضع الفاتح",
     "admin.header.switch_to_dark": "التبديل إلى الوضع الداكن",
+    "admin.header.theme_auto": "تلقائي (حسب نهار/ليل مكناس)",
 
     "admin.landing.title": "محرر الصفحة الرئيسية",
     "admin.landing.description":
